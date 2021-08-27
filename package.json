@@ -1,0 +1,29 @@
+{
+  "name": "recipe-me",
+  "version": "1.0.0",
+  "description": "An application for storing recipes learned and created throughout the years.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mnys176/recipe-me.git"
+  },
+  "keywords": [
+    "api",
+    "recipe",
+    "nodejs",
+    "mongodb",
+    "expressjs"
+  ],
+  "author": "Mike Nystoriak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mnys176/recipe-me/issues"
+  },
+  "homepage": "https://github.com/mnys176/recipe-me#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0"
+  }
+}

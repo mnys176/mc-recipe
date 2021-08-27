@@ -1,0 +1,9 @@
+# MacOS
+.DS_Store
+
+# NPM
+node_modules/
+.env
+
+# MongoDB volume
+db/data/

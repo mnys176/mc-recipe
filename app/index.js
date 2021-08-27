@@ -10,9 +10,13 @@
 
 const express = require('express')
 const dotenv = require('dotenv').config().parsed
+const connectToMongoDB = require('./mongo')
 
 const app = express()
 const port = process.env.PORT || dotenv.PORT || 8080
+
+// make the connection to MongoDB
+connectToMongoDB()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))

@@ -9,11 +9,11 @@
  ********************************************************/
 
 const express = require('express')
-const dotenv = require('dotenv').config().parsed
+const dotenv = require('dotenv').config()
 const connectToMongoDB = require('./mongo')
 
 const app = express()
-const port = process.env.PORT || dotenv.PORT || 8080
+const port = process.env.PORT || 8080
 
 // make the connection to MongoDB
 connectToMongoDB()

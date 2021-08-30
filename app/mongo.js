@@ -9,25 +9,14 @@
  ************************************************************/
 
 const mongoose = require('mongoose')
-const dotenv = require('dotenv').config().parsed
 
 const connectToMongoDB = async () => {
-    const connParams = {
-        host: 'localhost',
-        port: 3001,
-        user: dotenv.MONGODB_USERNAME,
-        password: dotenv.MONGODB_PASSWORD,
-        database: 'development'
-    }
-    const uri = `mongodb://${connParams.user}:${connParams.password}` +
-                `@${connParams.host}:${connParams.port}` +
-                `/${connParams.database}?authSource=admin`
-
     try {
-        await mongoose.connect(uri)
-        console.log(`Connection to MongoDB on ${connParams.host}:${connParams.port} succeeded!`)
+        const mongoConn = await mongoose.connect(process.env.MONGODB_URI)
+        const mongoDomain = `${mongoConn.connection.host}:${mongoConn.connection.port}`
+        console.log(`Connection to MongoDB at ${mongoDomain} succeeded!`)
     } catch (err) {
-        throw err;
+        throw err
     }
 }
 

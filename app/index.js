@@ -20,4 +20,5 @@ connectToMongoDB()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use('/api/recipes', require('./routes/recipes'))
 app.listen(port, () => console.log(`Running on port: ${port}`))

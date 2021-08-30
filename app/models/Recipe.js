@@ -8,6 +8,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+// anything with units (amounts and durations)
 const quantifiableSchema = new Schema({
     readable: {
         type: String,

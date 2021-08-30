@@ -12,8 +12,24 @@ const router = express.Router()
 
 // get all recipes
 router.get('/', async (req, res) => {
-    const results = await Recipe.find()
-    res.status(200).json(results)
+    try {
+        const results = await Recipe.find()
+        return res.status(200).json(results)
+    } catch (err) {
+        const msg = 'Uh-oh, something went wrong...'
+        return res.status(500).json({ status: 500, message: msg })
+    }
+})
+
+// get recipe by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const results = await Recipe.findById(req.params.id)
+        return res.status(200).json(results)
+    } catch (err) {
+        const msg = `No recipe found with ID of "${req.params.id}".`
+        return res.status(404).json({ status: 404, message: msg })
+    }
 })
 
 module.exports = router

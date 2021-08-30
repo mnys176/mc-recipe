@@ -21,20 +21,21 @@
 									"// assert that status code is 200",
 									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
 									"",
-									"// if something is returned, test for completeness",
-									"if (jsonResponse.length > 0) {",
-									"    pm.test('Recipes are complete', () => {",
-									"        const expectedRecipeKeys = [",
-									"            '_id',",
-									"            'title',",
-									"            'about',",
-									"            'prepTime',",
-									"            'ingredients',",
-									"            'instructions'",
-									"        ]",
-									"        jsonResponse.forEach(recipe => pm.expect(recipe).to.have.all.keys(...expectedRecipeKeys))",
-									"    })",
-									"}"
+									"// ensure many recipes are returned",
+									"pm.test('Multiple recipes returned', () => pm.expect(jsonResponse.length).to.greaterThan(1))",
+									"",
+									"// ensure each recipe is complete",
+									"pm.test('Recipes are complete', () => {",
+									"    const expectedRecipeKeys = [",
+									"        '_id',",
+									"        'title',",
+									"        'about',",
+									"        'prepTime',",
+									"        'ingredients',",
+									"        'instructions'",
+									"    ]",
+									"    jsonResponse.forEach(recipe => pm.expect(recipe).to.have.all.keys(...expectedRecipeKeys))",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -51,6 +52,82 @@
 							],
 							"path": [
 								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-recipes-by-id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get response as JSON",
+									"const jsonResponse = pm.response.json()",
+									"",
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+									"",
+									"// ensure recipe is complete",
+									"pm.test('Recipe is complete', () => {",
+									"    const expectedRecipeKeys = [",
+									"        '_id',",
+									"        'title',",
+									"        'about',",
+									"        'prepTime',",
+									"        'ingredients',",
+									"        'instructions'",
+									"    ]",
+									"    pm.expect(jsonResponse).to.have.all.keys(...expectedRecipeKeys)",
+									"})",
+									"",
+									"// check that the recipe returned is the recipe requested",
+									"pm.test('Correct recipe returned', () => {",
+									"    const expectedId = '612d252a308fdc12ccd0c379'",
+									"    pm.expect(jsonResponse._id).to.equal(expectedId)",
+									"})",
+									"",
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const req = {",
+									"    url: `http://${apiRoot}/recipes/asdhgfasdhgfasdhgfasdhgf`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"",
+									"// send request with invalid ID",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Invalid recipe ID returns with status of 404', () => pm.expect(res.code).to.equal(404))",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/612d252a308fdc12ccd0c379",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"612d252a308fdc12ccd0c379"
 							]
 						}
 					},

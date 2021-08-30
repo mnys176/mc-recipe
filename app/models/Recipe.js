@@ -21,6 +21,7 @@ const quantifiableSchema = new Schema({
 
 const recipeSchema = new Schema({
     title: { type: String, required: true },
+    uploader: { type: String, default: 'Mike Nystoriak' },
     about: {
         type: String,
         default: 'A recipe created by me.'

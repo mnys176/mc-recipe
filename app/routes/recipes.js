@@ -34,6 +34,16 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+/**
+ * Parses a quantifiable object from the frontend to
+ * the backend.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ *
+ * @param  {object} input Frontend quantifiable.
+ * 
+ * @return {object}       Backend quantifiable.
+ */
 const parseToQuantifiable = input => {
     // unit determines whether to set quantity and numeric representation
     const { unit } = input

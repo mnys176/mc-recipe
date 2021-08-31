@@ -29,10 +29,12 @@
 									"    const expectedRecipeKeys = [",
 									"        '_id',",
 									"        'title',",
+									"        'uploader',",
 									"        'about',",
 									"        'prepTime',",
 									"        'ingredients',",
-									"        'instructions'",
+									"        'instructions',",
+									"        '__v'",
 									"    ]",
 									"    jsonResponse.forEach(recipe => pm.expect(recipe).to.have.all.keys(...expectedRecipeKeys))",
 									"})"
@@ -58,7 +60,7 @@
 					"response": []
 				},
 				{
-					"name": "get-recipes-by-id",
+					"name": "get-recipe-by-id",
 					"event": [
 						{
 							"listen": "test",
@@ -75,17 +77,19 @@
 									"    const expectedRecipeKeys = [",
 									"        '_id',",
 									"        'title',",
+									"        'uploader',",
 									"        'about',",
 									"        'prepTime',",
 									"        'ingredients',",
-									"        'instructions'",
+									"        'instructions',",
+									"        '__v'",
 									"    ]",
 									"    pm.expect(jsonResponse).to.have.all.keys(...expectedRecipeKeys)",
 									"})",
 									"",
 									"// check that the recipe returned is the recipe requested",
 									"pm.test('Correct recipe returned', () => {",
-									"    const expectedId = '612d252a308fdc12ccd0c379'",
+									"    const expectedId = '612da772308fdc12ccd0c41b'",
 									"    pm.expect(jsonResponse._id).to.equal(expectedId)",
 									"})",
 									"",
@@ -120,14 +124,98 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/612d252a308fdc12ccd0c379",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/612da772308fdc12ccd0c41b",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"612d252a308fdc12ccd0c379"
+								"612da772308fdc12ccd0c41b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-recipe",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/recipes`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"",
+									"// count the number of recipes before the POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldRecipes = res.json().length",
+									"",
+									"    // make the request and current objective count visible to tests",
+									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// extract and store the UUID for later",
+									"const message = pm.response.json().message",
+									"console.log(message)",
+									"const objectIdToDelete = message.substr(29, 24)",
+									"pm.collectionVariables.set('recipeObjectIdToDelete', objectIdToDelete)",
+									"",
+									"// count the number of recipes after the POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('One more recipe exists than before', () => {",
+									"        const numNewRecipes = res.json().length",
+									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes + 1)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"s\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"40\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes"
 							]
 						}
 					},
@@ -180,6 +268,18 @@
 		},
 		{
 			"key": "apiRoot",
+			"value": ""
+		},
+		{
+			"key": "postTestGetRecipes",
+			"value": ""
+		},
+		{
+			"key": "numOldRecipes",
+			"value": ""
+		},
+		{
+			"key": "recipeObjectIdToDelete",
 			"value": ""
 		}
 	]

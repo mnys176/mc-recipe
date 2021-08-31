@@ -13,7 +13,7 @@ const quantifiableSchema = new Schema({
     readable: {
         type: String,
         required: true,
-        match: /^\d+[\/\.]?\d+[A-z]+$/,
+        match: /^\d+[\/\.]?\d*[A-z]+$/,
     },
     numeric: Number,
     unit: String
@@ -21,10 +21,10 @@ const quantifiableSchema = new Schema({
 
 const recipeSchema = new Schema({
     title: { type: String, required: true },
-    uploader: { type: String, default: 'Mike Nystoriak' },
+    uploader: { type: String, default: 'Anon Y. Mous' },
     about: {
         type: String,
-        default: 'A recipe created by me.'
+        default: 'A recipe created by Mike Nystoriak.'
     },
     prepTime: quantifiableSchema,
     ingredients: {
@@ -32,9 +32,12 @@ const recipeSchema = new Schema({
             name: { type: String, required: true },
             amount: quantifiableSchema
         }],
-        required: true
+        validate: v => Array.isArray(v) && v.length > 0
     },
-    instructions: { type: [String], required: true }
+    instructions: {
+        type: [String],
+        validate: v => Array.isArray(v) && v.length > 0
+    }
 })
 
 module.exports = mongoose.model('Recipe', recipeSchema)

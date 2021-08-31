@@ -9,6 +9,666 @@
 			"name": "recipe",
 			"item": [
 				{
+					"name": "failures",
+					"item": [
+						{
+							"name": "recipe-not-found",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// assert that status code is 200",
+											"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes/asdhgfasdhgfasdhgfasdhgf",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes",
+										"asdhgfasdhgfasdhgfasdhgf"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "title-not-included",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "preptime-not-included",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ingredients-not-included",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "instructions-not-included",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "quantifiable-quantity-not-included-with-valid-unit",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "quantifiable-quantity-not-included-with-invalid-unit",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"unit\": \"asdf\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "quantifiable-unit-not-included",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "quantifiable-quantity-not-included-with-pieces",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set variables to form a request",
+											"const apiRoot = pm.collectionVariables.get('apiRoot')",
+											"const protocol = pm.collectionVariables.get('protocol')",
+											"const req = {",
+											"    url: `${protocol}://${apiRoot}/recipes`,",
+											"    method: 'GET',",
+											"    headers: { 'Content-Type': 'application/json' }",
+											"}",
+											"",
+											"// count the number of recipes before the bad POST request",
+											"pm.sendRequest(req,  (err, res) => {",
+											"    if (err) throw err",
+											"    const numOldRecipes = res.json().length",
+											"",
+											"    // make the request and current recipe count visible to tests",
+											"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+											"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get relevant collection variables",
+											"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+											"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+											"",
+											"// assert that status code is 400",
+											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+											"",
+											"// count the number of recipes after the bad POST request",
+											"pm.sendRequest(req, (err, res) => {",
+											"    if (err) throw err",
+											"    pm.test('Same number of recipes exists', () => {",
+											"        const numNewRecipes = res.json().length",
+											"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"unit\": \"pieces\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{protocol}}://{{apiRoot}}/recipes",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{apiRoot}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "get-recipes",
 					"event": [
 						{
@@ -89,22 +749,8 @@
 									"",
 									"// check that the recipe returned is the recipe requested",
 									"pm.test('Correct recipe returned', () => {",
-									"    const expectedId = '612da772308fdc12ccd0c41b'",
+									"    const expectedId = '612e3cd92f83fd7610daa5ca'",
 									"    pm.expect(jsonResponse._id).to.equal(expectedId)",
-									"})",
-									"",
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const req = {",
-									"    url: `http://${apiRoot}/recipes/asdhgfasdhgfasdhgfasdhgf`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
-									"",
-									"// send request with invalid ID",
-									"pm.sendRequest(req,  (err, res) => {",
-									"    if (err) throw err",
-									"    pm.test('Invalid recipe ID returns with status of 404', () => pm.expect(res.code).to.equal(404))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -124,14 +770,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/612da772308fdc12ccd0c41b",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/612e3cd92f83fd7610daa5ca",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"612da772308fdc12ccd0c41b"
+								"612e3cd92f83fd7610daa5ca"
 							]
 						}
 					},
@@ -158,7 +804,7 @@
 									"    if (err) throw err",
 									"    const numOldRecipes = res.json().length",
 									"",
-									"    // make the request and current objective count visible to tests",
+									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
 									"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
 									"})"
@@ -201,7 +847,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"s\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"40\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"

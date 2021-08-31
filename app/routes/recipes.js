@@ -77,9 +77,7 @@ router.post('/', async (req, res) => {
     const recipeBuilder = { ...req.body }
 
     // build preparation time if it exists
-    if (req.body.prepTime) {
-        recipeBuilder.prepTime = parseToQuantifiable(req.body.prepTime)
-    }
+    recipeBuilder.prepTime = parseToQuantifiable(req.body.prepTime)
 
     // build ingredients if they exist
     if (req.body.ingredients) {

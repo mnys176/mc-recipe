@@ -16,8 +16,8 @@ router.get('/', async (req, res) => {
         const results = await Recipe.find()
         return res.status(200).json(results)
     } catch (err) {
-        const msg = 'Something went wrong...'
-        return res.status(500).json({ status: 500, message: msg })
+        const message = 'Something went wrong...'
+        return res.status(500).json({ status: 500, message })
     }
 })
 
@@ -27,14 +27,14 @@ router.get('/:id', async (req, res) => {
         const results = await Recipe.findById(req.params.id)
         return res.status(200).json(results)
     } catch (err) {
-        const msg = `No recipe found with ID of "${req.params.id}".`
-        return res.status(404).json({ status: 404, message: msg })
+        const message = `No recipes returned with ID of "${req.params.id}".`
+        const reason = 'Not found.'
+        return res.status(404).json({ status: 404, message })
     }
 })
 
 const parseToQuantifiable = input => {
     const { quantity, unit } = input
-
     let numeric = 0
     if (quantity.includes('/')) {
         const parts = quantity.split('/')
@@ -53,25 +53,30 @@ const parseToQuantifiable = input => {
 router.post('/', async (req, res) => {
     const recipeBuilder = { ...req.body }
 
-    // build preparation time
-    recipeBuilder.prepTime = parseToQuantifiable(req.body.prepTime)
+    // build preparation time if it exists
+    if (req.body.prepTime) {
+        recipeBuilder.prepTime = parseToQuantifiable(req.body.prepTime)
+    }
 
-    // build ingredients
-    recipeBuilder.ingredients = req.body.ingredients.map(i => {
-        return {
-            name: i.name,
-            amount: parseToQuantifiable(i.amount)
-        }
-    })
+    // build ingredients if they exist
+    if (req.body.ingredients) {
+        recipeBuilder.ingredients = req.body.ingredients.map(i => {
+            return {
+                name: i.name,
+                amount: parseToQuantifiable(i.amount)
+            }
+        })
+    }
     const newRecipe = new Recipe(recipeBuilder)
-
+    
     try {
         await newRecipe.save()
-        const msg = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
-        return res.status(201).json({ status: 201, message: msg })
+        const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
+        return res.status(201).json({ status: 201, message })
     } catch (err) {
-        const msg = `The recipe with ObjectID of "${newRecipe._id}" could not be created.`
-        return res.status(400).json({ status: 400, message: msg })
+        const message = `The recipe with ObjectID of "${newRecipe._id}" could not be created.`
+        const reason = err.message
+        return res.status(400).json({ status: 400, message, reason })
     }
 })
 

@@ -24,9 +24,9 @@ const recipeSchema = new Schema({
     uploader: { type: String, default: 'Anon Y. Mous' },
     about: {
         type: String,
-        default: 'A recipe created by Mike Nystoriak.'
+        default: 'A recipe created by Anon Y. Mous'
     },
-    prepTime: quantifiableSchema,
+    prepTime: { type: quantifiableSchema, required: true },
     ingredients: {
         type: [{
             name: { type: String, required: true },

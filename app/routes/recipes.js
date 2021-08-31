@@ -7,6 +7,7 @@
 
 const express = require('express')
 const Recipe = require('../models/Recipe')
+const units = require('../enum')
 
 const router = express.Router()
 
@@ -34,19 +35,29 @@ router.get('/:id', async (req, res) => {
 })
 
 const parseToQuantifiable = input => {
-    const { quantity, unit } = input
+    // unit determines whether to set quantity and numeric representation
+    const { unit } = input
     let numeric = 0
-    if (quantity.includes('/')) {
-        const parts = quantity.split('/')
-        numeric = parts[0] / parts[1]
+    let readable = ''
+
+    if (unit === units.misc.TO_TASTE) {
+        readable = ` ${unit}`
     } else {
-        numeric = parseFloat(quantity)
+        const quantity = input.quantity ?? '<undefined>'
+
+        // prepend unit with a space if unit is pieces
+        const space = unit === units.misc.PIECES ? ' ' : ''
+        readable = `${quantity}${space}${unit}`
+
+        // evaluate the fraction or number
+        if (quantity.includes('/')) {
+            const parts = quantity.split('/')
+            numeric = parts[0] / parts[1]
+        } else {
+            numeric = parseFloat(quantity)
+        }
     }
-    return {
-        readable: `${quantity}${unit}`,
-        numeric,
-        unit
-    }
+    return { readable, numeric, unit }
 }
 
 // create a recipe
@@ -68,7 +79,7 @@ router.post('/', async (req, res) => {
         })
     }
     const newRecipe = new Recipe(recipeBuilder)
-    
+
     try {
         await newRecipe.save()
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`

@@ -6,17 +6,40 @@
  ********************************************************/
 
 const mongoose = require('mongoose')
+const units = require('../enum')
 const Schema = mongoose.Schema
+
+/**
+ * Aggregates all possible units into an array and
+ * checks that the provided unit is registered as
+ * an enumeration.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ *
+ * @param  {string} unit Provided unit.
+ * 
+ * @return {boolean}     Flag indicating whether or
+ *                       not the unit is valid.
+ */
+const validateUnit = unit => {
+    const validUnits = []
+    Object.values(units).forEach(unitType => {
+        validUnits.push(Object.values(unitType))
+    })
+    return validUnits.flat().includes(unit)
+}
 
 // anything with units (amounts and durations)
 const quantifiableSchema = new Schema({
     readable: {
         type: String,
-        required: true,
-        match: /^\d+[\/\.]?\d*[A-z]+$/,
+        required: true
     },
     numeric: Number,
-    unit: String
+    unit: {
+        type: String,
+        validate: validateUnit
+    }
 })
 
 const recipeSchema = new Schema({

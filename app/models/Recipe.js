@@ -6,7 +6,7 @@
  ********************************************************/
 
 const mongoose = require('mongoose')
-const units = require('../enum')
+const units = require('../util/enum')
 const Schema = mongoose.Schema
 
 /**

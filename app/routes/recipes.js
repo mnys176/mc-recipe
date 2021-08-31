@@ -7,7 +7,7 @@
 
 const express = require('express')
 const Recipe = require('../models/Recipe')
-const units = require('../enum')
+const units = require('../util/enum')
 
 const router = express.Router()
 

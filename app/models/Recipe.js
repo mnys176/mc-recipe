@@ -38,7 +38,8 @@ const quantifiableSchema = new Schema({
     numeric: Number,
     unit: {
         type: String,
-        validate: validateUnit
+        validate: validateUnit,
+        required: true
     }
 })
 
@@ -53,7 +54,10 @@ const recipeSchema = new Schema({
     ingredients: {
         type: [{
             name: { type: String, required: true },
-            amount: quantifiableSchema
+            amount: {
+                type: quantifiableSchema,
+                required: true
+            }
         }],
         validate: v => Array.isArray(v) && v.length > 0
     },

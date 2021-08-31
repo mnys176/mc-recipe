@@ -45,29 +45,31 @@ router.get('/:id', async (req, res) => {
  * @return {object}       Backend quantifiable.
  */
 const parseToQuantifiable = input => {
-    // unit determines whether to set quantity and numeric representation
-    const { unit } = input
-    let numeric = 0
-    let readable = ''
+    if (input) {
+        const { unit } = input
+        let numeric = 0
+        let readable = ''
 
-    if (unit === units.misc.TO_TASTE) {
-        readable = ` ${unit}`
-    } else {
-        const quantity = input.quantity ?? '<undefined>'
-
-        // prepend unit with a space if unit is pieces
-        const space = unit === units.misc.PIECES ? ' ' : ''
-        readable = `${quantity}${space}${unit}`
-
-        // evaluate the fraction or number
-        if (quantity.includes('/')) {
-            const parts = quantity.split('/')
-            numeric = parts[0] / parts[1]
+        // unit determines whether to set quantity and numeric representation
+        if (unit === units.misc.TO_TASTE) {
+            readable = ` ${unit}`
         } else {
-            numeric = parseFloat(quantity)
+            const quantity = input.quantity ?? '<undefined>'
+
+            // prepend unit with a space if unit is pieces
+            const space = unit === units.misc.PIECES ? ' ' : ''
+            readable = `${quantity}${space}${unit}`
+
+            // evaluate the fraction or number
+            if (quantity.includes('/')) {
+                const parts = quantity.split('/')
+                numeric = parts[0] / parts[1]
+            } else {
+                numeric = parseFloat(quantity)
+            }
         }
+        return { readable, numeric, unit }
     }
-    return { readable, numeric, unit }
 }
 
 // create a recipe

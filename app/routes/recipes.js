@@ -1,6 +1,6 @@
 /************************************************************
  * Title:       recipes.js                                  *
- * Author:      Mike Nystoriak (mike.nystoriak@sapns2.com)  *
+ * Author:      Mike Nystoriak (mnystoriak@gmail.com)       *
  * Created:     08/30/2021                                  *
  * Description: Set of API routes that pertain to a recipe. *
  ************************************************************/
@@ -42,7 +42,7 @@ router.get('/:id', async (req, res) => {
  *
  * @param  {object} input Frontend quantifiable.
  * 
- * @return {object}       Backend quantifiable.
+ * @returns {object}       Backend quantifiable.
  */
 const parseToQuantifiable = input => {
     if (input) {

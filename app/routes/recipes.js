@@ -6,8 +6,9 @@
  ************************************************************/
 
 const express = require('express')
+
 const Recipe = require('../models/Recipe')
-const Quantifiable = require('../util/quantify')
+const { extractRecipe } = require('../util/helper')
 
 const router = express.Router()
 
@@ -34,45 +35,9 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-/**
- * Parses a quantifiable object from the frontend to
- * the backend.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- *
- * @param {object} input Frontend quantifiable.
- * 
- * @returns {object} Backend quantifiable.
- */
-const mapQuantifiable = input => {
-    if (input && input.quantity && input.unit) {
-        const quantifiable = Quantifiable.build(input.quantity, input.unit)
-        return {
-            readable: quantifiable.readable,
-            numeric: quantifiable.normalized,
-            unit: quantifiable.units
-        }
-    }
-}
-
 // create a recipe
 router.post('/', async (req, res) => {
-    const recipeBuilder = { ...req.body }
-
-    // build preparation time if it exists
-    recipeBuilder.prepTime = mapQuantifiable(req.body.prepTime)
-
-    // build ingredients if they exist
-    if (req.body.ingredients) {
-        recipeBuilder.ingredients = req.body.ingredients.map(i => {
-            return {
-                name: i.name,
-                amount: mapQuantifiable(i.amount)
-            }
-        })
-    }
-    const newRecipe = new Recipe(recipeBuilder)
-
+    const newRecipe = new Recipe(extractRecipe(req.body))
     try {
         await newRecipe.save()
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`

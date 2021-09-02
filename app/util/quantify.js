@@ -9,8 +9,22 @@
  *     converting from one unit to another.           *
  ******************************************************/
 
+/**
+ * Enumeration for time units.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @enum {string}
+ */
 const time = { DAYS: 'd', HOURS: 'h', MINUTES: 'm' }
 
+/**
+ * Enumeration for volume units.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @enum {string}
+ */
 const volume = {
     // imperial
     GALLONS: 'gal',
@@ -25,6 +39,13 @@ const volume = {
     MILLILITERS: 'mL'
 }
 
+/**
+ * Enumeration for mass units.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @enum {string}
+ */
 const mass = {
     // imperial
     OUNCES: 'oz',
@@ -36,6 +57,13 @@ const mass = {
     MILLIGRAMS: 'mg'
 }
 
+/**
+ * Enumeration for miscellaneous units.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @enum {string}
+ */
 const misc = { PIECES: 'pieces', TO_TASTE: 'to taste' }
 
 /**

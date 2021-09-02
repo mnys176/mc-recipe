@@ -12,6 +12,27 @@
 const units = require('./enum')
 
 /**
+ * Enforces instantiation policy on abstractions.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {class} someClass An abstract class.
+ */
+const preventAbstractInstantiation = someClass => {
+    const abstractionBlacklist = [
+        Unit,
+        TimeUnit,
+        VolumeUnit,
+        MassUnit
+    ]
+    if (abstractionBlacklist.includes(someClass.constructor)) {
+        const message = `Abstract \`${someClass.constructor.name}\`` +
+                        ' cannot be instantiated.'
+        throw new Error(message)
+    }
+}
+
+/**
  * A class to represent a quantity.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
@@ -20,19 +41,25 @@ const units = require('./enum')
  */
 const Unit = class {
     #value
+    #readable
 
     constructor(value) {
-        if (this.constructor === Unit) {
-            const message = `Abstract \`${this.constructor.name}\`` +
-                            ' cannot be instantiated.'
-            throw new Error(message)
-        }
-        this.#value = value
+        preventAbstractInstantiation(this)
+        this.#readable = value.toString()
+
+        const parts = this.#readable.split('/')
+        this.#value = parts[0] / (parts[1] ?? 1)
     }
 
     get value() { return this.#value }
+    get readable() { return this.#readable }
 
-    set value(value) { this.#value = value }
+    set value(value) {
+        this.#readable = value.toString()
+
+        const parts = this.#readable.split('/')
+        this.#value = parts[0] / (parts[1] ?? 1)
+    }
 }
 
 /**
@@ -45,14 +72,7 @@ const Unit = class {
  * @augments Unit
  */
 const TimeUnit = class extends Unit {
-    constructor(value) {
-        super(value)
-        if (this.constructor === TimeUnit) {
-            const message = `Abstract \`${this.constructor.name}\`` +
-                            ' cannot be instantiated.'
-            throw new Error(message)
-        }
-    }
+    constructor(value) { super(value) }
 
     static relatedUnits() {
         return [
@@ -86,14 +106,7 @@ const TimeUnit = class extends Unit {
  * @augments Unit
  */
 const VolumeUnit = class extends Unit {
-    constructor(value) {
-        super(value)
-        if (this.constructor === VolumeUnit) {
-            const message = `Abstract \`${this.constructor.name}\`` +
-                            ' cannot be instantiated.'
-            throw new Error(message)
-        }
-    }
+    constructor(value) { super(value) }
 
     static relatedUnits() {
         return [
@@ -132,14 +145,7 @@ const VolumeUnit = class extends Unit {
  * @augments Unit
  */
 const MassUnit = class extends Unit {
-    constructor(value) {
-        super(value)
-        if (this.constructor === MassUnit) {
-            const message = `Abstract \`${this.constructor.name}\`` +
-                            ' cannot be instantiated.'
-            throw new Error(message)
-        }
-    }
+    constructor(value) { super(value) }
 
     static relatedUnits() {
         return [
@@ -181,14 +187,16 @@ const Gallon = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inQuarts() { return super.value * 4 }
-    get inPints() { return super.value * 8 }
-    get inCups() { return super.value * 16 }
-    get inTablespoons() { return super.value * 256 }
-    get inTeaspoons() { return super.value * 768 }
-    get inLiters() { return super.value * 4.55 }
-    get inMilliliters() { return super.value * 4546.09 }
+    get inQuarts() { return this.value * 4 }
+    get inPints() { return this.value * 8 }
+    get inCups() { return this.value * 16 }
+    get inTablespoons() { return this.value * 256 }
+    get inTeaspoons() { return this.value * 768 }
+    get inLiters() { return this.value * 4.55 }
+    get inMilliliters() { return this.value * 4546.09 }
     get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -207,14 +215,16 @@ const Quart = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inGallons() { return super.value / 4 }
-    get inPints() { return super.value * 2 }
-    get inCups() { return super.value * 4 }
-    get inTablespoons() { return super.value * 64 }
-    get inTeaspoons() { return super.value * 192 }
-    get inLiters() { return super.value / 1.14 }
-    get inMilliliters() { return super.value * 1136.52 }
+    get inGallons() { return this.value / 4 }
+    get inPints() { return this.value * 2 }
+    get inCups() { return this.value * 4 }
+    get inTablespoons() { return this.value * 64 }
+    get inTeaspoons() { return this.value * 192 }
+    get inLiters() { return this.value / 1.14 }
+    get inMilliliters() { return this.value * 1136.52 }
     get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -233,14 +243,16 @@ const Pint = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inGallons() { return super.value / 8 }
-    get inQuarts() { return super.value / 2 }
-    get inCups() { return super.value * 2 }
-    get inTablespoons() { return super.value * 32 }
-    get inTeaspoons() { return super.value * 96 }
-    get inLiters() { return super.value / 1.76 }
-    get inMilliliters() { return super.value * 568.26 }
+    get inGallons() { return this.value / 8 }
+    get inQuarts() { return this.value / 2 }
+    get inCups() { return this.value * 2 }
+    get inTablespoons() { return this.value * 32 }
+    get inTeaspoons() { return this.value * 96 }
+    get inLiters() { return this.value / 1.76 }
+    get inMilliliters() { return this.value * 568.26 }
     get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -259,14 +271,16 @@ const Cup = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inGallons() { return super.value / 16 }
-    get inQuarts() { return super.value / 4 }
-    get inPints() { return super.value / 2 }
-    get inTablespoons() { return super.value * 16 }
-    get inTeaspoons() { return super.value * 48 }
-    get inLiters() { return super.value / 3.52 }
-    get inMilliliters() { return super.value * 284.13 }
+    get inGallons() { return this.value / 16 }
+    get inQuarts() { return this.value / 4 }
+    get inPints() { return this.value / 2 }
+    get inTablespoons() { return this.value * 16 }
+    get inTeaspoons() { return this.value * 48 }
+    get inLiters() { return this.value / 3.52 }
+    get inMilliliters() { return this.value * 284.13 }
     get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -285,14 +299,16 @@ const Tablespoon = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inGallons() { return super.value / 256 }
-    get inQuarts() { return super.value / 64 }
-    get inPints() { return super.value / 32 }
-    get inCups() { return super.value / 16 }
-    get inTeaspoons() { return super.value * 3 }
-    get inLiters() { return super.value / 56.31 }
-    get inMilliliters() { return super.value * 17.76 }
+    get inGallons() { return this.value / 256 }
+    get inQuarts() { return this.value / 64 }
+    get inPints() { return this.value / 32 }
+    get inCups() { return this.value / 16 }
+    get inTeaspoons() { return this.value * 3 }
+    get inLiters() { return this.value / 56.31 }
+    get inMilliliters() { return this.value * 17.76 }
     get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -311,14 +327,16 @@ const Teaspoon = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inGallons() { return super.value / 768 }
-    get inQuarts() { return super.value / 192 }
-    get inPints() { return super.value / 96 }
-    get inCups() { return super.value / 48 }
-    get inTablespoons() { return super.value / 3 }
-    get inLiters() { return super.value / 169.94 }
-    get inMilliliters() { return super.value * 5.92 }
+    get inGallons() { return this.value / 768 }
+    get inQuarts() { return this.value / 192 }
+    get inPints() { return this.value / 96 }
+    get inCups() { return this.value / 48 }
+    get inTablespoons() { return this.value / 3 }
+    get inLiters() { return this.value / 169.94 }
+    get inMilliliters() { return this.value * 5.92 }
     get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -337,14 +355,16 @@ const Liter = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inGallons() { return super.value / 4.55 }
-    get inQuarts() { return super.value * 1.14 }
-    get inPints() { return super.value * 1.76 }
-    get inCups() { return super.value * 3.52 }
-    get inTablespoons() { return super.value * 56.31 }
-    get inTeaspoons() { return super.value * 169.94 }
-    get inMilliliters() { return super.value * 1000 }
-    get normalized() { return super.value }
+    get inGallons() { return this.value / 4.55 }
+    get inQuarts() { return this.value * 1.14 }
+    get inPints() { return this.value * 1.76 }
+    get inCups() { return this.value * 3.52 }
+    get inTablespoons() { return this.value * 56.31 }
+    get inTeaspoons() { return this.value * 169.94 }
+    get inMilliliters() { return this.value * 1000 }
+    get normalized() { return this.value }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -363,14 +383,16 @@ const Milliliter = class extends VolumeUnit {
     }
 
     get units() { return this.#units }
-    get inGallons() { return super.value / 4546.09 }
-    get inQuarts() { return super.value / 1136.52 }
-    get inPints() { return super.value / 568.26 }
-    get inCups() { return super.value / 284.13 }
-    get inTablespoons() { return super.value / 17.76 }
-    get inTeaspoons() { return super.value / 5.92 }
-    get inLiters() { return super.value / 1000 }
+    get inGallons() { return this.value / 4546.09 }
+    get inQuarts() { return this.value / 1136.52 }
+    get inPints() { return this.value / 568.26 }
+    get inCups() { return this.value / 284.13 }
+    get inTablespoons() { return this.value / 17.76 }
+    get inTeaspoons() { return this.value / 5.92 }
+    get inLiters() { return this.value / 1000 }
     get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -389,11 +411,13 @@ const Ounce = class extends MassUnit {
     }
 
     get units() { return this.#units }
-    get inPounds() { return super.value / 16 }
-    get inKilograms() { return super.value / 35.27 }
-    get inGrams() { return super.value * 28.35 }
-    get inMilligrams() { return super.value * 28349.5 }
+    get inPounds() { return this.value / 16 }
+    get inKilograms() { return this.value / 35.27 }
+    get inGrams() { return this.value * 28.35 }
+    get inMilligrams() { return this.value * 28349.5 }
     get normalized() { return this.inGrams }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -412,11 +436,13 @@ const Pound = class extends MassUnit {
     }
 
     get units() { return this.#units }
-    get inOunces() { return super.value * 16 }
-    get inKilograms() { return super.value / 2.21 }
-    get inGrams() { return super.value * 453.59 }
-    get inMilligrams() { return super.value * 453592 }
+    get inOunces() { return this.value * 16 }
+    get inKilograms() { return this.value / 2.21 }
+    get inGrams() { return this.value * 453.59 }
+    get inMilligrams() { return this.value * 453592 }
     get normalized() { return this.inGrams }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -435,11 +461,13 @@ const Kilogram = class extends MassUnit {
     }
 
     get units() { return this.#units }
-    get inOunces() { return super.value * 35.27 }
-    get inPounds() { return super.value * 2.2 }
-    get inGrams() { return super.value * 1000 }
-    get inMilligrams() { return super.value * 1000000 }
+    get inOunces() { return this.value * 35.27 }
+    get inPounds() { return this.value * 2.2 }
+    get inGrams() { return this.value * 1000 }
+    get inMilligrams() { return this.value * 1000000 }
     get normalized() { return this.inGrams }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -458,11 +486,13 @@ const Gram = class extends MassUnit {
     }
 
     get units() { return this.#units }
-    get inOunces() { return super.value / 28.35 }
-    get inPounds() { return super.value / 453.59 }
-    get inKilograms() { return super.value / 1000 }
-    get inMilligrams() { return super.value * 1000 }
-    get normalized() { return super.value }
+    get inOunces() { return this.value / 28.35 }
+    get inPounds() { return this.value / 453.59 }
+    get inKilograms() { return this.value / 1000 }
+    get inMilligrams() { return this.value * 1000 }
+    get normalized() { return this.value }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -481,11 +511,13 @@ const Milligram = class extends MassUnit {
     }
 
     get units() { return this.#units }
-    get inOunces() { return super.value / 28349.5 }
-    get inPounds() { return super.value / 453592 }
-    get inKilograms() { return super.value / 1000000 }
-    get inGrams() { return super.value / 1000 }
+    get inOunces() { return this.value / 28349.5 }
+    get inPounds() { return this.value / 453592 }
+    get inKilograms() { return this.value / 1000000 }
+    get inGrams() { return this.value / 1000 }
     get normalized() { return this.inGrams }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -504,9 +536,11 @@ const Day = class extends TimeUnit {
     }
 
     get units() { return this.#units }
-    get inHours() { return super.value * 24 }
-    get inMinutes() { return super.value * 24 * 60 }
+    get inHours() { return this.value * 24 }
+    get inMinutes() { return this.value * 24 * 60 }
     get normalized() { return this.inMinutes }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -525,9 +559,11 @@ const Hour = class extends TimeUnit {
     }
 
     get units() { return this.#units }
-    get inDays() { return super.value / 24 }
-    get inMinutes() { return super.value * 60 }
+    get inDays() { return this.value / 24 }
+    get inMinutes() { return this.value * 60 }
     get normalized() { return this.inMinutes }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -546,9 +582,11 @@ const Minute = class extends TimeUnit {
     }
 
     get units() { return this.#units }
-    get inDays() { return super.value / 60 / 24 }
-    get inHours() { return super.value / 60 }
-    get normalized() { return super.value }
+    get inDays() { return this.value / 60 / 24 }
+    get inHours() { return this.value / 60 }
+    get normalized() { return this.value }
+
+    toString() { return `${this.readable}${this.#units}` }
 }
 
 /**
@@ -568,6 +606,8 @@ const Piece = class extends Unit {
     }
 
     get units() { return this.#units }
+
+    toString() { return `${this.readable} ${this.#units}` }
 }
 
 /**
@@ -587,6 +627,8 @@ const ToTaste = class extends Unit {
     }
 
     get units() { return this.#units }
+
+    toString() { return ` ${this.#units}` }
 }
 
 module.exports = {

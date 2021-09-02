@@ -40,9 +40,9 @@ router.get('/:id', async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param  {object} input Frontend quantifiable.
+ * @param {object} input Frontend quantifiable.
  * 
- * @returns {object}       Backend quantifiable.
+ * @returns {object} Backend quantifiable.
  */
 const parseToQuantifiable = input => {
     if (input) {
@@ -77,6 +77,7 @@ router.post('/', async (req, res) => {
     const recipeBuilder = { ...req.body }
 
     // build preparation time if it exists
+    console.log(req.body.prepTime)
     recipeBuilder.prepTime = parseToQuantifiable(req.body.prepTime)
 
     // build ingredients if they exist

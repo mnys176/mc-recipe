@@ -37,13 +37,36 @@ router.get('/:id', async (req, res) => {
 
 // create a recipe
 router.post('/', async (req, res) => {
-    const newRecipe = new Recipe(extractRecipe(req.body))
     try {
+        const newRecipe = new Recipe(extractRecipe(req.body))
         await newRecipe.save()
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
         return res.status(201).json({ status: 201, message })
     } catch (err) {
         const message = `The recipe with ObjectID of "${newRecipe._id}" could not be created.`
+        const reason = err.message
+        return res.status(400).json({ status: 400, message, reason })
+    }
+})
+
+// update a recipe
+router.put('/:id', async (req, res) => {
+    try {
+        const currRecipe = await Recipe.findById(req.params.id)
+        const newRecipe = new Recipe(extractRecipe(req.body))
+
+        // map new properties to recipe model
+        currRecipe.title = newRecipe.title
+        currRecipe.about = newRecipe.about
+        currRecipe.prepTime = newRecipe.prepTime
+        currRecipe.ingredients = newRecipe.ingredients
+        currRecipe.instructions = newRecipe.instructions
+
+        await currRecipe.save()
+        const message = `The recipe with ObjectID of "${req.params.id}" was successfully updated.`
+        return res.status(200).json({ status: 200, message })
+    } catch (err) {
+        const message = `The recipe with ObjectID of "${req.params.id}" could not be updated.`
         const reason = err.message
         return res.status(400).json({ status: 400, message, reason })
     }

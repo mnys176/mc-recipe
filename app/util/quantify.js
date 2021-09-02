@@ -1,5 +1,5 @@
 /******************************************************
- * Title:       units.js                              *
+ * Title:       quantifiable.js                       *
  * Author:      Mike Nystoriak (mnystoriak@gmail.com) *
  * Created:     09/01/2021                            *
  * Description:                                       *
@@ -9,7 +9,12 @@
  *     converting from one unit to another.           *
  ******************************************************/
 
-const units = require('./enum')
+const {
+    time,
+    volume,
+    mass,
+    misc
+} = require('./enum')
 
 /**
  * Enforces instantiation policy on abstractions.
@@ -20,10 +25,11 @@ const units = require('./enum')
  */
 const preventAbstractInstantiation = someClass => {
     const abstractionBlacklist = [
-        Unit,
-        TimeUnit,
-        VolumeUnit,
-        MassUnit
+        QuantifiableBase,
+        TimeQuantifiable,
+        VolumeQuantifiable,
+        MassQuantifiable,
+        Quantifiable
     ]
     if (abstractionBlacklist.includes(someClass.constructor)) {
         const message = `Abstract \`${someClass.constructor.name}\`` +
@@ -39,16 +45,18 @@ const preventAbstractInstantiation = someClass => {
  * 
  * @abstract
  */
-const Unit = class {
+const QuantifiableBase = class {
     #value
     #readable
 
     constructor(value) {
         preventAbstractInstantiation(this)
-        this.#readable = value.toString()
+        if (value) {
+            this.#readable = value.toString()
 
-        const parts = this.#readable.split('/')
-        this.#value = parts[0] / (parts[1] ?? 1)
+            const parts = this.#readable.split('/')
+            this.#value = parts[0] / (parts[1] ?? 1)
+        }
     }
 
     get value() { return this.#value }
@@ -69,16 +77,16 @@ const Unit = class {
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @abstract
- * @augments Unit
+ * @augments Quantifiable
  */
-const TimeUnit = class extends Unit {
+const TimeQuantifiable = class extends QuantifiableBase {
     constructor(value) { super(value) }
 
-    static relatedUnits() {
+    static relatedQuantifiables() {
         return [
-            units.time.DAYS,
-            units.time.HOURS,
-            units.time.MINUTES
+            time.DAYS,
+            time.HOURS,
+            time.MINUTES
         ]
     }
     static totalTime(times) {
@@ -87,8 +95,8 @@ const TimeUnit = class extends Unit {
             throw new Error(message)
         }
         times.forEach(t => {
-            if (!this.relatedUnits().includes(t.units)) {
-                const message = 'Must be an array of type `TimeUnit`.'
+            if (!this.relatedQuantifiables().includes(t.units)) {
+                const message = 'Must be an array of type `TimeQuantifiable`.'
                 throw new Error(message)
             }
         })
@@ -103,21 +111,21 @@ const TimeUnit = class extends Unit {
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @abstract
- * @augments Unit
+ * @augments Quantifiable
  */
-const VolumeUnit = class extends Unit {
+const VolumeQuantifiable = class extends QuantifiableBase {
     constructor(value) { super(value) }
 
-    static relatedUnits() {
+    static relatedQuantifiables() {
         return [
-            units.volume.imperial.GALLONS,
-            units.volume.imperial.QUARTS,
-            units.volume.imperial.PINTS,
-            units.volume.imperial.CUPS,
-            units.volume.imperial.TABLESPOONS,
-            units.volume.imperial.TEASPOONS,
-            units.volume.metric.LITERS,
-            units.volume.metric.MILLILITERS
+            volume.GALLONS,
+            volume.QUARTS,
+            volume.PINTS,
+            volume.CUPS,
+            volume.TABLESPOONS,
+            volume.TEASPOONS,
+            volume.LITERS,
+            volume.MILLILITERS
         ]
     }
     static totalVolume(volumes) {
@@ -126,8 +134,8 @@ const VolumeUnit = class extends Unit {
             throw new Error(message)
         }
         volumes.forEach(v => {
-            if (!this.relatedUnits().includes(v.units)) {
-                const message = 'Must be an array of type `VolumeUnit`.'
+            if (!this.relatedQuantifiables().includes(v.units)) {
+                const message = 'Must be an array of type `VolumeQuantifiable`.'
                 throw new Error(message)
             }
         })
@@ -142,18 +150,18 @@ const VolumeUnit = class extends Unit {
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @abstract
- * @augments Unit
+ * @augments Quantifiable
  */
-const MassUnit = class extends Unit {
+const MassQuantifiable = class extends QuantifiableBase {
     constructor(value) { super(value) }
 
-    static relatedUnits() {
+    static relatedQuantifiables() {
         return [
-            units.mass.imperial.OUNCES,
-            units.mass.imperial.POUNDS,
-            units.mass.metric.MILLIGRAMS,
-            units.mass.metric.GRAMS,
-            units.mass.metric.KILOGRAMS
+            mass.OUNCES,
+            mass.POUNDS,
+            mass.MILLIGRAMS,
+            mass.GRAMS,
+            mass.KILOGRAMS
         ]
     }
     static totalMass(masses) {
@@ -162,8 +170,8 @@ const MassUnit = class extends Unit {
             throw new Error(message)
         }
         masses.forEach(m => {
-            if (!this.relatedUnits().includes(m.units)) {
-                const message = 'Must be an array of type `MassUnit`.'
+            if (!this.relatedQuantifiables().includes(m.units)) {
+                const message = 'Must be an array of type `MassQuantifiable`.'
                 throw new Error(message)
             }
         })
@@ -176,14 +184,14 @@ const MassUnit = class extends Unit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Gallon = class extends VolumeUnit {
+const Gallon = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.imperial.GALLONS
+        this.#units = volume.GALLONS
     }
 
     get units() { return this.#units }
@@ -204,14 +212,14 @@ const Gallon = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Quart = class extends VolumeUnit {
+const Quart = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.imperial.QUARTS
+        this.#units = volume.QUARTS
     }
 
     get units() { return this.#units }
@@ -232,14 +240,14 @@ const Quart = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Pint = class extends VolumeUnit {
+const Pint = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.imperial.PINTS
+        this.#units = volume.PINTS
     }
 
     get units() { return this.#units }
@@ -260,14 +268,14 @@ const Pint = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Cup = class extends VolumeUnit {
+const Cup = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.imperial.CUPS
+        this.#units = volume.CUPS
     }
 
     get units() { return this.#units }
@@ -288,14 +296,14 @@ const Cup = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Tablespoon = class extends VolumeUnit {
+const Tablespoon = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.imperial.TABLESPOONS
+        this.#units = volume.TABLESPOONS
     }
 
     get units() { return this.#units }
@@ -316,14 +324,14 @@ const Tablespoon = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Teaspoon = class extends VolumeUnit {
+const Teaspoon = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.imperial.TEASPOONS
+        this.#units = volume.TEASPOONS
     }
 
     get units() { return this.#units }
@@ -344,14 +352,14 @@ const Teaspoon = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Liter = class extends VolumeUnit {
+const Liter = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.metric.LITERS
+        this.#units = volume.LITERS
     }
 
     get units() { return this.#units }
@@ -372,14 +380,14 @@ const Liter = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments VolumeUnit
+ * @augments VolumeQuantifiable
  */
-const Milliliter = class extends VolumeUnit {
+const Milliliter = class extends VolumeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.volume.metric.MILLILITERS
+        this.#units = volume.MILLILITERS
     }
 
     get units() { return this.#units }
@@ -400,14 +408,14 @@ const Milliliter = class extends VolumeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments MassUnit
+ * @augments MassQuantifiable
  */
-const Ounce = class extends MassUnit {
+const Ounce = class extends MassQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.mass.imperial.OUNCES
+        this.#units = mass.OUNCES
     }
 
     get units() { return this.#units }
@@ -425,14 +433,14 @@ const Ounce = class extends MassUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments MassUnit
+ * @augments MassQuantifiable
  */
-const Pound = class extends MassUnit {
+const Pound = class extends MassQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.mass.imperial.POUNDS
+        this.#units = mass.POUNDS
     }
 
     get units() { return this.#units }
@@ -450,14 +458,14 @@ const Pound = class extends MassUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments MassUnit
+ * @augments MassQuantifiable
  */
-const Kilogram = class extends MassUnit {
+const Kilogram = class extends MassQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.mass.metric.KILOGRAMS
+        this.#units = mass.KILOGRAMS
     }
 
     get units() { return this.#units }
@@ -475,14 +483,14 @@ const Kilogram = class extends MassUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments MassUnit
+ * @augments MassQuantifiable
  */
-const Gram = class extends MassUnit {
+const Gram = class extends MassQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.mass.metric.GRAMS
+        this.#units = mass.GRAMS
     }
 
     get units() { return this.#units }
@@ -500,14 +508,14 @@ const Gram = class extends MassUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments MassUnit
+ * @augments MassQuantifiable
  */
-const Milligram = class extends MassUnit {
+const Milligram = class extends MassQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.mass.metric.MILLIGRAMS
+        this.#units = mass.MILLIGRAMS
     }
 
     get units() { return this.#units }
@@ -525,14 +533,14 @@ const Milligram = class extends MassUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments TimeUnit
+ * @augments TimeQuantifiable
  */
-const Day = class extends TimeUnit {
+const Day = class extends TimeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.time.DAYS
+        this.#units = time.DAYS
     }
 
     get units() { return this.#units }
@@ -548,14 +556,14 @@ const Day = class extends TimeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments TimeUnit
+ * @augments TimeQuantifiable
  */
-const Hour = class extends TimeUnit {
+const Hour = class extends TimeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.time.HOURS
+        this.#units = time.HOURS
     }
 
     get units() { return this.#units }
@@ -571,14 +579,14 @@ const Hour = class extends TimeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments TimeUnit
+ * @augments TimeQuantifiable
  */
-const Minute = class extends TimeUnit {
+const Minute = class extends TimeQuantifiable {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.time.MINUTES
+        this.#units = time.MINUTES
     }
 
     get units() { return this.#units }
@@ -595,14 +603,14 @@ const Minute = class extends TimeUnit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments Unit
+ * @augments Quantifiable
  */
-const Piece = class extends Unit {
+const Piece = class extends QuantifiableBase {
     #units
 
     constructor(value) {
         super(value)
-        this.#units = units.misc.PIECES
+        this.#units = misc.PIECES
     }
 
     get units() { return this.#units }
@@ -616,14 +624,14 @@ const Piece = class extends Unit {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @augments Unit
+ * @augments Quantifiable
  */
-const ToTaste = class extends Unit {
+const ToTaste = class extends QuantifiableBase {
     #units
 
     constructor() {
         super(0)
-        this.#units = units.misc.TO_TASTE
+        this.#units = misc.TO_TASTE
     }
 
     get units() { return this.#units }
@@ -631,23 +639,39 @@ const ToTaste = class extends Unit {
     toString() { return ` ${this.#units}` }
 }
 
-module.exports = {
-    Day,
-    Hour,
-    Minute,
-    Gallon,
-    Quart,
-    Pint,
-    Cup,
-    Tablespoon,
-    Teaspoon,
-    Liter,
-    Milliliter,
-    Ounce,
-    Pound,
-    Milligram,
-    Gram,
-    Kilogram,
-    Piece,
-    ToTaste
+/**
+ * Factory that produces a `Quantifiable` from a string
+ * and quantity.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @abstract
+ */
+const Quantifiable = class {
+    constructor() { preventAbstractInstantiation(this) }
+
+    static build(q, u) {
+        switch (u) {
+            case time.DAYS: return new Day(q)
+            case time.HOURS: return new Hour(q)
+            case time.MINUTES: return new Minute(q)
+            case volume.GALLONS: return new Gallon(q)
+            case volume.QUARTS: return new Quart(q)
+            case volume.PINTS: return new Pint(q)
+            case volume.CUPS: return new Cup(q)
+            case volume.TABLESPOONS: return new Tablespoon(q)
+            case volume.TEASPOONS: return new Teaspoon(q)
+            case volume.LITERS: return new Liter(q)
+            case volume.MILLILITERS: return new Milliliter(q)
+            case mass.OUNCES: return new Ounce(q)
+            case mass.POUNDS: return new Pound(q)
+            case mass.MILLIGRAMS: return new Milligram(q)
+            case mass.GRAMS: return new Gram(q)
+            case mass.KILOGRAMS: return new Kilogram(q)
+            case misc.PIECES: return new Piece(q)
+            default: return new ToTaste()
+        }
+    }
 }
+
+module.exports = Quantifiable

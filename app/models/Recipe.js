@@ -18,8 +18,8 @@ const Schema = mongoose.Schema
  *
  * @param  {string} unit Provided unit.
  * 
- * @return {boolean}     Flag indicating whether or
- *                       not the unit is valid.
+ * @return {boolean} Flag indicating whether or
+ *                   not the unit is valid.
  */
 const validateUnit = unit => {
     const validUnits = []
@@ -31,10 +31,7 @@ const validateUnit = unit => {
 
 // anything with units (amounts and durations)
 const quantifiableSchema = new Schema({
-    readable: {
-        type: String,
-        required: true
-    },
+    readable: { type: String, required: true },
     numeric: Number,
     unit: {
         type: String,

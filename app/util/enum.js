@@ -1,6 +1,6 @@
 /************************************************************
  * Title:       enum.js                                     *
- * Author:      Mike Nystoriak (mnystoriak@gmail.com)       *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)       *
  * Created:     08/31/2021                                  *
  * Description: Enumerations for the MC Recipe application. *
  ************************************************************/

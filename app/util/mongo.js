@@ -1,6 +1,6 @@
 /************************************************************
  * Title:       mongo.js                                    *
- * Author:      Mike Nystoriak (mnystoriak@gmail.com)       *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)       *
  * Created:     08/27/2021                                  *
  * Description:                                             *
  *     Establishes a connection to MongoDB. This connection *

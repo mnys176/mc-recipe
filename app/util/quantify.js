@@ -1,6 +1,6 @@
 /******************************************************
  * Title:       quantifiable.js                       *
- * Author:      Mike Nystoriak (mnystoriak@gmail.com) *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com) *
  * Created:     09/01/2021                            *
  * Description:                                       *
  *     Contains a plethora of classes that can be     *

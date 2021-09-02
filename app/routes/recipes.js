@@ -1,6 +1,6 @@
 /************************************************************
  * Title:       recipes.js                                  *
- * Author:      Mike Nystoriak (mnystoriak@gmail.com)       *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)       *
  * Created:     08/30/2021                                  *
  * Description: Set of API routes that pertain to a recipe. *
  ************************************************************/

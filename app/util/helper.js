@@ -60,4 +60,25 @@ const extractRecipe = body => {
     return recipeBuilder
 }
 
-module.exports = { extractRecipe }
+/**
+ * Handles a '404 Not Found' error when the client
+ * requests a nonexistent ID.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ *
+ * @param {string} id      ID of a requested recipe.
+ * @param {object} results Results that should exist.
+ * 
+ * @return {object} An object describing the error if
+ *                  the given results are empty.
+ */
+const handleNotFound = (id, results) => {
+    if (!results) {
+        const message = `No recipes returned with ID of "${id}".`
+        const reason = 'Not found.'
+        return { status: 404, message, reason }
+    }
+    return null
+}
+
+module.exports = { extractRecipe, handleNotFound }

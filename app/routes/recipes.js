@@ -8,7 +8,7 @@
 const express = require('express')
 
 const Recipe = require('../models/Recipe')
-const { extractRecipe } = require('../util/helper')
+const { extractRecipe, handleNotFound } = require('../util/helper')
 
 const router = express.Router()
 
@@ -27,10 +27,13 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const results = await Recipe.findById(req.params.id)
+
+        // handle not found
+        const errorObj = handleNotFound(req.params.id, results)
+        if (errorObj) return res.status(404).json(errorObj)
+
         return res.status(200).json(results)
     } catch (err) {
-        const message = `No recipes returned with ID of "${req.params.id}".`
-        const reason = 'Not found.'
         return res.status(404).json({ status: 404, message })
     }
 })
@@ -51,8 +54,14 @@ router.post('/', async (req, res) => {
 
 // update a recipe
 router.put('/:id', async (req, res) => {
+    const { id } = request.params
     try {
-        const currRecipe = await Recipe.findById(req.params.id)
+        const currRecipe = await Recipe.findById(id)
+
+        // handle not found
+        const errorObj = handleNotFound(id, currRecipe)
+        if (errorObj) return res.status(404).json(errorObj)
+
         const newRecipe = new Recipe(extractRecipe(req.body))
 
         // map new properties to recipe model
@@ -63,10 +72,29 @@ router.put('/:id', async (req, res) => {
         currRecipe.instructions = newRecipe.instructions
 
         await currRecipe.save()
-        const message = `The recipe with ObjectID of "${req.params.id}" was successfully updated.`
+        const message = `The recipe with ObjectID of "${id}" was successfully updated.`
         return res.status(200).json({ status: 200, message })
     } catch (err) {
-        const message = `The recipe with ObjectID of "${req.params.id}" could not be updated.`
+        const message = `The recipe with ObjectID of "${id}" could not be updated.`
+        const reason = err.message
+        return res.status(400).json({ status: 400, message, reason })
+    }
+})
+
+// delete a recipe
+router.delete('/:id', async (req, res) => {
+    const { id } = request.params
+    try {
+        const results = await Recipe.findByIdAndDelete(req.params.id)
+
+        // handle not found
+        const errorObj = handleNotFound(id, results)
+        if (errorObj) return res.status(404).json(errorObj)
+
+        const message = `The recipe with ObjectID of "${id}" was successfully deleted.`
+        return res.status(200).json({ status: 200, message })
+    } catch (err) {
+        const message = `The recipe with ObjectID of "${id}" could not be deleted.`
         const reason = err.message
         return res.status(400).json({ status: 400, message, reason })
     }

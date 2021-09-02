@@ -45,7 +45,7 @@ router.get('/:id', async (req, res) => {
  * @returns {object} Backend quantifiable.
  */
 const mapQuantifiable = input => {
-    if (input) {
+    if (input && input.quantity && input.unit) {
         const quantifiable = Quantifiable.build(input.quantity, input.unit)
         return {
             readable: quantifiable.readable,

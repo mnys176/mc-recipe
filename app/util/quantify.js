@@ -1,5 +1,5 @@
 /******************************************************
- * Title:       quantifiable.js                       *
+ * Title:       quantify.js                           *
  * Author:      Mike Nystoriak (nystoriakm@gmail.com) *
  * Created:     09/01/2021                            *
  * Description:                                       *
@@ -105,430 +105,6 @@ const TimeQuantifiable = class extends QuantifiableBase {
 }
 
 /**
- * A class to represent a quantities that are represented in the
- * context of volume.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @abstract
- * @augments Quantifiable
- */
-const VolumeQuantifiable = class extends QuantifiableBase {
-    constructor(value) { super(value) }
-
-    static relatedQuantifiables() {
-        return [
-            volume.GALLONS,
-            volume.QUARTS,
-            volume.PINTS,
-            volume.CUPS,
-            volume.TABLESPOONS,
-            volume.TEASPOONS,
-            volume.LITERS,
-            volume.MILLILITERS
-        ]
-    }
-    static totalVolume(volumes) {
-        if (!volumes || !(volumes instanceof Array)) {
-            const message = 'No `volumes` array was supplied.'
-            throw new Error(message)
-        }
-        volumes.forEach(v => {
-            if (!this.relatedQuantifiables().includes(v.units)) {
-                const message = 'Must be an array of type `VolumeQuantifiable`.'
-                throw new Error(message)
-            }
-        })
-        return volumes.map(v => v.normalized).reduce((a, c) => a + c)
-    }
-}
-
-/**
- * A class to represent a quantities that are represented in the
- * context of mass.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @abstract
- * @augments Quantifiable
- */
-const MassQuantifiable = class extends QuantifiableBase {
-    constructor(value) { super(value) }
-
-    static relatedQuantifiables() {
-        return [
-            mass.OUNCES,
-            mass.POUNDS,
-            mass.MILLIGRAMS,
-            mass.GRAMS,
-            mass.KILOGRAMS
-        ]
-    }
-    static totalMass(masses) {
-        if (!masses || !(masses instanceof Array)) {
-            const message = 'No `masses` array was supplied.'
-            throw new Error(message)
-        }
-        masses.forEach(m => {
-            if (!this.relatedQuantifiables().includes(m.units)) {
-                const message = 'Must be an array of type `MassQuantifiable`.'
-                throw new Error(message)
-            }
-        })
-        return masses.map(m => m.normalized).reduce((a, c) => a + c)
-    }
-}
-
-/**
- * A class to represent a quantity in imperial gallons.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Gallon = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.GALLONS
-    }
-
-    get units() { return this.#units }
-    get inQuarts() { return this.value * 4 }
-    get inPints() { return this.value * 8 }
-    get inCups() { return this.value * 16 }
-    get inTablespoons() { return this.value * 256 }
-    get inTeaspoons() { return this.value * 768 }
-    get inLiters() { return this.value * 4.55 }
-    get inMilliliters() { return this.value * 4546.09 }
-    get normalized() { return this.inLiters }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in imperial quarts.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Quart = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.QUARTS
-    }
-
-    get units() { return this.#units }
-    get inGallons() { return this.value / 4 }
-    get inPints() { return this.value * 2 }
-    get inCups() { return this.value * 4 }
-    get inTablespoons() { return this.value * 64 }
-    get inTeaspoons() { return this.value * 192 }
-    get inLiters() { return this.value / 1.14 }
-    get inMilliliters() { return this.value * 1136.52 }
-    get normalized() { return this.inLiters }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in imperial pints.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Pint = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.PINTS
-    }
-
-    get units() { return this.#units }
-    get inGallons() { return this.value / 8 }
-    get inQuarts() { return this.value / 2 }
-    get inCups() { return this.value * 2 }
-    get inTablespoons() { return this.value * 32 }
-    get inTeaspoons() { return this.value * 96 }
-    get inLiters() { return this.value / 1.76 }
-    get inMilliliters() { return this.value * 568.26 }
-    get normalized() { return this.inLiters }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in imperial cups.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Cup = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.CUPS
-    }
-
-    get units() { return this.#units }
-    get inGallons() { return this.value / 16 }
-    get inQuarts() { return this.value / 4 }
-    get inPints() { return this.value / 2 }
-    get inTablespoons() { return this.value * 16 }
-    get inTeaspoons() { return this.value * 48 }
-    get inLiters() { return this.value / 3.52 }
-    get inMilliliters() { return this.value * 284.13 }
-    get normalized() { return this.inLiters }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in imperial tablespoons.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Tablespoon = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.TABLESPOONS
-    }
-
-    get units() { return this.#units }
-    get inGallons() { return this.value / 256 }
-    get inQuarts() { return this.value / 64 }
-    get inPints() { return this.value / 32 }
-    get inCups() { return this.value / 16 }
-    get inTeaspoons() { return this.value * 3 }
-    get inLiters() { return this.value / 56.31 }
-    get inMilliliters() { return this.value * 17.76 }
-    get normalized() { return this.inLiters }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in imperial teaspoons.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Teaspoon = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.TEASPOONS
-    }
-
-    get units() { return this.#units }
-    get inGallons() { return this.value / 768 }
-    get inQuarts() { return this.value / 192 }
-    get inPints() { return this.value / 96 }
-    get inCups() { return this.value / 48 }
-    get inTablespoons() { return this.value / 3 }
-    get inLiters() { return this.value / 169.94 }
-    get inMilliliters() { return this.value * 5.92 }
-    get normalized() { return this.inLiters }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in liters.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Liter = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.LITERS
-    }
-
-    get units() { return this.#units }
-    get inGallons() { return this.value / 4.55 }
-    get inQuarts() { return this.value * 1.14 }
-    get inPints() { return this.value * 1.76 }
-    get inCups() { return this.value * 3.52 }
-    get inTablespoons() { return this.value * 56.31 }
-    get inTeaspoons() { return this.value * 169.94 }
-    get inMilliliters() { return this.value * 1000 }
-    get normalized() { return this.value }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in milliliters.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments VolumeQuantifiable
- */
-const Milliliter = class extends VolumeQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = volume.MILLILITERS
-    }
-
-    get units() { return this.#units }
-    get inGallons() { return this.value / 4546.09 }
-    get inQuarts() { return this.value / 1136.52 }
-    get inPints() { return this.value / 568.26 }
-    get inCups() { return this.value / 284.13 }
-    get inTablespoons() { return this.value / 17.76 }
-    get inTeaspoons() { return this.value / 5.92 }
-    get inLiters() { return this.value / 1000 }
-    get normalized() { return this.inLiters }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in imperial ounces.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments MassQuantifiable
- */
-const Ounce = class extends MassQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = mass.OUNCES
-    }
-
-    get units() { return this.#units }
-    get inPounds() { return this.value / 16 }
-    get inKilograms() { return this.value / 35.27 }
-    get inGrams() { return this.value * 28.35 }
-    get inMilligrams() { return this.value * 28349.5 }
-    get normalized() { return this.inGrams }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in imperial pounds.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments MassQuantifiable
- */
-const Pound = class extends MassQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = mass.POUNDS
-    }
-
-    get units() { return this.#units }
-    get inOunces() { return this.value * 16 }
-    get inKilograms() { return this.value / 2.21 }
-    get inGrams() { return this.value * 453.59 }
-    get inMilligrams() { return this.value * 453592 }
-    get normalized() { return this.inGrams }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in kilograms.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments MassQuantifiable
- */
-const Kilogram = class extends MassQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = mass.KILOGRAMS
-    }
-
-    get units() { return this.#units }
-    get inOunces() { return this.value * 35.27 }
-    get inPounds() { return this.value * 2.2 }
-    get inGrams() { return this.value * 1000 }
-    get inMilligrams() { return this.value * 1000000 }
-    get normalized() { return this.inGrams }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in grams.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments MassQuantifiable
- */
-const Gram = class extends MassQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = mass.GRAMS
-    }
-
-    get units() { return this.#units }
-    get inOunces() { return this.value / 28.35 }
-    get inPounds() { return this.value / 453.59 }
-    get inKilograms() { return this.value / 1000 }
-    get inMilligrams() { return this.value * 1000 }
-    get normalized() { return this.value }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
- * A class to represent a quantity in milligrams.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @augments MassQuantifiable
- */
-const Milligram = class extends MassQuantifiable {
-    #units
-
-    constructor(value) {
-        super(value)
-        this.#units = mass.MILLIGRAMS
-    }
-
-    get units() { return this.#units }
-    get inOunces() { return this.value / 28349.5 }
-    get inPounds() { return this.value / 453592 }
-    get inKilograms() { return this.value / 1000000 }
-    get inGrams() { return this.value / 1000 }
-    get normalized() { return this.inGrams }
-
-    toString() { return `${this.readable}${this.#units}` }
-}
-
-/**
  * A class to represent a quantity in days.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
@@ -593,6 +169,430 @@ const Minute = class extends TimeQuantifiable {
     get inDays() { return this.value / 60 / 24 }
     get inHours() { return this.value / 60 }
     get normalized() { return this.value }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantities that are represented in the
+ * context of volume.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @abstract
+ * @augments Quantifiable
+ */
+const VolumeQuantifiable = class extends QuantifiableBase {
+    constructor(value) { super(value) }
+
+    static relatedQuantifiables() {
+        return [
+            volume.GALLONS,
+            volume.QUARTS,
+            volume.PINTS,
+            volume.CUPS,
+            volume.TABLESPOONS,
+            volume.TEASPOONS,
+            volume.LITERS,
+            volume.MILLILITERS
+        ]
+    }
+    static totalVolume(volumes) {
+        if (!volumes || !(volumes instanceof Array)) {
+            const message = 'No `volumes` array was supplied.'
+            throw new Error(message)
+        }
+        volumes.forEach(v => {
+            if (!this.relatedQuantifiables().includes(v.units)) {
+                const message = 'Must be an array of type `VolumeQuantifiable`.'
+                throw new Error(message)
+            }
+        })
+        return volumes.map(v => v.normalized).reduce((a, c) => a + c)
+    }
+}
+
+/**
+ * A class to represent a quantity in imperial cups.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Cup = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.CUPS
+    }
+
+    get units() { return this.#units }
+    get inGallons() { return this.value / 16 }
+    get inQuarts() { return this.value / 4 }
+    get inPints() { return this.value / 2 }
+    get inTablespoons() { return this.value * 16 }
+    get inTeaspoons() { return this.value * 48 }
+    get inLiters() { return this.value / 3.52 }
+    get inMilliliters() { return this.value * 284.13 }
+    get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in imperial gallons.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Gallon = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.GALLONS
+    }
+
+    get units() { return this.#units }
+    get inQuarts() { return this.value * 4 }
+    get inPints() { return this.value * 8 }
+    get inCups() { return this.value * 16 }
+    get inTablespoons() { return this.value * 256 }
+    get inTeaspoons() { return this.value * 768 }
+    get inLiters() { return this.value * 4.55 }
+    get inMilliliters() { return this.value * 4546.09 }
+    get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in liters.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Liter = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.LITERS
+    }
+
+    get units() { return this.#units }
+    get inGallons() { return this.value / 4.55 }
+    get inQuarts() { return this.value * 1.14 }
+    get inPints() { return this.value * 1.76 }
+    get inCups() { return this.value * 3.52 }
+    get inTablespoons() { return this.value * 56.31 }
+    get inTeaspoons() { return this.value * 169.94 }
+    get inMilliliters() { return this.value * 1000 }
+    get normalized() { return this.value }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in milliliters.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Milliliter = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.MILLILITERS
+    }
+
+    get units() { return this.#units }
+    get inGallons() { return this.value / 4546.09 }
+    get inQuarts() { return this.value / 1136.52 }
+    get inPints() { return this.value / 568.26 }
+    get inCups() { return this.value / 284.13 }
+    get inTablespoons() { return this.value / 17.76 }
+    get inTeaspoons() { return this.value / 5.92 }
+    get inLiters() { return this.value / 1000 }
+    get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in imperial pints.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Pint = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.PINTS
+    }
+
+    get units() { return this.#units }
+    get inGallons() { return this.value / 8 }
+    get inQuarts() { return this.value / 2 }
+    get inCups() { return this.value * 2 }
+    get inTablespoons() { return this.value * 32 }
+    get inTeaspoons() { return this.value * 96 }
+    get inLiters() { return this.value / 1.76 }
+    get inMilliliters() { return this.value * 568.26 }
+    get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in imperial quarts.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Quart = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.QUARTS
+    }
+
+    get units() { return this.#units }
+    get inGallons() { return this.value / 4 }
+    get inPints() { return this.value * 2 }
+    get inCups() { return this.value * 4 }
+    get inTablespoons() { return this.value * 64 }
+    get inTeaspoons() { return this.value * 192 }
+    get inLiters() { return this.value / 1.14 }
+    get inMilliliters() { return this.value * 1136.52 }
+    get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in imperial tablespoons.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Tablespoon = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.TABLESPOONS
+    }
+
+    get units() { return this.#units }
+    get inGallons() { return this.value / 256 }
+    get inQuarts() { return this.value / 64 }
+    get inPints() { return this.value / 32 }
+    get inCups() { return this.value / 16 }
+    get inTeaspoons() { return this.value * 3 }
+    get inLiters() { return this.value / 56.31 }
+    get inMilliliters() { return this.value * 17.76 }
+    get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in imperial teaspoons.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments VolumeQuantifiable
+ */
+const Teaspoon = class extends VolumeQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = volume.TEASPOONS
+    }
+
+    get units() { return this.#units }
+    get inGallons() { return this.value / 768 }
+    get inQuarts() { return this.value / 192 }
+    get inPints() { return this.value / 96 }
+    get inCups() { return this.value / 48 }
+    get inTablespoons() { return this.value / 3 }
+    get inLiters() { return this.value / 169.94 }
+    get inMilliliters() { return this.value * 5.92 }
+    get normalized() { return this.inLiters }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantities that are represented in the
+ * context of mass.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @abstract
+ * @augments Quantifiable
+ */
+const MassQuantifiable = class extends QuantifiableBase {
+    constructor(value) { super(value) }
+
+    static relatedQuantifiables() {
+        return [
+            mass.OUNCES,
+            mass.POUNDS,
+            mass.MILLIGRAMS,
+            mass.GRAMS,
+            mass.KILOGRAMS
+        ]
+    }
+    static totalMass(masses) {
+        if (!masses || !(masses instanceof Array)) {
+            const message = 'No `masses` array was supplied.'
+            throw new Error(message)
+        }
+        masses.forEach(m => {
+            if (!this.relatedQuantifiables().includes(m.units)) {
+                const message = 'Must be an array of type `MassQuantifiable`.'
+                throw new Error(message)
+            }
+        })
+        return masses.map(m => m.normalized).reduce((a, c) => a + c)
+    }
+}
+
+/**
+ * A class to represent a quantity in grams.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments MassQuantifiable
+ */
+const Gram = class extends MassQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = mass.GRAMS
+    }
+
+    get units() { return this.#units }
+    get inOunces() { return this.value / 28.35 }
+    get inPounds() { return this.value / 453.59 }
+    get inKilograms() { return this.value / 1000 }
+    get inMilligrams() { return this.value * 1000 }
+    get normalized() { return this.value }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in kilograms.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments MassQuantifiable
+ */
+const Kilogram = class extends MassQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = mass.KILOGRAMS
+    }
+
+    get units() { return this.#units }
+    get inOunces() { return this.value * 35.27 }
+    get inPounds() { return this.value * 2.2 }
+    get inGrams() { return this.value * 1000 }
+    get inMilligrams() { return this.value * 1000000 }
+    get normalized() { return this.inGrams }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in milligrams.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments MassQuantifiable
+ */
+const Milligram = class extends MassQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = mass.MILLIGRAMS
+    }
+
+    get units() { return this.#units }
+    get inOunces() { return this.value / 28349.5 }
+    get inPounds() { return this.value / 453592 }
+    get inKilograms() { return this.value / 1000000 }
+    get inGrams() { return this.value / 1000 }
+    get normalized() { return this.inGrams }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in imperial ounces.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments MassQuantifiable
+ */
+const Ounce = class extends MassQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = mass.OUNCES
+    }
+
+    get units() { return this.#units }
+    get inPounds() { return this.value / 16 }
+    get inKilograms() { return this.value / 35.27 }
+    get inGrams() { return this.value * 28.35 }
+    get inMilligrams() { return this.value * 28349.5 }
+    get normalized() { return this.inGrams }
+
+    toString() { return `${this.readable}${this.#units}` }
+}
+
+/**
+ * A class to represent a quantity in imperial pounds.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @augments MassQuantifiable
+ */
+const Pound = class extends MassQuantifiable {
+    #units
+
+    constructor(value) {
+        super(value)
+        this.#units = mass.POUNDS
+    }
+
+    get units() { return this.#units }
+    get inOunces() { return this.value * 16 }
+    get inKilograms() { return this.value / 2.21 }
+    get inGrams() { return this.value * 453.59 }
+    get inMilligrams() { return this.value * 453592 }
+    get normalized() { return this.inGrams }
 
     toString() { return `${this.readable}${this.#units}` }
 }

@@ -29,7 +29,6 @@ router.get('/:id', async (req, res) => {
     try {
         // handle invalid ID
         if (!objectIdIsValid(id)) return res.status(404).json(handleNotFound(id))
-
         const results = await Recipe.findById(id)
 
         // handle not found
@@ -63,7 +62,6 @@ router.put('/:id', async (req, res) => {
     try {
         // handle invalid ID
         if (!objectIdIsValid(id)) return res.status(404).json(handleNotFound(id))
-
         const currRecipe = await Recipe.findById(id)
 
         // handle not found
@@ -94,7 +92,6 @@ router.delete('/:id', async (req, res) => {
     try {
         // handle invalid ID
         if (!objectIdIsValid(id)) return res.status(404).json(handleNotFound(id))
-
         const results = await Recipe.findByIdAndDelete(id)
 
         // handle not found

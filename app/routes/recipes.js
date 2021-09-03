@@ -8,7 +8,7 @@
 const express = require('express')
 
 const Recipe = require('../models/Recipe')
-const { extractRecipe, handleNotFound } = require('../util/helper')
+const { extractRecipe, handleNotFound, objectIdIsValid } = require('../util/helper')
 
 const router = express.Router()
 
@@ -27,11 +27,13 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const { id } = req.params
     try {
+        // handle invalid ID
+        if (!objectIdIsValid(id)) return res.status(404).json(handleNotFound(id))
+
         const results = await Recipe.findById(id)
 
         // handle not found
-        const errorObj = handleNotFound(id, results)
-        if (errorObj) return res.status(404).json(errorObj)
+        if (!results) return res.status(404).json(handleNotFound(id))
 
         return res.status(200).json(results)
     } catch (err) {
@@ -59,11 +61,13 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { id } = req.params
     try {
+        // handle invalid ID
+        if (!objectIdIsValid(id)) return res.status(404).json(handleNotFound(id))
+
         const currRecipe = await Recipe.findById(id)
 
         // handle not found
-        const errorObj = handleNotFound(id, currRecipe)
-        if (errorObj) return res.status(404).json(errorObj)
+        if (!currRecipe) return res.status(404).json(handleNotFound(id))
 
         const newRecipe = new Recipe(extractRecipe(req.body))
 
@@ -88,11 +92,13 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params
     try {
-        const results = await Recipe.findByIdAndDelete(req.params.id)
+        // handle invalid ID
+        if (!objectIdIsValid(id)) return res.status(404).json(handleNotFound(id))
+
+        const results = await Recipe.findByIdAndDelete(id)
 
         // handle not found
-        const errorObj = handleNotFound(id, results)
-        if (errorObj) return res.status(404).json(errorObj)
+        if (!results) return res.status(404).json(handleNotFound(id))
 
         const message = `The recipe with ObjectID of "${id}" was successfully deleted.`
         return res.status(200).json({ status: 200, message })

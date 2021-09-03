@@ -67,18 +67,25 @@ const extractRecipe = body => {
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
  * @param {string} id      ID of a requested recipe.
- * @param {object} results Results that should exist.
  * 
- * @return {object} An object describing the error if
- *                  the given results are empty.
+ * @return {object} An object describing the error.
  */
-const handleNotFound = (id, results) => {
-    if (!results) {
-        const message = `No recipes returned with ID of "${id}".`
-        const reason = 'Not found.'
-        return { status: 404, message, reason }
-    }
-    return null
+const handleNotFound = (id) => {
+    const message = `No recipes returned with ID of "${id}".`
+    const reason = 'Not found.'
+    return { status: 404, message, reason }
 }
 
-module.exports = { extractRecipe, handleNotFound }
+/**
+ * Confirms that the provided ID is a MongoDB
+ * ObjectID.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id Provided ObjectID.
+ * 
+ * @returns {boolean} True if valid, false if not.
+ */
+const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
+
+module.exports = { extractRecipe, handleNotFound, objectIdIsValid }

@@ -658,7 +658,7 @@ const ToTaste = class extends QuantifiableBase {
     #units
 
     constructor() {
-        super(0)
+        super('0')
         this.#units = misc.TO_TASTE
     }
 

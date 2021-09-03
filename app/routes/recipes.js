@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
 
 // update a recipe
 router.put('/:id', async (req, res) => {
-    const { id } = request.params
+    const { id } = req.params
     try {
         const currRecipe = await Recipe.findById(id)
 
@@ -86,7 +86,7 @@ router.put('/:id', async (req, res) => {
 
 // delete a recipe
 router.delete('/:id', async (req, res) => {
-    const { id } = request.params
+    const { id } = req.params
     try {
         const results = await Recipe.findByIdAndDelete(req.params.id)
 

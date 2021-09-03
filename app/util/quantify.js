@@ -132,13 +132,6 @@ const QuantifiableBase = class {
 const TimeQuantifiable = class extends QuantifiableBase {
     constructor(value) { super(value) }
 
-    static relatedQuantifiables() {
-        return [
-            time.DAYS,
-            time.HOURS,
-            time.MINUTES
-        ]
-    }
     static totalTime(times) {
         if (!times || !(times instanceof Array)) {
             const message = 'No `times` array was supplied.'
@@ -152,6 +145,8 @@ const TimeQuantifiable = class extends QuantifiableBase {
         })
         return times.map(t => t.normalized).reduce((a, c) => a + c)
     }
+
+    relatedQuantifiables() { return Object.values(time) }
 }
 
 /**
@@ -235,18 +230,6 @@ const Minute = class extends TimeQuantifiable {
 const VolumeQuantifiable = class extends QuantifiableBase {
     constructor(value) { super(value) }
 
-    static relatedQuantifiables() {
-        return [
-            volume.GALLONS,
-            volume.QUARTS,
-            volume.PINTS,
-            volume.CUPS,
-            volume.TABLESPOONS,
-            volume.TEASPOONS,
-            volume.LITERS,
-            volume.MILLILITERS
-        ]
-    }
     static totalVolume(volumes) {
         if (!volumes || !(volumes instanceof Array)) {
             const message = 'No `volumes` array was supplied.'
@@ -260,6 +243,8 @@ const VolumeQuantifiable = class extends QuantifiableBase {
         })
         return volumes.map(v => v.normalized).reduce((a, c) => a + c)
     }
+
+    relatedQuantifiables() { return Object.values(volume) }
 }
 
 /**
@@ -498,15 +483,6 @@ const Teaspoon = class extends VolumeQuantifiable {
 const MassQuantifiable = class extends QuantifiableBase {
     constructor(value) { super(value) }
 
-    static relatedQuantifiables() {
-        return [
-            mass.OUNCES,
-            mass.POUNDS,
-            mass.MILLIGRAMS,
-            mass.GRAMS,
-            mass.KILOGRAMS
-        ]
-    }
     static totalMass(masses) {
         if (!masses || !(masses instanceof Array)) {
             const message = 'No `masses` array was supplied.'
@@ -520,6 +496,8 @@ const MassQuantifiable = class extends QuantifiableBase {
         })
         return masses.map(m => m.normalized).reduce((a, c) => a + c)
     }
+    
+    relatedQuantifiables() { return Object.values(mass) }
 }
 
 /**

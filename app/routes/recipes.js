@@ -25,23 +25,26 @@ router.get('/', async (req, res) => {
 
 // get recipe by ID
 router.get('/:id', async (req, res) => {
+    const { id } = req.params
     try {
-        const results = await Recipe.findById(req.params.id)
+        const results = await Recipe.findById(id)
 
         // handle not found
-        const errorObj = handleNotFound(req.params.id, results)
+        const errorObj = handleNotFound(id, results)
         if (errorObj) return res.status(404).json(errorObj)
 
         return res.status(200).json(results)
     } catch (err) {
-        return res.status(404).json({ status: 404, message })
+        const message = `No recipes returned with ID of "${id}".`
+        const reason = 'Not found.'
+        return res.status(404).json({ status: 404, message, reason })
     }
 })
 
 // create a recipe
 router.post('/', async (req, res) => {
+    const newRecipe = new Recipe(extractRecipe(req.body))
     try {
-        const newRecipe = new Recipe(extractRecipe(req.body))
         await newRecipe.save()
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
         return res.status(201).json({ status: 201, message })

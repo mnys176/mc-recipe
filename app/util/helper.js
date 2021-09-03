@@ -70,7 +70,7 @@ const extractRecipe = body => {
  * 
  * @return {object} An object describing the error.
  */
-const handleNotFound = (id) => {
+const handleNotFound = id => {
     const message = `No recipes returned with ID of "${id}".`
     const reason = 'Not found.'
     return { status: 404, message, reason }

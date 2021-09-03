@@ -1752,7 +1752,7 @@
 					"    PROD: 'production'",
 					"}",
 					"",
-					"// DEV for localhost or PROD for Cloud Foundry",
+					"// DEV for localhost or PROD for production environment",
 					"const mode = modes.DEV",
 					"",
 					"// determine whether to use HTTP or HTTPS",

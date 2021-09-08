@@ -8,17 +8,26 @@
  *     created throughout the years.                    *
  ********************************************************/
 
+const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv').config()
 const connectToMongoDB = require('./util/mongo')
 
 const app = express()
 const port = process.env.PORT || 8080
+const webapp = path.join(__dirname, 'webapp', 'src')
 
 // make the connection to MongoDB
 connectToMongoDB()
 
+// serve the VueJS application
+app.use(express.static(webapp))
+
+// accept JSON and URL body data
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+
+// include API routes
 app.use('/api/recipes', require('./routes/recipes'))
+
 app.listen(port, () => console.log(`Running on port: ${port}`))

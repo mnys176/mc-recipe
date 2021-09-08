@@ -15,7 +15,7 @@ const connectToMongoDB = require('./util/mongo')
 
 const app = express()
 const port = process.env.PORT || 8080
-const webapp = path.join(__dirname, 'webapp', 'src')
+const webapp = path.join(__dirname, 'webapp', 'dist')
 
 // make the connection to MongoDB
 connectToMongoDB()

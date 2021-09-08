@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon index",
-    "build": "webpack"
+    "build": "vue-cli-service build"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,8 @@
     "recipe",
     "nodejs",
     "mongodb",
-    "expressjs"
+    "expressjs",
+    "vuejs"
   ],
   "author": "Mike Nystoriak",
   "license": "MIT",
@@ -28,10 +29,10 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^6.0.4",
-    "vue": "^3.2.10"
+    "mongoose": "^6.0.4"
   },
   "devDependencies": {
+    "@vue/cli-service": "^4.5.13",
     "nodemon": "^2.0.12"
   }
 }

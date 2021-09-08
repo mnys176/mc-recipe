@@ -19,17 +19,8 @@ module.exports = {
         const newEntry = path.join(
             webapp,
             'src',
-            'assets',
-            'js',
             'main.js'
         )
         config.entry('app').add(newEntry)
-
-        // point to correct index page
-        config.plugin('html').tap(args => {
-            args[0].title = 'MC Recipe'
-            args[0].template = path.join(webapp, 'src', 'index.html')
-            return args
-        })
     }
 }

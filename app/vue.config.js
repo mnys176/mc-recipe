@@ -16,11 +16,14 @@ module.exports = {
         config.entry('app').clear()
 
         // add new entry point
-        const newEntry = path.join(
-            webapp,
-            'src',
-            'main.js'
-        )
+        const newEntry = path.join(webapp, 'src', 'main.js')
         config.entry('app').add(newEntry)
+
+        config.plugin('html').tap(args => {
+            args[0].favicon = path.join(webapp, 'public', 'favicon.ico')
+            args[0].template = path.join(webapp, 'public', 'index.html')
+            args[0].title = 'MC Recipe!!!!'
+            return args
+        })
     }
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon index",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "inspect": "vue-cli-service inspect"
   },
   "repository": {
     "type": "git",

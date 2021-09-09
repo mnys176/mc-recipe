@@ -22,7 +22,7 @@ module.exports = {
         config.plugin('html').tap(args => {
             args[0].favicon = path.join(webapp, 'public', 'favicon.ico')
             args[0].template = path.join(webapp, 'public', 'index.html')
-            args[0].title = 'MC Recipe'
+            args[0].title = 'Ready, Setti, Spaghetti!'
             return args
         })
     }

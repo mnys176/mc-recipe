@@ -1,5 +1,5 @@
 {
-  "name": "the-ready-setti-spaghetti-club-recipe-book",
+  "name": "recipe-book",
   "version": "1.0.0",
   "description": "An application for storing recipes learned and created throughout the years.",
   "main": "index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/mnys176/the-ready-setti-spaghetti-club-recipe-book.git"
+    "url": "git+ssh://git@github.com/mnys176/recipe-book.git"
   },
   "keywords": [
     "api",
@@ -24,9 +24,9 @@
   "author": "Mike Nystoriak",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mnys176/the-ready-setti-spaghetti-club-recipe-book/issues"
+    "url": "https://github.com/mnys176/recipe-book/issues"
   },
-  "homepage": "https://github.com/mnys176/the-ready-setti-spaghetti-club-recipe-book#readme",
+  "homepage": "https://github.com/mnys176/recipe-book#readme",
   "dependencies": {
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

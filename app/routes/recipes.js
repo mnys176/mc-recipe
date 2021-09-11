@@ -72,6 +72,8 @@ router.put('/:id', async (req, res) => {
         // map new properties to recipe model
         currRecipe.title = newRecipe.title
         currRecipe.about = newRecipe.about
+        currRecipe.category = newRecipe.category
+        currRecipe.modifiedOn = Date.now()
         currRecipe.prepTime = newRecipe.prepTime
         currRecipe.ingredients = newRecipe.ingredients
         currRecipe.instructions = newRecipe.instructions

@@ -11,14 +11,11 @@
 const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv').config()
-const connectToMongoDB = require('./util/mongo')
+const upload = require('./util/mongo')
 
 const app = express()
 const port = process.env.PORT || 8080
 const webapp = path.join(__dirname, 'webapp', 'dist')
-
-// make the connection to MongoDB
-connectToMongoDB()
 
 // serve the VueJS application
 app.use(express.static(webapp))

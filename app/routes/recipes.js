@@ -6,13 +6,12 @@
  ************************************************************/
 
 const express = require('express')
-const multer = require('multer')
 
 const Recipe = require('../models/Recipe')
 const { extractRecipe, handleNotFound, objectIdIsValid } = require('../util/helper')
+const media = require('../middleware/multer')
 
 const router = express.Router()
-const media = multer({ dest: 'media' })
 
 // get all recipes
 router.get('/', async (req, res) => {

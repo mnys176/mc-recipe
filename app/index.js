@@ -11,7 +11,9 @@
 const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv').config()
-const upload = require('./util/mongo')
+
+// make connection to MongoDB
+require('./util/mongo')
 
 const app = express()
 const port = process.env.PORT || 8080
@@ -22,7 +24,6 @@ app.use(express.static(webapp))
 
 // accept JSON and URL body data
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
 
 // include API routes
 app.use('/api/recipes', require('./routes/recipes'))

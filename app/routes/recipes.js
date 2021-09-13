@@ -6,11 +6,13 @@
  ************************************************************/
 
 const express = require('express')
+const multer = require('multer')
 
 const Recipe = require('../models/Recipe')
 const { extractRecipe, handleNotFound, objectIdIsValid } = require('../util/helper')
 
 const router = express.Router()
+const media = multer({ dest: 'media' })
 
 // get all recipes
 router.get('/', async (req, res) => {
@@ -43,7 +45,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // create a recipe
-router.post('/', async (req, res) => {
+router.post('/', media.array('foodImages'), async (req, res) => {
     const newRecipe = new Recipe(extractRecipe(req.body))
     try {
         await newRecipe.save()
@@ -57,7 +59,7 @@ router.post('/', async (req, res) => {
 })
 
 // update a recipe
-router.put('/:id', async (req, res) => {
+router.put('/:id', media.array('foodImages'), async (req, res) => {
     const { id } = req.params
     try {
         // handle invalid ID

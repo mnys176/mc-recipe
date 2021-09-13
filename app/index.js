@@ -12,7 +12,7 @@ const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv').config()
 
-// make connection to MongoDB
+// make connection to MongoDB asynchronously
 require('./util/mongo')
 
 const app = express()
@@ -21,9 +21,6 @@ const webapp = path.join(__dirname, 'webapp', 'dist')
 
 // serve the VueJS application
 app.use(express.static(webapp))
-
-// accept JSON and URL body data
-app.use(express.json())
 
 // include API routes
 app.use('/api/recipes', require('./routes/recipes'))

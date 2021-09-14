@@ -8,6 +8,7 @@
 const express = require('express')
 
 const Recipe = require('../models/Recipe')
+const media = require('../middleware/multer')
 const {
     extractRecipe,
     handleNotFound,
@@ -15,7 +16,6 @@ const {
     updateMediaDirectory,
     deleteMediaDirectory
 } = require('../util/helper')
-const media = require('../middleware/multer')
 
 const router = express.Router()
 

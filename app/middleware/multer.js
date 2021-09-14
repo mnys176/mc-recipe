@@ -7,7 +7,16 @@
  *     an incoming request.                           *
  ******************************************************/
 
+const path = require('path')
 const multer = require('multer')
-const media = multer({ dest: 'media' })
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, dest),
+    filename: (req, file, cb) => {
+        const name = `${Date.now()}${path.extname(file.originalname)}`
+        cb(null, name)
+    }
+})
+const media = multer({ storage })
 
 module.exports = media

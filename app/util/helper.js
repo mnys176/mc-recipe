@@ -7,6 +7,8 @@
  *     logic from routes.                              *
  *******************************************************/
 
+const fs = require('fs')
+const crypto = require('crypto')
 const Quantifiable = require('./quantify')
 
 /**
@@ -44,6 +46,9 @@ const mapQuantifiable = input => {
 const extractRecipe = body => {
     // bring literal data into recipe
     const recipeBuilder = { ...body }
+
+    // generate random media directory
+    recipeBuilder.mediaDir = crypto.randomBytes(8).toString('hex')
 
     // build preparation time if it exists
     recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
@@ -88,4 +93,30 @@ const handleNotFound = id => {
  */
 const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
 
-module.exports = { extractRecipe, handleNotFound, objectIdIsValid }
+/**
+ * Creates a directory for a recipe if it doesn't
+ * exist and updates the images within it.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string}   mediaDir The directory to update.
+ * @param {[object]} images   The images to populate
+ *                            the media directory.
+ */
+const updateMediaDirectory = (mediaDir, images) => {
+    // if the directory does not exist, make it
+    fs.access(mediaDir, err => {
+        if (err) {
+            fs.mkdirSync(mediaDir, { recursive: true })
+        }
+    })
+
+    // TODO: Figure out how to handle images.
+}
+
+module.exports = {
+    extractRecipe,
+    handleNotFound,
+    objectIdIsValid,
+    updateMediaDirectory
+}

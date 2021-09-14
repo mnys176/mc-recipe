@@ -5,10 +5,16 @@
  * Description: Set of API routes that pertain to a recipe. *
  ************************************************************/
 
+const path = require('path')
 const express = require('express')
 
 const Recipe = require('../models/Recipe')
-const { extractRecipe, handleNotFound, objectIdIsValid } = require('../util/helper')
+const {
+    extractRecipe,
+    handleNotFound,
+    objectIdIsValid,
+    updateMediaDirectory
+} = require('../util/helper')
 const media = require('../middleware/multer')
 
 const router = express.Router()
@@ -45,9 +51,14 @@ router.get('/:id', async (req, res) => {
 
 // create a recipe
 router.post('/', media.array('foodImages'), async (req, res) => {
-    const newRecipe = new Recipe(extractRecipe(req.body))
+    const recipeBuilder = extractRecipe(req.body)
+    const newRecipe = new Recipe(recipeBuilder)
     try {
         await newRecipe.save()
+
+        const mediaDir = path.join('..', 'media', recipeBuilder.mediaDir)
+        updateMediaDirectory(mediaDir, req.files)
+
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
         return res.status(201).json({ status: 201, message })
     } catch (err) {
@@ -59,6 +70,9 @@ router.post('/', media.array('foodImages'), async (req, res) => {
 
 // update a recipe
 router.put('/:id', media.array('foodImages'), async (req, res) => {
+
+    // TODO: Handle update for media directory.
+
     const { id } = req.params
     try {
         // handle invalid ID
@@ -91,6 +105,9 @@ router.put('/:id', media.array('foodImages'), async (req, res) => {
 
 // delete a recipe
 router.delete('/:id', async (req, res) => {
+
+    // TODO: Remove media directory on deletion.
+
     const { id } = req.params
     try {
         // handle invalid ID

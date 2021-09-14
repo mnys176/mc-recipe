@@ -8,7 +8,7 @@
  *******************************************************/
 
 const fs = require('fs')
-const crypto = require('crypto')
+const path = require('path')
 const Quantifiable = require('./quantify')
 
 /**
@@ -46,9 +46,6 @@ const mapQuantifiable = input => {
 const extractRecipe = body => {
     // bring literal data into recipe
     const recipeBuilder = { ...body }
-
-    // generate random media directory
-    recipeBuilder.mediaDir = crypto.randomBytes(8).toString('hex')
 
     // build preparation time if it exists
     recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
@@ -94,29 +91,38 @@ const handleNotFound = id => {
 const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
 
 /**
- * Creates a directory for a recipe if it doesn't
- * exist and updates the images within it.
+ * Creates a directory for a recipe and updates the
+ * images within it.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string}   mediaDir The directory to update.
+ * @param {ObjectId} id       The recipe ObjectID.
  * @param {[object]} images   The images to populate
  *                            the media directory.
  */
-const updateMediaDirectory = (mediaDir, images) => {
-    // if the directory does not exist, make it
-    fs.access(mediaDir, err => {
-        if (err) {
-            fs.mkdirSync(mediaDir, { recursive: true })
-        }
-    })
+const updateMediaDirectory = (id, images) => {
+    const dir = path.join('..', 'media', id.toString())
+    fs.mkdirSync(dir, { recursive: true })
 
     // TODO: Figure out how to handle images.
+}
+
+/**
+ * Removes a media directory.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {ObjectId} id The recipe ObjectID.
+ */
+const deleteMediaDirectory = id => {
+    const dir = path.join('..', 'media', id.toString())
+    fs.rmSync(dir, { recursive: true })
 }
 
 module.exports = {
     extractRecipe,
     handleNotFound,
     objectIdIsValid,
-    updateMediaDirectory
+    updateMediaDirectory,
+    deleteMediaDirectory
 }

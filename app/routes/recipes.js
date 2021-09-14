@@ -5,7 +5,6 @@
  * Description: Set of API routes that pertain to a recipe. *
  ************************************************************/
 
-const path = require('path')
 const express = require('express')
 
 const Recipe = require('../models/Recipe')
@@ -13,7 +12,8 @@ const {
     extractRecipe,
     handleNotFound,
     objectIdIsValid,
-    updateMediaDirectory
+    updateMediaDirectory,
+    deleteMediaDirectory
 } = require('../util/helper')
 const media = require('../middleware/multer')
 
@@ -54,10 +54,10 @@ router.post('/', media.array('foodImages'), async (req, res) => {
     const recipeBuilder = extractRecipe(req.body)
     const newRecipe = new Recipe(recipeBuilder)
     try {
+        // make sure new recipe is stored properly
         await newRecipe.save()
 
-        const mediaDir = path.join('..', 'media', recipeBuilder.mediaDir)
-        updateMediaDirectory(mediaDir, req.files)
+        updateMediaDirectory(newRecipe._id, req.files)
 
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
         return res.status(201).json({ status: 201, message })
@@ -70,9 +70,6 @@ router.post('/', media.array('foodImages'), async (req, res) => {
 
 // update a recipe
 router.put('/:id', media.array('foodImages'), async (req, res) => {
-
-    // TODO: Handle update for media directory.
-
     const { id } = req.params
     try {
         // handle invalid ID
@@ -94,6 +91,9 @@ router.put('/:id', media.array('foodImages'), async (req, res) => {
         currRecipe.instructions = newRecipe.instructions
 
         await currRecipe.save()
+
+        updateMediaDirectory(id, req.files)
+
         const message = `The recipe with ObjectID of "${id}" was successfully updated.`
         return res.status(200).json({ status: 200, message })
     } catch (err) {
@@ -105,9 +105,6 @@ router.put('/:id', media.array('foodImages'), async (req, res) => {
 
 // delete a recipe
 router.delete('/:id', async (req, res) => {
-
-    // TODO: Remove media directory on deletion.
-
     const { id } = req.params
     try {
         // handle invalid ID
@@ -116,6 +113,8 @@ router.delete('/:id', async (req, res) => {
 
         // handle not found
         if (!results) return res.status(404).json(handleNotFound(id))
+
+        deleteMediaDirectory(id)
 
         const message = `The recipe with ObjectID of "${id}" was successfully deleted.`
         return res.status(200).json({ status: 200, message })

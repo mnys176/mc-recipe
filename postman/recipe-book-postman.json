@@ -32,7 +32,6 @@
 									"        'uploader',",
 									"        'createdOn',",
 									"        'modifiedOn',",
-									"        'mediaDir',",
 									"        'category',",
 									"        'about',",
 									"        'prepTime',",
@@ -84,7 +83,6 @@
 									"        'uploader',",
 									"        'createdOn',",
 									"        'modifiedOn',",
-									"        'mediaDir',",
 									"        'category',",
 									"        'about',",
 									"        'prepTime',",
@@ -97,7 +95,7 @@
 									"",
 									"// check that the recipe returned is the recipe requested",
 									"pm.test('Correct recipe returned', () => {",
-									"    const expectedId = '613ff489cda01f478b114831'",
+									"    const expectedId = '614009af5b338a1dd33615e3'",
 									"    pm.expect(jsonResponse._id).to.equal(expectedId)",
 									"})"
 								],
@@ -118,14 +116,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/613ff489cda01f478b114831",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/614009af5b338a1dd33615e3",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"613ff489cda01f478b114831"
+								"614009af5b338a1dd33615e3"
 							]
 						}
 					},

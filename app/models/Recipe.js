@@ -20,7 +20,6 @@ const recipeSchema = new Schema({
     uploader: { type: String, default: 'Anon Y. Mous' },
     createdOn: { type: Date, default: Date.now() },
     modifiedOn: { type: Date, default: Date.now() },
-    mediaDir: String,
     category: {
         type: String,
         required: true,

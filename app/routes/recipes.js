@@ -92,6 +92,7 @@ router.put('/:id', media.array('foodImages'), async (req, res) => {
 
         await currRecipe.save()
 
+        deleteMediaDirectory(id)
         updateMediaDirectory(id, req.files)
 
         const message = `The recipe with ObjectID of "${id}" was successfully updated.`

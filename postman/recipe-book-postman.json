@@ -32,6 +32,7 @@
 									"        'uploader',",
 									"        'createdOn',",
 									"        'modifiedOn',",
+									"        'mediaDir',",
 									"        'category',",
 									"        'about',",
 									"        'prepTime',",
@@ -83,6 +84,7 @@
 									"        'uploader',",
 									"        'createdOn',",
 									"        'modifiedOn',",
+									"        'mediaDir',",
 									"        'category',",
 									"        'about',",
 									"        'prepTime',",
@@ -95,7 +97,7 @@
 									"",
 									"// check that the recipe returned is the recipe requested",
 									"pm.test('Correct recipe returned', () => {",
-									"    const expectedId = '613c170efa3659d6815a7278'",
+									"    const expectedId = '613ff489cda01f478b114831'",
 									"    pm.expect(jsonResponse._id).to.equal(expectedId)",
 									"})"
 								],
@@ -116,14 +118,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/613c170efa3659d6815a7278",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/613ff489cda01f478b114831",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"613c170efa3659d6815a7278"
+								"613ff489cda01f478b114831"
 							]
 						}
 					},
@@ -279,12 +281,7 @@
 									"type": "file",
 									"src": []
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -403,12 +400,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -522,12 +514,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -636,12 +623,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -750,12 +732,7 @@
 									"value": "lb",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -874,12 +851,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1003,12 +975,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1127,12 +1094,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1251,12 +1213,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1375,12 +1332,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1499,12 +1451,7 @@
 									"value": "Big peach.",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1741,12 +1688,7 @@
 									"value": "{{newRecipeInstructions2}}",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -1979,12 +1921,7 @@
 									"value": "{{newRecipeInstructions2}}",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2217,12 +2154,7 @@
 									"value": "{{newRecipeInstructions2}}",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2460,12 +2392,7 @@
 									"value": "{{newRecipeInstructions2}}",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2693,12 +2620,7 @@
 									"value": "{{newRecipeInstructions2}}",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2921,12 +2843,7 @@
 									"value": "{{newRecipeInstructions2}}",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -3149,12 +3066,7 @@
 									"value": "{{newRecipeIngredients0Unit}}",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",

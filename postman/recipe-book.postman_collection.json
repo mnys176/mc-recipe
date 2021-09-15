@@ -28,7 +28,7 @@
 									"pm.test('Recipes are complete', () => {",
 									"    const expectedRecipeKeys = [",
 									"        '_id',",
-									"        'directory',",
+									"        'media',",
 									"        'title',",
 									"        'uploader',",
 									"        'createdOn',",
@@ -80,7 +80,7 @@
 									"pm.test('Recipe is complete', () => {",
 									"    const expectedRecipeKeys = [",
 									"        '_id',",
-									"        'directory',",
+									"        'media',",
 									"        'title',",
 									"        'uploader',",
 									"        'createdOn',",
@@ -138,7 +138,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// assert that status code is 200",
+									"// assert that status code is 404",
 									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
 								],
 								"type": "text/javascript"
@@ -2252,6 +2252,37 @@
 					"response": []
 				},
 				{
+					"name": "recipe-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"asdfasdfasdfasdfasdfasdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "delete-recipe",
 					"event": [
 						{
@@ -2264,8 +2295,9 @@
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
 									"",
-									"    // test that the objective no longer exists after the DELETE request",
-									"    pm.test('Objective no longer exists after request', () => pm.expect(res.code).to.be.equal(404))",
+									"    // test that the recipe no longer exists after the DELETE request",
+									"    console.log(res.code)",
+									"    pm.test('Recipe no longer exists after request', () => pm.expect(res.code).to.be.equal(404))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2332,7 +2364,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// assert that status code is 200",
+									"// assert that status code is 404",
 									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
 								],
 								"type": "text/javascript"

@@ -48,10 +48,6 @@ const extractRecipe = req => {
     // bring literal data into recipe
     const recipeBuilder = { ...req.body }
 
-    // set GUID
-    recipeBuilder.directory = uuidv4()
-    // recipeBuilder.directory = req.directory
-
     // build preparation time if it exists
     recipeBuilder.prepTime = mapQuantifiable(req.body.prepTime)
 

@@ -12,7 +12,7 @@ const multer = require('multer')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const dest = path.join('media', req.directory)
+        const dest = path.join('media', req.params.id)
         cb(null, dest)
     },
     filename: (req, file, cb) => {

@@ -8,8 +8,5 @@ node_modules/
 # MongoDB volume
 db/data/
 
-# media uploads
-media/
-
 # web application
 dist/

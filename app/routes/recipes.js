@@ -5,11 +5,12 @@
  * Description: Set of API routes that pertain to a recipe. *
  ************************************************************/
 
+const fs = require('fs')
 const express = require('express')
 
 const Recipe = require('../models/Recipe')
-// const media = require('../middleware/multer')
-// const { injectMedia, alterMedia, purgeMedia } = require('../middleware/media-tree')
+const media = require('../middleware/multer')
+const { injectMedia } = require('../middleware/media-tree')
 const { extractRecipe, handleNotFound, objectIdIsValid } = require('../util/helper')
 
 const router = express.Router()
@@ -48,16 +49,21 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const recipeBuilder = extractRecipe(req)
     const newRecipe = new Recipe(recipeBuilder)
-    // console.log(req.files)
     try {
         await newRecipe.save()
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
-        return res.status(201).json({ status: 201, message })
+        return res.status(201).json({ status: 201, message, id: newRecipe._id })
     } catch (err) {
         const message = `The recipe with ObjectID of "${newRecipe._id}" could not be created.`
         const reason = err.message
         return res.status(400).json({ status: 400, message, reason })
     }
+})
+
+// create media for a recipe
+router.post('/media/:id', injectMedia, media.array('foodImages'), (req, res) => {
+    const { id } = req.params
+    res.json(req.files)
 })
 
 // update a recipe

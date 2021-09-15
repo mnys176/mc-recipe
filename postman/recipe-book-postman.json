@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "741ec554-9ab5-4eb4-a8cf-a106d9838ae0",
+		"_postman_id": "a485ea8f-8d2a-4820-9ee4-612aecc2f5ce",
 		"name": "recipe-book",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -28,6 +28,7 @@
 									"pm.test('Recipes are complete', () => {",
 									"    const expectedRecipeKeys = [",
 									"        '_id',",
+									"        'directory',",
 									"        'title',",
 									"        'uploader',",
 									"        'createdOn',",
@@ -79,6 +80,7 @@
 									"pm.test('Recipe is complete', () => {",
 									"    const expectedRecipeKeys = [",
 									"        '_id',",
+									"        'directory',",
 									"        'title',",
 									"        'uploader',",
 									"        'createdOn',",
@@ -202,6 +204,7 @@
 									"",
 									"// extract and store the UUID for later",
 									"const message = pm.response.json().message",
+									"console.log(message)",
 									"const objectIdToDelete = message.substr(29, 24)",
 									"pm.collectionVariables.set('recipeObjectIdToDelete', objectIdToDelete)",
 									"",
@@ -222,64 +225,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
-								},
-								{
-									"key": "foodImages",
-									"type": "file",
-									"src": []
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Small Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"breakfast\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -351,54 +303,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -470,49 +381,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"category\": \"dinner\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -584,44 +459,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"category\": \"breakfast\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -693,44 +537,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"category\": \"lunch\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -802,54 +615,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -921,59 +693,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "asdf",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"category\": \"asdf\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1045,54 +771,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"category\": \"lunch\",\n    \"prepTime\": { \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1164,54 +849,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "asdf",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "lb",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"prepTime\": { \"unit\": \"asdf\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1283,54 +927,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "140",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"category\": \"lunch\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1402,54 +1005,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "Mike's Small Peach",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "1/2",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "h",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "breakfast",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "big peach",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "pieces",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "Get a peach.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "Make it big.",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "Big peach.",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Giant Peach\",\n    \"category\": \"lunch\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"unit\": \"pieces\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes",
@@ -1604,21 +1166,9 @@
 									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
 									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
 									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
+									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -1629,64 +1179,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "{{newRecipeTitle}}",
-									"type": "text"
-								},
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "{{newRecipeCategory}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "{{newRecipePrepTimeQuantity}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "{{newRecipePrepTimeUnit}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "{{newRecipeIngredients0Name}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "{{newRecipeIngredients0Quantity}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "{{newRecipeIngredients0Unit}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "{{newRecipeInstructions0}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "{{newRecipeInstructions1}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "{{newRecipeInstructions2}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{newRecipeTitle}}\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -1842,21 +1341,9 @@
 									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
 									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
 									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
+									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -1867,59 +1354,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "{{newRecipeCategory}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "{{newRecipePrepTimeQuantity}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "{{newRecipePrepTimeUnit}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "{{newRecipeIngredients0Name}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "{{newRecipeIngredients0Quantity}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "{{newRecipeIngredients0Unit}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "{{newRecipeInstructions0}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "{{newRecipeInstructions1}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "{{newRecipeInstructions2}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2075,21 +1516,9 @@
 									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
 									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
 									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
+									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2100,59 +1529,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "{{newRecipeTitle}}",
-									"type": "text"
-								},
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "{{newRecipePrepTimeQuantity}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "{{newRecipePrepTimeUnit}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "{{newRecipeIngredients0Name}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "{{newRecipeIngredients0Quantity}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "{{newRecipeIngredients0Unit}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "{{newRecipeInstructions0}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "{{newRecipeInstructions1}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "{{newRecipeInstructions2}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{newRecipeTitle}}\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2308,21 +1691,9 @@
 									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
 									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
 									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
+									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2333,64 +1704,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "{{newRecipeTitle}}",
-									"type": "text"
-								},
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "asdf",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "{{newRecipePrepTimeQuantity}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "{{newRecipePrepTimeUnit}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "{{newRecipeIngredients0Name}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "{{newRecipeIngredients0Quantity}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "{{newRecipeIngredients0Unit}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "{{newRecipeInstructions0}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "{{newRecipeInstructions1}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "{{newRecipeInstructions2}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{newRecipeTitle}}\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"asdf\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2546,21 +1866,9 @@
 									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
 									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
 									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
+									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2571,54 +1879,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "{{newRecipeTitle}}",
-									"type": "text"
-								},
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "{{newRecipeCategory}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "{{newRecipeIngredients0Name}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "{{newRecipeIngredients0Quantity}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "{{newRecipeIngredients0Unit}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "{{newRecipeInstructions0}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "{{newRecipeInstructions1}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "{{newRecipeInstructions2}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{newRecipeTitle}}\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2774,21 +2041,9 @@
 									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
 									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
 									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
+									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2799,49 +2054,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "{{newRecipeTitle}}",
-									"type": "text"
-								},
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "{{newRecipeCategory}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "{{newRecipePrepTimeQuantity}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "{{newRecipePrepTimeUnit}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "{{newRecipeInstructions0}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "{{newRecipeInstructions1}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "{{newRecipeInstructions2}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{newRecipeTitle}}\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -2997,21 +2216,9 @@
 									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
 									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
 									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
+									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -3022,49 +2229,13 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "{{newRecipeTitle}}",
-									"type": "text"
-								},
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "{{newRecipeCategory}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "{{newRecipePrepTimeQuantity}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "{{newRecipePrepTimeUnit}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "{{newRecipeIngredients0Name}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "{{newRecipeIngredients0Quantity}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "{{newRecipeIngredients0Unit}}",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{newRecipeTitle}}\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
@@ -3075,183 +2246,6 @@
 							"path": [
 								"recipes",
 								"{{recipeObjectIdToDelete}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "recipe-not-found",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// assert that status code is 200",
-									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
-									"",
-									"// get current values from agent before the PUT requests",
-									"pm.sendRequest(req, (err, res) => {",
-									"    if (err) throw err",
-									"    jsonRes = res.json()",
-									"    ",
-									"    // create a rotation cycle that constantly changes values",
-									"    const oldRecipeTitle = jsonRes.title",
-									"    const oldRecipeAbout = jsonRes.about",
-									"    const oldRecipePrepTime = jsonRes.prepTime",
-									"    const oldRecipeIngredients = jsonRes.ingredients",
-									"    const oldRecipeInstructions = jsonRes.instructions",
-									"    const oldRecipeCategory = jsonRes.category",
-									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
-									"",
-									"    // new title is the old title reversed",
-									"    const newRecipeTitle = oldRecipeTitle.split(' ').reverse().join(' ')",
-									"",
-									"    // new about is the old about in reverse",
-									"    const newRecipeAbout = oldRecipeAbout.split(' ').reverse().join(' ')",
-									"",
-									"    // new preparation time is the reversed old quantity in the same units",
-									"    const newRecipePrepTime = {",
-									"        quantity: oldRecipePrepTime.readable.split('').reverse().join(''),",
-									"        unit: oldRecipePrepTime.unit",
-									"    }",
-									"",
-									"    // new ingredients are now all \"swirled\"",
-									"    const newRecipeIngredients = oldRecipeIngredients.map(i => {",
-									"        const name = i.name.split('').reverse().join('')",
-									"        const unit = i.amount.unit === 'pieces' ? 'to taste' : 'pieces'",
-									"        const quantity = i.amount.readable.split('').reverse().join('')",
-									"        return { name, amount: { quantity, unit } }",
-									"    })",
-									"",
-									"    // new instructions are the old instructions reversed",
-									"    const newRecipeInstructions = [...oldRecipeInstructions].reverse()",
-									"",
-									"    // new category is 'dinner' if the old one was 'breakfast', otherwise it's 'breakfast'",
-									"    const newRecipeCategory = oldRecipeCategory === 'breakfast' ? 'dinner' : 'breakfast'",
-									"",
-									"    // make the request and current recipe properties visible to tests",
-									"    pm.collectionVariables.set('putTestGetRecipeById', JSON.stringify(req))",
-									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
-									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
-									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
-									"    pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(oldRecipePrepTime))",
-									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
-									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
-									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
-									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
-									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
-									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"",
-									"    // split nested objects for form data",
-									"    const { quantity, unit } = newRecipePrepTime",
-									"    pm.collectionVariables.set('newRecipePrepTimeQuantity', quantity)",
-									"    pm.collectionVariables.set('newRecipePrepTimeUnit', unit)",
-									"",
-									"    newRecipeIngredients.forEach((n, i) => {",
-									"        const { name, amount } = n",
-									"        const { quantity, unit } = amount",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Name`, name)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Quantity`, quantity)",
-									"        pm.collectionVariables.set(`newRecipeIngredients${i}Unit`, unit)",
-									"    })",
-									"",
-									"    newRecipeInstructions.forEach((n, i) => pm.collectionVariables.set(`newRecipeInstructions${i}`, n))",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "{{newRecipeTitle}}",
-									"type": "text"
-								},
-								{
-									"key": "about",
-									"value": "{{newRecipeAbout}}",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "{{newRecipeCategory}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[quantity]",
-									"value": "{{newRecipePrepTimeQuantity}}",
-									"type": "text"
-								},
-								{
-									"key": "prepTime[unit]",
-									"value": "{{newRecipePrepTimeUnit}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][name]",
-									"value": "{{newRecipeIngredients0Name}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][quantity]",
-									"value": "{{newRecipeIngredients0Quantity}}",
-									"type": "text"
-								},
-								{
-									"key": "ingredients[0][amount][unit]",
-									"value": "{{newRecipeIngredients0Unit}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[0]",
-									"value": "{{newRecipeInstructions0}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[1]",
-									"value": "{{newRecipeInstructions1}}",
-									"type": "text"
-								},
-								{
-									"key": "instructions[2]",
-									"value": "{{newRecipeInstructions2}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"asdfasdfasdfasdfasdfasdf"
 							]
 						}
 					},
@@ -3481,50 +2475,6 @@
 		},
 		{
 			"key": "oldRecipeModifiedOn",
-			"value": ""
-		},
-		{
-			"key": "oldRecipeInstructions0",
-			"value": ""
-		},
-		{
-			"key": "oldRecipeInstructions1",
-			"value": ""
-		},
-		{
-			"key": "oldRecipeInstructions2",
-			"value": ""
-		},
-		{
-			"key": "newRecipePrepTimeQuantity",
-			"value": ""
-		},
-		{
-			"key": "newRecipePrepTimeUnit",
-			"value": ""
-		},
-		{
-			"key": "newRecipeIngredients0Name",
-			"value": ""
-		},
-		{
-			"key": "newRecipeIngredients0Quantity",
-			"value": ""
-		},
-		{
-			"key": "newRecipeIngredients0Unit",
-			"value": ""
-		},
-		{
-			"key": "newRecipeInstructions0",
-			"value": ""
-		},
-		{
-			"key": "newRecipeInstructions1",
-			"value": ""
-		},
-		{
-			"key": "newRecipeInstructions2",
 			"value": ""
 		}
 	]

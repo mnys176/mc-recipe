@@ -8,14 +8,9 @@
 const express = require('express')
 
 const Recipe = require('../models/Recipe')
-const media = require('../middleware/multer')
-const {
-    extractRecipe,
-    handleNotFound,
-    objectIdIsValid,
-    updateMediaDirectory,
-    deleteMediaDirectory
-} = require('../util/helper')
+// const media = require('../middleware/multer')
+// const { injectMedia, alterMedia, purgeMedia } = require('../middleware/media-tree')
+const { extractRecipe, handleNotFound, objectIdIsValid } = require('../util/helper')
 
 const router = express.Router()
 
@@ -50,15 +45,12 @@ router.get('/:id', async (req, res) => {
 })
 
 // create a recipe
-router.post('/', media.array('foodImages'), async (req, res) => {
-    const recipeBuilder = extractRecipe(req.body)
+router.post('/', async (req, res) => {
+    const recipeBuilder = extractRecipe(req)
     const newRecipe = new Recipe(recipeBuilder)
+    // console.log(req.files)
     try {
-        // make sure new recipe is stored properly
         await newRecipe.save()
-
-        updateMediaDirectory(newRecipe._id, req.files)
-
         const message = `The recipe with ObjectID of "${newRecipe._id}" was successfully created.`
         return res.status(201).json({ status: 201, message })
     } catch (err) {
@@ -69,7 +61,7 @@ router.post('/', media.array('foodImages'), async (req, res) => {
 })
 
 // update a recipe
-router.put('/:id', media.array('foodImages'), async (req, res) => {
+router.put('/:id', async (req, res) => {
     const { id } = req.params
     try {
         // handle invalid ID
@@ -79,7 +71,7 @@ router.put('/:id', media.array('foodImages'), async (req, res) => {
         // handle not found
         if (!currRecipe) return res.status(404).json(handleNotFound(id))
 
-        const newRecipe = new Recipe(extractRecipe(req.body))
+        const newRecipe = new Recipe(extractRecipe(req))
 
         // map new properties to recipe model
         currRecipe.title = newRecipe.title
@@ -91,9 +83,6 @@ router.put('/:id', media.array('foodImages'), async (req, res) => {
         currRecipe.instructions = newRecipe.instructions
 
         await currRecipe.save()
-
-        deleteMediaDirectory(id)
-        updateMediaDirectory(id, req.files)
 
         const message = `The recipe with ObjectID of "${id}" was successfully updated.`
         return res.status(200).json({ status: 200, message })
@@ -114,8 +103,6 @@ router.delete('/:id', async (req, res) => {
 
         // handle not found
         if (!results) return res.status(404).json(handleNotFound(id))
-
-        deleteMediaDirectory(id)
 
         const message = `The recipe with ObjectID of "${id}" was successfully deleted.`
         return res.status(200).json({ status: 200, message })

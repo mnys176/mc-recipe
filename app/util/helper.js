@@ -9,6 +9,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const { v4: uuidv4 } = require('uuid')
 const Quantifiable = require('./quantify')
 
 /**
@@ -39,20 +40,24 @@ const mapQuantifiable = input => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object} body Request body.
+ * @param {object} Request object.
  * 
  * @returns {object} Premature recipe.
  */
-const extractRecipe = body => {
+const extractRecipe = req => {
     // bring literal data into recipe
-    const recipeBuilder = { ...body }
+    const recipeBuilder = { ...req.body }
+
+    // set GUID
+    recipeBuilder.directory = uuidv4()
+    // recipeBuilder.directory = req.directory
 
     // build preparation time if it exists
-    recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
+    recipeBuilder.prepTime = mapQuantifiable(req.body.prepTime)
 
     // build ingredients if they exist
-    if (body.ingredients) {
-        recipeBuilder.ingredients = body.ingredients.map(i => {
+    if (req.body.ingredients) {
+        recipeBuilder.ingredients = req.body.ingredients.map(i => {
             return {
                 name: i.name,
                 amount: mapQuantifiable(i.amount)
@@ -90,39 +95,8 @@ const handleNotFound = id => {
  */
 const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
 
-/**
- * Creates a directory for a recipe and updates the
- * images within it.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {ObjectId} id       The recipe ObjectID.
- * @param {[object]} images   The images to populate
- *                            the media directory.
- */
-const updateMediaDirectory = (id, images) => {
-    const dir = path.join('..', 'media', id.toString())
-    fs.mkdirSync(dir, { recursive: true })
-
-    // TODO: Figure out how to handle images.
-}
-
-/**
- * Removes a media directory.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {ObjectId} id The recipe ObjectID.
- */
-const deleteMediaDirectory = id => {
-    const dir = path.join('..', 'media', id.toString())
-    fs.rmSync(dir, { recursive: true })
-}
-
 module.exports = {
     extractRecipe,
     handleNotFound,
-    objectIdIsValid,
-    updateMediaDirectory,
-    deleteMediaDirectory
+    objectIdIsValid
 }

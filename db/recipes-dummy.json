@@ -3,6 +3,7 @@
         "_id": {
             "$oid": "614009af5b338a1dd33615e3"
         },
+        "directory": "98298fa8-6d6b-4b23-a528-d1bfb096d690",
         "title": "Linda's Cake",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -100,6 +101,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615e4",
+        "directory": "a7351e4d-8f6b-433c-b2bf-413d93956313",
         "title": "Marcy's Pancakes",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -199,6 +201,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615e5",
+        "directory": "a1d3e2da-c6d2-4878-8735-3613dc92a8ca",
         "title": "Tillman's Cookies",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -284,6 +287,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615e6",
+        "directory": "55791057-f9b9-4343-a480-b2aa6cfd292a",
         "title": "Savannah's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -391,6 +395,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615e7",
+        "directory": "9f756157-a982-494b-a7df-3f06ffb7d45a",
         "title": "Curtis's Bread",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -490,6 +495,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615e8",
+        "directory": "0d0ac6a7-6b87-473a-8d11-ab278207cb08",
         "title": "Delacruz's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -580,6 +586,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615e9",
+        "directory": "b7035877-eaf5-41c4-84f5-5a23efdaa7f9",
         "title": "Morton's Pie",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -667,6 +674,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615ea",
+        "directory": "61f7c8f6-82ff-424a-9834-cadd640489c8",
         "title": "Farrell's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -748,6 +756,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615eb",
+        "directory": "de8d2fa9-e8d4-40eb-a557-d1d6411faa74",
         "title": "Lorna's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -831,6 +840,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615ec",
+        "directory": "83706885-5037-484d-8ad0-38589e4c1a60",
         "title": "Lacey's Bread",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -917,6 +927,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615ed",
+        "directory": "38adc9dd-7355-467c-8477-3e21fd516ef5",
         "title": "Joni's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -999,6 +1010,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615ee",
+        "directory": "55d665b4-33dc-47ed-a148-25385c2dfe1d",
         "title": "Oneil's Cake",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1118,6 +1130,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615ef",
+        "directory": "4adc78b4-160f-4cfb-b6a8-060422c7130d",
         "title": "Darlene's Bread",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1220,6 +1233,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f0",
+        "directory": "4a61193b-698f-46ec-b041-2858247d5a83",
         "title": "Vaughn's Pie",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1335,6 +1349,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f1",
+        "directory": "313a24ee-c221-4699-a945-84018a1908c3",
         "title": "Opal's Pancakes",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1461,6 +1476,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f2",
+        "directory": "c01b9d6b-1c73-4c9b-adec-6a942ff03e31",
         "title": "Brandy's Cookies",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1558,6 +1574,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f3",
+        "directory": "d70af9d5-9d05-4be0-9240-16cdc4c0aa76",
         "title": "Lyons's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1659,6 +1676,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f4",
+        "directory": "5a288d8c-b008-4d7a-8d38-923b36f511fb",
         "title": "Hope's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1746,6 +1764,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f5",
+        "directory": "6c48c575-4d82-4869-8f4a-a9d452d88db3",
         "title": "Morrison's Pancakes",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1853,6 +1872,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f6",
+        "directory": "2d5b04fc-a525-4b25-8cc0-477f8bbc3e56",
         "title": "Bentley's Bread",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -1971,6 +1991,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f7",
+        "directory": "58cf2f33-2ce4-4120-9360-f466d2a52d15",
         "title": "Humphrey's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2093,6 +2114,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f8",
+        "directory": "4d781fd4-703f-443f-8f65-4b1604d3a141",
         "title": "Virginia's Cake",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2206,6 +2228,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615f9",
+        "directory": "00c0d45f-8b32-4245-8217-4b0cb8ab28fd",
         "title": "Marcella's Bread",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2324,6 +2347,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615fa",
+        "directory": "70b77f2e-7bc2-4c3d-85a1-577dbcfe3355",
         "title": "Nita's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2402,6 +2426,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615fb",
+        "directory": "d97ead98-2955-4e1a-8f72-4b3b91adc1a8",
         "title": "Ashley's Pie",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2483,6 +2508,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615fc",
+        "directory": "79a58af5-6c34-4d7f-afb0-569b6599a803",
         "title": "Janelle's Pie",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2592,6 +2618,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615fd",
+        "directory": "186f796a-0e29-4ce9-804f-1859e7baaa53",
         "title": "Knowles's Cookies",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2679,6 +2706,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615fe",
+        "directory": "38550180-7ccb-41fa-81af-6be87606f53c",
         "title": "Santana's Bread",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2786,6 +2814,7 @@
     },
     {
         "_id": "614009af5b338a1dd33615ff",
+        "directory": "1ec6c89d-57b3-4cae-aa43-4847db4784b5",
         "title": "Keri's Pie",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -2890,6 +2919,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361600",
+        "directory": "3e845c3f-ba7b-4239-b197-c7fa5c1f714a",
         "title": "Orr's Cake",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3003,6 +3033,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361601",
+        "directory": "7e0dc650-40d5-4ac4-8adb-4f25b6ed140d",
         "title": "Gray's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3083,6 +3114,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361602",
+        "directory": "c1d7f78b-8725-449c-8901-b775fb71c942",
         "title": "Riley's Cookies",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3179,6 +3211,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361603",
+        "directory": "2a24061e-f301-40b9-8b33-0d6a4a9c398d",
         "title": "Montgomery's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3278,6 +3311,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361604",
+        "directory": "d765f634-2302-4bbd-93f5-ede218b0c2c3",
         "title": "Cervantes's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3400,6 +3434,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361605",
+        "directory": "eeeb90be-8594-4069-9d4e-7b667c25d359",
         "title": "Florine's Cookies",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3488,6 +3523,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361606",
+        "directory": "a180ac90-79f5-4daa-a8de-bd01f08d54cd",
         "title": "Aurelia's Pancakes",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3615,6 +3651,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361607",
+        "directory": "353ec840-445d-4009-a394-e3068d8e26a5",
         "title": "Steele's Pancakes",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3718,6 +3755,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361608",
+        "directory": "42252d67-957f-4796-bb8f-0eeab56e84aa",
         "title": "Maggie's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3797,6 +3835,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361609",
+        "directory": "a6b544ff-e2ee-43a2-835c-913fd2ba52f1",
         "title": "Meagan's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3880,6 +3919,7 @@
     },
     {
         "_id": "614009af5b338a1dd336160a",
+        "directory": "9f89a8d6-8af3-4d65-902b-cf052e3d6cd0",
         "title": "Gaines's Pancakes",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -3977,6 +4017,7 @@
     },
     {
         "_id": "614009af5b338a1dd336160b",
+        "directory": "cea17624-e18d-45c4-acdd-f8dd1288b398",
         "title": "Agnes's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4068,6 +4109,7 @@
     },
     {
         "_id": "614009af5b338a1dd336160c",
+        "directory": "53129f24-2c13-4fe0-af41-f9e667b16a95",
         "title": "Brianna's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4195,6 +4237,7 @@
     },
     {
         "_id": "614009af5b338a1dd336160d",
+        "directory": "28869ef9-0cbb-4cf5-bbdc-e59e6a052c80",
         "title": "Coleman's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4318,6 +4361,7 @@
     },
     {
         "_id": "614009af5b338a1dd336160e",
+        "directory": "3b540ce3-2a1e-4ee8-8c4a-d38db48d2213",
         "title": "Solis's Pie",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4435,6 +4479,7 @@
     },
     {
         "_id": "614009af5b338a1dd336160f",
+        "directory": "f2927ab1-c3fb-4f31-bcfa-90b62c405ed3",
         "title": "Gay's Pie",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4517,6 +4562,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361610",
+        "directory": "13419c4a-d2af-4d9a-b0f3-a3b61efdf995",
         "title": "Gilliam's Pancakes",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4624,6 +4670,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361611",
+        "directory": "f49b636c-4796-4576-a68b-4c2b8df3ddb7",
         "title": "Bridgett's Waffles",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4722,6 +4769,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361612",
+        "directory": "2ce5dc1c-65f7-4b5e-8e53-77c67fd0c2d4",
         "title": "Workman's Scones",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4842,6 +4890,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361613",
+        "directory": "92022176-5021-47bc-86e2-60f36851dad1",
         "title": "Cox's Cake",
         "uploader": "Anon Y. Mous",
         "createdOn": {
@@ -4917,6 +4966,7 @@
     },
     {
         "_id": "614009af5b338a1dd3361614",
+        "directory": "ea7e7853-7eea-40d1-9ab4-95d3f67106e7",
         "title": "Mason's Cookies",
         "uploader": "Anon Y. Mous",
         "createdOn": {

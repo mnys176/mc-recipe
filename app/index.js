@@ -19,6 +19,9 @@ const app = express()
 const port = process.env.PORT || 8080
 const webapp = path.join(__dirname, 'webapp', 'dist')
 
+// accept JSON data
+app.use(express.json())
+
 // serve the VueJS application
 app.use(express.static(webapp))
 

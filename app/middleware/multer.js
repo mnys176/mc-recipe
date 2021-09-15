@@ -11,10 +11,12 @@ const path = require('path')
 const multer = require('multer')
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, dest),
+    destination: (req, file, cb) => {
+        const dest = path.join('media', req.directory)
+        cb(null, dest)
+    },
     filename: (req, file, cb) => {
-        const name = `${Date.now()}${path.extname(file.originalname)}`
-        cb(null, name)
+        cb(null, file.originalname)
     }
 })
 const media = multer({ storage })

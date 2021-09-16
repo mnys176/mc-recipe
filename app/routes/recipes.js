@@ -7,7 +7,7 @@
 
 const express = require('express')
 const recipe = require('../controllers/recipe')
-const media = require('../middleware/multer')
+const { media, sanitize } = require('../middleware/media')
 
 const router = express.Router()
 
@@ -48,10 +48,10 @@ router.post(
     media.array('foodImages'),
     async (req, res) => {
         try {
-            // const recipeExists = await recipe.exists(req.params.id)
-            // return res.json(recipeExists)
-            res.json()
+            await sanitize(req.files[0].destination)
+            res.json(req.files)
         } catch (err) {
+            res.json(err)
         }
     }
 )
@@ -63,10 +63,9 @@ router.put(
     media.array('foodImages'),
     async (req, res) => {
         try {
-            // const recipeExists = await recipe.exists(req.params.id)
-            // return res.json(recipeExists)
-            res.json()
+            res.json(req.files)
         } catch (err) {
+            res.json(err)
         }
     }
 )
@@ -81,6 +80,7 @@ router.delete(
             // return res.json(recipeExists)
             res.json()
         } catch (err) {
+            res.json(err)
         }
     }
 )

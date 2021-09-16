@@ -345,12 +345,12 @@ const removeMedia = async id => {
 const manageMedia = async (req, res, next) => {
     const { id } = req.params
     if (req.method === 'POST') {
-        addMedia(id)
+        await addMedia(id)
     } else if (req.method === 'PUT') {
-        removeMedia(id)
-        addMedia(id)
+        await removeMedia(id)
+        await addMedia(id)
     } else if (req.method === 'DELETE') {
-        removeMedia(id)
+        await removeMedia(id)
     }
     next()
 }

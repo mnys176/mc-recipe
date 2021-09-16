@@ -5,9 +5,9 @@
  * Description: Set of API routes that pertain to a recipe. *
  ************************************************************/
 
-const fs = require('fs')
 const express = require('express')
 const recipe = require('../controllers/recipe')
+const media = require('../middleware/multer')
 
 const router = express.Router()
 
@@ -29,12 +29,6 @@ router.post('/', async (req, res) => {
     return res.status(status).json(data)
 })
 
-// create media for a recipe
-// router.post('/media/:id', injectMedia, media.array('foodImages'), (req, res) => {
-//     const { id } = req.params
-//     res.json(req.files)
-// })
-
 // update a recipe
 router.put('/:id', async (req, res) => {
     const { status, data } = await recipe.change(req.params.id, req.body)
@@ -45,6 +39,44 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { status, data } = await recipe.discard(req.params.id)
     return res.status(status).json(data)
+})
+
+// create media for a recipe
+router.post(
+    '/media/:id',
+    recipe.manageMedia,
+    media.array('foodImages'),
+    async (req, res) => {
+    try {
+        // const recipeExists = await recipe.exists(req.params.id)
+        // return res.json(recipeExists)
+        res.json()
+    } catch (err) {
+    }
+})
+
+// update media for a recipe
+router.put(
+    '/media/:id',
+    recipe.manageMedia,
+    media.array('foodImages'),
+    async (req, res) => {
+    try {
+        // const recipeExists = await recipe.exists(req.params.id)
+        // return res.json(recipeExists)
+        res.json()
+    } catch (err) {
+    }
+})
+
+// delete media for a recipe
+router.delete('/media/:id', recipe.manageMedia, async (req, res) => {
+    try {
+        // const recipeExists = await recipe.exists(req.params.id)
+        // return res.json(recipeExists)
+        res.json()
+    } catch (err) {
+    }
 })
 
 module.exports = router

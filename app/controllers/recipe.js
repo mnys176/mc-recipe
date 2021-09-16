@@ -7,8 +7,44 @@
  *     recipe Mongoose model.                         *
  ******************************************************/
 
+const fs = require('fs')
+const path = require('path')
 const Recipe = require('../models/Recipe')
 const Quantifiable = require('../util/quantify')
+
+const media = 'media'
+
+/**
+ * Creates a media directory.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id The recipe ObjectID.
+ */
+const createDir = id => {
+    try {
+        const dir = path.join(media, id)
+        fs.mkdirSync(dir, { recursive: true })
+    } catch (err) {
+        // ignore for now
+    }
+}
+
+/**
+ * Removes a media directory.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id The recipe ObjectID.
+ */
+const removeDir = id => {
+    try {
+        const dir = path.join(media, id)
+        fs.rmSync(dir, { recursive: true })
+    } catch (err) {
+        // ignore for now
+    }
+}
 
 /**
  * Parses a quantifiable object from the frontend to
@@ -252,10 +288,78 @@ const discard = async id => {
     }
 }
 
+/**
+ * Checks if a recipe exists in the database.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id The ID of the recipe.
+ * 
+ * @returns {boolean} True if it does exist,
+ *                    false otherwise.
+ */
+const exists = async id => {
+    try {
+        return await Recipe.exists({ _id: id })
+    } catch (err) {
+        return false
+    }
+}
+
+/**
+ * Creates a media directory for a recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id The ID of the recipe.
+ */
+const addMedia = async id => {
+    // if the recipe is valid only
+    const recipeExists = await exists(id)
+    if (recipeExists) return createDir(id)
+}
+
+/**
+ * Removes a media directory for a recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id The ID of the recipe.
+ */
+const removeMedia = async id => {
+    // if the recipe is valid only
+    const recipeExists = await exists(id)
+    if (recipeExists) return removeDir(id)
+}
+
+/**
+ * Middleware that prepares media directories based
+ * on request.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {object}   req  The request.
+ * @param {object}   res  The response.
+ * @param {function} next Next middleware in line.
+ */
+const manageMedia = async (req, res, next) => {
+    const { id } = req.params
+    if (req.method === 'POST') {
+        addMedia(id)
+    } else if (req.method === 'PUT') {
+        removeMedia(id)
+        addMedia(id)
+    } else if (req.method === 'DELETE') {
+        removeMedia(id)
+    }
+    next()
+}
+
 module.exports = {
     fetch,
     fetchById,
     create,
     change,
-    discard
+    discard,
+    manageMedia
 }

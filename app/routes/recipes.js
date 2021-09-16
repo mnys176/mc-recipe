@@ -47,13 +47,14 @@ router.post(
     recipe.manageMedia,
     media.array('foodImages'),
     async (req, res) => {
-    try {
-        // const recipeExists = await recipe.exists(req.params.id)
-        // return res.json(recipeExists)
-        res.json()
-    } catch (err) {
+        try {
+            // const recipeExists = await recipe.exists(req.params.id)
+            // return res.json(recipeExists)
+            res.json()
+        } catch (err) {
+        }
     }
-})
+)
 
 // update media for a recipe
 router.put(
@@ -61,22 +62,27 @@ router.put(
     recipe.manageMedia,
     media.array('foodImages'),
     async (req, res) => {
-    try {
-        // const recipeExists = await recipe.exists(req.params.id)
-        // return res.json(recipeExists)
-        res.json()
-    } catch (err) {
+        try {
+            // const recipeExists = await recipe.exists(req.params.id)
+            // return res.json(recipeExists)
+            res.json()
+        } catch (err) {
+        }
     }
-})
+)
 
 // delete media for a recipe
-router.delete('/media/:id', recipe.manageMedia, async (req, res) => {
-    try {
-        // const recipeExists = await recipe.exists(req.params.id)
-        // return res.json(recipeExists)
-        res.json()
-    } catch (err) {
+router.delete(
+    '/media/:id',
+    recipe.manageMedia,
+    async (req, res) => {
+        try {
+            // const recipeExists = await recipe.exists(req.params.id)
+            // return res.json(recipeExists)
+            res.json()
+        } catch (err) {
+        }
     }
-})
+)
 
 module.exports = router

@@ -48,10 +48,11 @@ router.post(
     media.array('foodImages'),
     async (req, res) => {
         try {
-            await sanitize(req.files[0].destination)
-            res.json(req.files)
+            const mediaDir = req.files[0].destination
+            await sanitize(mediaDir, /image\/(jpeg|png)/)
+            return res.json(req.files)
         } catch (err) {
-            res.json(err)
+            return res.json(err)
         }
     }
 )

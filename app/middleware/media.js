@@ -8,21 +8,32 @@
  ********************************************************/
 
 const path = require('path')
-const { readdir, readFile, rm, chmod } = require('fs/promises')
 const multer = require('multer')
-const getStream = require('get-stream')
+const { readdir, readFile, rm, chmod } = require('fs/promises')
 const FileType = require('file-type')
 
-const sanitize = async dest => {
+/**
+ * Leverages the `file-type` module to sanitize
+ * a directory. This analyses the actual file
+ * contents as opposed to just the extension.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} dir    Path to the directory to be
+ *                        sanitized.
+ * @param {object} filter Regular expression for the
+ *                        acceptable MIME types.
+ */
+const sanitize = async (dir, filter) => {
     try {
-        const files = await readdir(dest)
+        const files = await readdir(dir)
         files.forEach(async name => {
-            const filePath = path.join(dest, name)
+            const filePath = path.join(dir, name)
             const data = await readFile(filePath)
             const fileType = await FileType.fromBuffer(data)
 
-            // if files are neither PNG or JPG, delete them
-            if (!fileType || !fileType.mime.match(/image\/(png|jpeg)/)) {
+            // if file is not legitimate, delete it
+            if (!fileType || !fileType.mime.match(filter)) {
                 await rm(filePath, { force: true })
             } else {
                 await chmod(filePath, 0o644)

@@ -23,22 +23,32 @@ const FileType = require('file-type')
  *                        sanitized.
  * @param {object} filter Regular expression for the
  *                        acceptable MIME types.
+ * 
+ * @returns {[string]} Filenames of the rejected files.
  */
-const sanitize = async (dir, filter) => {
+const sanitize = async (dir, filter = /INVALID/) => {
     try {
-        const files = await readdir(dir)
-        files.forEach(async name => {
-            const filePath = path.join(dir, name)
-            const data = await readFile(filePath)
-            const fileType = await FileType.fromBuffer(data)
+        if (dir) {
+            const rejects = []
+            const files = await readdir(dir)
+            for (let i = 0; i < files.length; i++) {
+                const name = files[i]
+                const filePath = path.join(dir, name)
+                const data = await readFile(filePath)
+                const fileType = await FileType.fromBuffer(data)
 
-            // if file is not legitimate, delete it
-            if (!fileType || !fileType.mime.match(filter)) {
-                await rm(filePath, { force: true })
-            } else {
-                await chmod(filePath, 0o644)
+                // if file is not legitimate, delete it
+                if (!fileType || !fileType.mime.match(filter)) {
+                    await rm(filePath, { force: true })
+                    rejects.push(name)
+                } else {
+                    // force permissions (just in case)
+                    await chmod(filePath, 0o644)
+                }
             }
-        })
+            return rejects
+        }
+        return []
     } catch (err) {
         throw err
     }

@@ -11,6 +11,11 @@ const fs = require('fs')
 const path = require('path')
 const Recipe = require('../models/Recipe')
 const Quantifiable = require('../util/quantify')
+const {
+    handleNotFound,
+    handleBadRequest,
+    handleInternalServerError
+} = require('../util/http-status')
 
 const media = 'media'
 
@@ -98,56 +103,6 @@ const extractRecipe = body => {
 }
 
 /**
- * Handles a '404 Not Found' error when the client
- * requests a nonexistent ID.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- *
- * @param {string} id ID of a requested recipe.
- * 
- * @return {object} An object describing the error.
- */
-const handleNotFound = id => {
-    const status = 404
-    const message = `No recipes returned with ID of "${id}".`
-    const reason = 'Not found.'
-    return { status, data: { status, message, reason } }
-}
-
-/**
- * Handles a '400 Bad Request' error when the client
- * provides insufficient data to manipulate a recipe.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- *
- * @param {string} id     ID of a requested recipe.
- * @param {string} reason The reason the recipe could
- *                        not be created.
- * 
- * @return {object} An object describing the error.
- */
-const handleBadRequest = (id, reason) => {
-    const status = 400
-    const message = `The recipe with ObjectID of "${id}" could not be modified.`
-    return { status, data: { status, message, reason } }
-}
-
-/**
- * Handles an error that occures when handling a
- * recipe.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @return {object} An object describing the error.
- */
-const handleServerError = () => {
-    const status = 500
-    const message = 'Something went wrong...'
-    const reason = 'Unknown server error.'
-    return { status, data: { status, message, reason } }
-}
-
-/**
  * Confirms that the provided ID is a MongoDB
  * ObjectID.
  * 
@@ -173,8 +128,8 @@ const fetch = async () => {
         return { status: 200, data }
     } catch (err) {
         // this should never happen
-        return handleServerError()
-    }
+        return handleInternalServerError()
+   Internal }
 }
 
 /**

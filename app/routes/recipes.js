@@ -8,6 +8,11 @@
 const express = require('express')
 const recipe = require('../controllers/recipe')
 const { media, sanitize } = require('../middleware/media')
+const {
+    handleNotFound,
+    handleBadRequest,
+    handleInternalServerError
+} = require('../util/http-status')
 
 const router = express.Router()
 
@@ -48,11 +53,12 @@ router.post(
     media.array('foodImages'),
     async (req, res) => {
         try {
-            const mediaDir = req.files[0].destination
-            await sanitize(mediaDir, /image\/(jpeg|png)/)
-            return res.json(req.files)
+            const sample = req.files[0]
+            const destination = sample ? sample.destination : undefined
+            const rejects = await sanitize(destination, /image\/(jpeg|png)/)
+            return res.status(201).json(rejects)
         } catch (err) {
-            return res.json(err)
+            return handleInternalServerError()
         }
     }
 )

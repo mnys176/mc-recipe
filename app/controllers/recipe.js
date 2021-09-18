@@ -139,17 +139,15 @@ const fetch = async () => {
  * @returns {object} The results of the query.
  */
 const fetchById = async id => {
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' could not be retrieved.'
     try {
         const data = await Recipe.findById(id)
         if (data) return quickResponse(200, data)
-        const message = `The recipe with ID of "${id}"` +
-                        ' could not be retrieved.'
-        return quickResponse(404, message)
+        return quickResponse(404, notFoundMessage)
     } catch (err) {
         // handle invalid IDs as 'Not Found'
-        const message = `The recipe with ID of "${id}"` +
-                        ' could not be retrieved.'
-        return quickResponse(404, message)
+        return quickResponse(404, notFoundMessage)
     }
 }
 
@@ -234,28 +232,19 @@ const change = async (id, json) => {
  * @returns {object} The results of the operation.
  */
 const discard = async id => {
+    const notFoundMessage = `The recipe with ID of "${id}".` +
+                            ' could not be retrieved.'
     try {
-        if (!objectIdIsValid(id)) {
-            const message = `The recipe with ID of "${id}"` +
-                            ' could not be retrieved.'
-            return quickResponse(404, message)
-        }
-
+        if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
         const data = await Recipe.findByIdAndDelete(id)
-        if (!data) {
-            const message = `The recipe with ID of "${id}"` +
-                            ' could not be retrieved.'
-            return quickResponse(404, message)
-        }
+        if (!data) return quickResponse(404, notFoundMessage)
 
         const message = `The recipe with ID of "${id}"` +
                         ' was successfully deleted.'
         return quickResponse(200, message)
     } catch (err) {
         // handle invalid IDs as 'Not Found'
-        const message = `The recipe with ID of "${id}"` +
-                        ' could not be retrieved.'
-        return quickResponse(404, message)
+        return quickResponse(404, notFoundMessage)
     }
 }
 

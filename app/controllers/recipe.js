@@ -11,11 +11,7 @@ const fs = require('fs')
 const path = require('path')
 const Recipe = require('../models/Recipe')
 const Quantifiable = require('../util/quantify')
-const {
-    handleNotFound,
-    handleBadRequest,
-    handleInternalServerError
-} = require('../util/http-status')
+const quickResponse = require('../util/quick-response')
 
 const media = 'media'
 
@@ -125,11 +121,11 @@ const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
 const fetch = async () => {
     try {
         const data = await Recipe.find()
-        return { status: 200, data }
+        return quickResponse(200, data)
     } catch (err) {
         // this should never happen
-        return handleInternalServerError()
-   Internal }
+        return quickResponse(500)
+    }
 }
 
 /**
@@ -145,11 +141,15 @@ const fetch = async () => {
 const fetchById = async id => {
     try {
         const data = await Recipe.findById(id)
-        if (!data) return handleNotFound(id)
-        return { status: 200, data }
+        if (data) return quickResponse(200, data)
+        const message = `The recipe with ID of "${id}"` +
+                        ' could not be retrieved.'
+        return quickResponse(404, message)
     } catch (err) {
         // handle invalid IDs as 'Not Found'
-        return handleNotFound(id)
+        const message = `The recipe with ID of "${id}"` +
+                        ' could not be retrieved.'
+        return quickResponse(404, message)
     }
 }
 
@@ -167,12 +167,13 @@ const create = async json => {
     const newRecipe = new Recipe(extractRecipe(json))
     try {
         await newRecipe.save()
-        const status = 201
-        const message = 'The recipe with ObjectID of' +
-                        ` "${newRecipe._id}" was successfully created.`
-        return { status, data: { status, message } }
+        const message = `The recipe with ID of "${newRecipe._id}"` +
+                        ' was successfully created.'
+        return quickResponse(201, message)
     } catch (err) {
-        return handleBadRequest(newRecipe._id, err.message)
+        const message = `The recipe with ID of "${newRecipe._id}"` +
+                        ' could not be created.'
+        return quickResponse(400, message, err.message)
     }
 }
 
@@ -189,12 +190,16 @@ const create = async json => {
  */
 const change = async (id, json) => {
     try {
-        if (!objectIdIsValid(id)) return handleNotFound(id)
+        if (!objectIdIsValid(id)) {
+            const message = `The recipe with ID of "${id}"` +
+                            ' could not be retrieved.'
+            return quickResponse(404, message)
+        }
 
         // use method that already handles 404 Not Found
         const temp = await fetchById(id)
 
-        const currRecipe = temp.data
+        const currRecipe = temp.data.message
         const newRecipe = new Recipe(extractRecipe(json))
 
         // map new properties to recipe model
@@ -208,12 +213,13 @@ const change = async (id, json) => {
 
         await currRecipe.save()
 
-        const status = 200
-        const message = 'The recipe with ObjectID of' +
-                        ` "${id}" was successfully updated.`
-        return { status, data: { status, message } }
+        const message = `The recipe with ID of "${id}"` +
+                        ' was successfully updated.'
+        return quickResponse(200, message)
     } catch (err) {
-        return handleBadRequest(id, err.message)
+        const message = `The recipe with ID of "${id}"` +
+                        ' could not be updated.'
+        return quickResponse(400, message, err.message)
     }
 
 }
@@ -229,17 +235,27 @@ const change = async (id, json) => {
  */
 const discard = async id => {
     try {
-        if (!objectIdIsValid(id)) return handleNotFound(id)
-        const data = await Recipe.findByIdAndDelete(id)
-        if (!data) return handleNotFound(id)
+        if (!objectIdIsValid(id)) {
+            const message = `The recipe with ID of "${id}"` +
+                            ' could not be retrieved.'
+            return quickResponse(404, message)
+        }
 
-        const status = 200
-        const message = 'The recipe with ObjectID of' +
-                        ` "${id}" was successfully deleted.`
-        return { status, data: { status, message } }
+        const data = await Recipe.findByIdAndDelete(id)
+        if (!data) {
+            const message = `The recipe with ID of "${id}"` +
+                            ' could not be retrieved.'
+            return quickResponse(404, message)
+        }
+
+        const message = `The recipe with ID of "${id}"` +
+                        ' was successfully deleted.'
+        return quickResponse(200, message)
     } catch (err) {
         // handle invalid IDs as 'Not Found'
-        return handleNotFound(id)
+        const message = `The recipe with ID of "${id}"` +
+                        ' could not be retrieved.'
+        return quickResponse(404, message)
     }
 }
 

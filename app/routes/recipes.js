@@ -8,11 +8,7 @@
 const express = require('express')
 const recipe = require('../controllers/recipe')
 const { media, sanitize } = require('../middleware/media')
-const {
-    handleNotFound,
-    handleBadRequest,
-    handleInternalServerError
-} = require('../util/http-status')
+const quickResponse = require('../util/quick-response')
 
 const router = express.Router()
 
@@ -58,7 +54,7 @@ router.post(
             const rejects = await sanitize(destination, /image\/(jpeg|png)/)
             return res.status(201).json(rejects)
         } catch (err) {
-            return handleInternalServerError()
+            return quickResponse(500)
         }
     }
 )

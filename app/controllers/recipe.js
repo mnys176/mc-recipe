@@ -199,7 +199,7 @@ const change = async (id, json) => {
  * @returns {object} The results of the operation.
  */
 const discard = async id => {
-    const notFoundMessage = `The recipe with ID of "${id}".` +
+    const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' could not be retrieved.'
     try {
         if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
@@ -240,11 +240,7 @@ const exists = async id => {
  * 
  * @param {string} id The ID of the recipe.
  */
-const addMedia = async id => {
-    // if the recipe is valid only
-    const recipeExists = await exists(id)
-    if (recipeExists) return media.createDir(id)
-}
+const addMedia = async id => media.createDir(id)
 
 /**
  * Removes a media directory for a recipe.
@@ -253,11 +249,7 @@ const addMedia = async id => {
  * 
  * @param {string} id The ID of the recipe.
  */
-const removeMedia = async id => {
-    // if the recipe is valid only
-    const recipeExists = await exists(id)
-    if (recipeExists) return media.removeDir(id)
-}
+const removeMedia = async id => media.removeDir(id)
 
 /**
  * Middleware that prepares media directories based
@@ -270,6 +262,7 @@ const removeMedia = async id => {
  * @param {function} next Next middleware in line.
  */
 const prepareMedia = async (req, res, next) => {
+    // TODO: Non-existent ID still creates directory.
     const { id } = req.params
     if (req.method === 'POST') {
         await addMedia(id)
@@ -292,7 +285,13 @@ const prepareMedia = async (req, res, next) => {
  * 
  * @returns {object} The results of the operation.
  */
-const setMedia = async (id, files) => media.set(id, files)
+const setMedia = async (id, files) => {
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' does not exist.'
+    const recipeExists = await exists(id)
+    if (!recipeExists) return quickResponse(404, notFoundMessage)
+    return await media.set(id, files)
+}
 
 /**
  * Stages a media directory for the recipe.
@@ -303,7 +302,13 @@ const setMedia = async (id, files) => media.set(id, files)
  * 
  * @returns {object} The results of the operation.
  */
-const unsetMedia = async id => media.unset(id)
+const unsetMedia = async id => {
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' does not exist.'
+    const recipeExists = await exists(id)
+    if (!recipeExists) return quickResponse(404, notFoundMessage)
+    return await media.unset(id)
+}
 
 module.exports = {
     fetch,

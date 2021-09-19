@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a485ea8f-8d2a-4820-9ee4-612aecc2f5ce",
+		"_postman_id": "e216ed5d-0f34-47b4-ba83-3b05f2174081",
 		"name": "recipe-book",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1027,271 +1027,6 @@
 							],
 							"path": [
 								"recipes"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create-recipe-media",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const jsonResponse = pm.response.json()",
-									"",
-									"// assert that status code is 201",
-									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
-									"",
-									"// make sure no rejects were returned to the client",
-									"pm.test('No files were rejected', () => {",
-									"    const { context } = jsonResponse",
-									"    pm.expect(context).to.be.an('array').that.has.lengthOf.greaterThan(0)",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "foodImages",
-									"type": "file",
-									"src": [
-										"media/cake.jpg",
-										"media/dice.png",
-										"media/doughnuts.jpg"
-									]
-								}
-							]
-						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "media-not-included",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// assert that status code is 204",
-									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
-									"",
-									"// assert that absolutely nothing was returned",
-									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "foodImages",
-									"type": "file",
-									"src": []
-								}
-							]
-						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "only-rejected-media-included",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// assert that status code is 204",
-									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
-									"",
-									"// assert that absolutely nothing was returned",
-									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "foodImages",
-									"type": "file",
-									"src": [
-										"media/a.out",
-										"media/bad.zip",
-										"media/evil",
-										"media/hello.png",
-										"media/illegal.svg",
-										"media/main.cpp",
-										"media/sneakier.png",
-										"media/sneaky.sh"
-									]
-								}
-							]
-						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "some-rejected-media-included",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const { context } = pm.response.json()",
-									"",
-									"// assert that status code is 201",
-									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
-									"",
-									"// both cleared and rejected arrays must be present",
-									"pm.test('Cleared and rejected arrays returned in an object', () => {",
-									"    pm.expect(context).to.be.an('object')",
-									"        .that.has.all.keys('cleared', 'rejected')",
-									"})",
-									"",
-									"// make sure some rejects were returned to the client",
-									"pm.test('Bad files were rejected', () => {",
-									"    const { rejected } = context",
-									"    pm.expect(rejected).to.be.an('array')",
-									"        .that.has.lengthOf.greaterThan(0)",
-									"})",
-									"",
-									"// make sure some cleared files were returned to the client",
-									"pm.test('Good files were not rejected', () => {",
-									"    const { cleared } = context",
-									"    pm.expect(cleared).to.be.an('array')",
-									"        .that.has.lengthOf.greaterThan(0)",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "foodImages",
-									"type": "file",
-									"src": [
-										"media/a.out",
-										"media/bad.zip",
-										"media/cake.jpg",
-										"media/dice.png",
-										"media/doughnuts.jpg",
-										"media/evil",
-										"media/hello.png",
-										"media/illegal.svg",
-										"media/main.cpp",
-										"media/sneakier.png",
-										"media/sneaky.sh"
-									]
-								}
-							]
-						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
 							]
 						}
 					},
@@ -2561,6 +2296,432 @@
 					"response": []
 				},
 				{
+					"name": "delete-recipe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const req = JSON.parse(pm.collectionVariables.get('deleteTestGetRecipeById'))",
+									"",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"",
+									"    // test that the recipe no longer exists after the DELETE request",
+									"    console.log(res.code)",
+									"    pm.test('Recipe no longer exists after request', () => pm.expect(res.code).to.be.equal(404))",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"",
+									"    // test that the recipe currently exists before the DELETE request",
+									"    pm.test('Recipe exists before request', () => pm.expect(res.code).to.be.equal(200))",
+									"",
+									"    // make the request visible to tests",
+									"    pm.collectionVariables.set('deleteTestGetRecipeById', JSON.stringify(req))",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"{{recipeObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "recipe-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"asdfasdfasdfasdfasdfasdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-recipe-media",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonResponse = pm.response.json()",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// make sure no rejects were returned to the client",
+									"pm.test('No files were rejected', () => {",
+									"    const { context } = jsonResponse",
+									"    pm.expect(context).to.be.an('array').that.has.lengthOf.greaterThan(0)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "media-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "only-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "some-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { context } = pm.response.json()",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// both cleared and rejected arrays must be present",
+									"pm.test('Cleared and rejected arrays returned in an object', () => {",
+									"    pm.expect(context).to.be.an('object')",
+									"        .that.has.all.keys('cleared', 'rejected')",
+									"})",
+									"",
+									"// make sure some rejects were returned to the client",
+									"pm.test('Bad files were rejected', () => {",
+									"    const { rejected } = context",
+									"    pm.expect(rejected).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// make sure some cleared files were returned to the client",
+									"pm.test('Good files were not rejected', () => {",
+									"    const { cleared } = context",
+									"    pm.expect(cleared).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "recipe-not-found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"asdfasdfasdfasdfasdfasdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "update-recipe-media",
 					"event": [
 						{
@@ -2826,83 +2987,17 @@
 					"response": []
 				},
 				{
-					"name": "delete-recipe",
+					"name": "recipe-not-found",
 					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// set variables to form a request",
-									"const req = JSON.parse(pm.collectionVariables.get('deleteTestGetRecipeById'))",
-									"",
-									"pm.sendRequest(req,  (err, res) => {",
-									"    if (err) throw err",
-									"",
-									"    // test that the recipe no longer exists after the DELETE request",
-									"    console.log(res.code)",
-									"    pm.test('Recipe no longer exists after request', () => pm.expect(res.code).to.be.equal(404))",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						},
 						{
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
-									"",
-									"pm.sendRequest(req,  (err, res) => {",
-									"    if (err) throw err",
-									"",
-									"    // test that the recipe currently exists before the DELETE request",
-									"    pm.test('Recipe exists before request', () => pm.expect(res.code).to.be.equal(200))",
-									"",
-									"    // make the request visible to tests",
-									"    pm.collectionVariables.set('deleteTestGetRecipeById', JSON.stringify(req))",
-									"})"
+									""
 								],
 								"type": "text/javascript"
 							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
 						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"{{recipeObjectIdToDelete}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "recipe-not-found",
-					"event": [
 						{
 							"listen": "test",
 							"script": {
@@ -2915,16 +3010,31 @@
 						}
 					],
 					"request": {
-						"method": "DELETE",
+						"method": "PUT",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/asdfasdfasdfasdfasdfasdf",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
+								"media",
 								"asdfasdfasdfasdfasdfasdf"
 							]
 						}
@@ -2971,6 +3081,61 @@
 								"recipes",
 								"media",
 								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "recipe-not-found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"asdfasdfasdfasdfasdfasdf"
 							]
 						}
 					},

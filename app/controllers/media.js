@@ -47,7 +47,6 @@ const removeDir = async id => {
         const dir = path.join(mediaDir, id)
         await rmdir(dir, { recursive: true, force: true })
     } catch (err) {
-        throw err
         // ignore for now
     }
 }

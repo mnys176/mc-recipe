@@ -282,7 +282,27 @@ const prepareMedia = async (req, res, next) => {
     next()
 }
 
+/**
+ * Stages a media directory for the recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string}      id ID of the recipe.
+ * @param {[object]} files File array created by Multer.
+ * 
+ * @returns {object} The results of the operation.
+ */
 const setMedia = async (id, files) => media.set(id, files)
+
+/**
+ * Stages a media directory for the recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id ID of the recipe.
+ * 
+ * @returns {object} The results of the operation.
+ */
 const unsetMedia = async id => media.unset(id)
 
 module.exports = {

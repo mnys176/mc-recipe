@@ -97,6 +97,17 @@ const sanitize = async (dir, filter = /INVALID/) => {
     }
 }
 
+/**
+ * Updates and sanitizes a media directory for a
+ * recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string}      id ID of the recipe.
+ * @param {[object]} files File array created by Multer.
+ * 
+ * @returns {object} The results of the operation.
+ */
 const set = async (id, files = []) => {
     try {
         const dir = files.length > 0 ? files[0].destination : undefined
@@ -134,6 +145,15 @@ const set = async (id, files = []) => {
     }
 }
 
+/**
+ * Removes a media directory from a recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string}      id ID of the recipe.
+ * 
+ * @returns {object} The results of the operation.
+ */
 const unset = async id => {
     try {
         const message = `The media for recipe with ID of "${id}" was successfully deleted.`

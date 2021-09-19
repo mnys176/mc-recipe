@@ -141,7 +141,7 @@ const internalServerError = (message = 'Internal server error.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {number}           code Status code.
+ * @param {number}        code    Status code.
  * @param {string|object} message Optional message that acts as
  *                                the payload.
  * @param {string|object} context Optional information that goes

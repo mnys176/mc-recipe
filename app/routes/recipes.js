@@ -7,8 +7,8 @@
 
 const express = require('express')
 const recipe = require('../controllers/recipe')
-const { media, sanitize } = require('../middleware/media')
-const quickResponse = require('../util/quick-response')
+const { media } = require('../middleware/media-multer')
+const { sanitize } = require('../controllers/media')
 
 const router = express.Router()
 
@@ -41,6 +41,24 @@ router.delete('/:id', async (req, res) => {
     const { status, data } = await recipe.discard(req.params.id)
     return res.status(status).json(data)
 })
+
+const { readdir, readFile } = require('fs/promises')
+const path = require('path')
+const quickResponse = require('../util/quick-response')
+const mediaPath = '../media'
+
+// // get all media for a recipe
+// router.get('/media/:id', async (req, res) => {
+//     try {
+//         let { status, data } = await recipe.fetchById(req.params.id)
+//         const { media } = temp.data.message
+//         const files = await readdir(mediaPath)
+//         console.log(temp)
+//         res.end()
+//     } catch (err) {
+//         throw err
+//     }
+// })
 
 // create media for a recipe
 router.post(
@@ -76,7 +94,9 @@ router.post(
             const { status, data } = temp
             return res.status(status).json(data)
         } catch (err) {
-            return res.status(quickResponse(500).status).json(quickResponse(500).data)
+            throw err
+            const { status, data } = quickResponse(500)
+            return res.status(status).json(data)
         }
     }
 )
@@ -115,7 +135,8 @@ router.put(
             const { status, data } = temp
             return res.status(status).json(data)
         } catch (err) {
-            return res.status(quickResponse(500).status).json(quickResponse(500).data)
+            const { status, data } = quickResponse(500)
+            return res.status(status).json(data)
         }
     }
 )

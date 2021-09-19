@@ -16,7 +16,7 @@
 							"script": {
 								"exec": [
 									"// get response as JSON",
-									"const jsonResponse = pm.response.json()",
+									"const jsonResponse = pm.response.json().message",
 									"",
 									"// assert that status code is 200",
 									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
@@ -71,7 +71,7 @@
 							"script": {
 								"exec": [
 									"// get response as JSON",
-									"const jsonResponse = pm.response.json()",
+									"const jsonResponse = pm.response.json().message",
 									"",
 									"// assert that status code is 200",
 									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
@@ -114,9 +114,16 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
 						"url": {
 							"raw": "{{protocol}}://{{apiRoot}}/recipes/614009af5b338a1dd33615e3",
 							"protocol": "{{protocol}}",
@@ -181,7 +188,7 @@
 									"// count the number of recipes before the POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -203,16 +210,15 @@
 									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
 									"",
 									"// extract and store the UUID for later",
-									"const message = pm.response.json().message",
-									"console.log(message)",
-									"const objectIdToDelete = message.substr(29, 24)",
+									"const { message } = pm.response.json()",
+									"const objectIdToDelete = message.substr(23, 24)",
 									"pm.collectionVariables.set('recipeObjectIdToDelete', objectIdToDelete)",
 									"",
 									"// count the number of recipes after the POST request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('One more recipe exists than before', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes + 1)",
 									"    })",
 									"})"
@@ -265,7 +271,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -290,7 +296,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -343,7 +349,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -368,7 +374,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -421,7 +427,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -446,7 +452,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -499,7 +505,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -524,7 +530,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -577,7 +583,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -602,7 +608,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -655,7 +661,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -680,7 +686,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -733,7 +739,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -758,7 +764,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -811,7 +817,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -836,7 +842,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -889,7 +895,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -914,7 +920,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -967,7 +973,7 @@
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
-									"    const numOldRecipes = res.json().length",
+									"    const numOldRecipes = res.json().message.length",
 									"",
 									"    // make the request and current recipe count visible to tests",
 									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
@@ -992,7 +998,7 @@
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    pm.test('Same number of recipes exists', () => {",
-									"        const numNewRecipes = res.json().length",
+									"        const numNewRecipes = res.json().message.length",
 									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
 									"    })",
 									"})"
@@ -1027,6 +1033,271 @@
 					"response": []
 				},
 				{
+					"name": "create-recipe-media",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonResponse = pm.response.json()",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// make sure no rejects were returned to the client",
+									"pm.test('No files were rejected', () => {",
+									"    const { context } = jsonResponse",
+									"    pm.expect(context).to.be.an('array').that.has.lengthOf.greaterThan(0)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "media-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "only-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "some-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { context } = pm.response.json()",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// both cleared and rejected arrays must be present",
+									"pm.test('Cleared and rejected arrays returned in an object', () => {",
+									"    pm.expect(context).to.be.an('object')",
+									"        .that.has.all.keys('cleared', 'rejected')",
+									"})",
+									"",
+									"// make sure some rejects were returned to the client",
+									"pm.test('Bad files were rejected', () => {",
+									"    const { rejected } = context",
+									"    pm.expect(rejected).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// make sure some cleared files were returned to the client",
+									"pm.test('Good files were not rejected', () => {",
+									"    const { cleared } = context",
+									"    pm.expect(cleared).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "update-recipe",
 					"event": [
 						{
@@ -1049,47 +1320,48 @@
 									"// get values from recipe after the PUT request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has changed', () => {",
-									"        const newRecipeTitle = res.json().title",
+									"        const newRecipeTitle = jsonRes.title",
 									"        pm.expect(newRecipeTitle).to.not.equal(oldRecipeTitle)    ",
 									"",
 									"        // set old title to new title to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has changed', () => {",
-									"        const newRecipeAbout = res.json().about",
+									"        const newRecipeAbout = jsonRes.about",
 									"        pm.expect(newRecipeAbout).to.not.equal(oldRecipeAbout)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has changed', () => {",
-									"        const newRecipeCategory = res.json().category",
+									"        const newRecipeCategory = jsonRes.category",
 									"        pm.expect(newRecipeCategory).to.not.equal(oldRecipeCategory)    ",
 									"",
 									"        // set old category to new category to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has changed', () => {",
-									"        const newRecipeModifiedOn = Date.parse(res.json().modifiedOn)",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"        pm.expect(newRecipeModifiedOn).to.greaterThan(oldRecipeModifiedOn)    ",
 									"    })",
 									"    pm.test('Recipe preparation time has changed', () => {",
-									"        const newRecipePrepTime = res.json().prepTime",
+									"        const newRecipePrepTime = jsonRes.prepTime",
 									"        pm.expect(newRecipePrepTime).to.not.deep.equal(oldRecipePrepTime)    ",
 									"",
 									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
 									"    })",
 									"    pm.test('Recipe ingredients list has changed', () => {",
-									"        const newRecipeIngredients = res.json().ingredients",
+									"        const newRecipeIngredients = jsonRes.ingredients",
 									"        pm.expect(newRecipeIngredients).to.not.deep.equal(oldRecipeIngredients)    ",
 									"",
 									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
 									"    })",
 									"    pm.test('Recipe instructions set has changed', () => {",
-									"        const newRecipeInstructions = res.json().instructions",
+									"        const newRecipeInstructions = jsonRes.instructions",
 									"        pm.expect(newRecipeInstructions).to.not.deep.equal(oldRecipeInstructions)    ",
 									"",
 									"        // set old instructions to new instructions to enable consecutive runs without fail",
@@ -1117,7 +1389,7 @@
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
-									"    jsonRes = res.json()",
+									"    jsonRes = res.json().message",
 									"    ",
 									"    // create a rotation cycle that constantly changes values",
 									"    const oldRecipeTitle = jsonRes.title",
@@ -1224,47 +1496,48 @@
 									"// get values from recipe after the PUT request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
-									"        const newRecipeTitle = res.json().title",
+									"        const newRecipeTitle = jsonRes.title",
 									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
 									"",
 									"        // set old title to new title to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
-									"        const newRecipeAbout = res.json().about",
+									"        const newRecipeAbout = jsonRes.about",
 									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
-									"        const newRecipeCategory = res.json().category",
+									"        const newRecipeCategory = jsonRes.category",
 									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
-									"        const newRecipeModifiedOn = Date.parse(res.json().modifiedOn)",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
-									"        const newRecipePrepTime = res.json().prepTime",
+									"        const newRecipePrepTime = jsonRes.prepTime",
 									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
 									"",
 									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
-									"        const newRecipeIngredients = res.json().ingredients",
+									"        const newRecipeIngredients = jsonRes.ingredients",
 									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
 									"",
 									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
-									"        const newRecipeInstructions = res.json().instructions",
+									"        const newRecipeInstructions = jsonRes.instructions",
 									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
 									"",
 									"        // set old instructions to new instructions to enable consecutive runs without fail",
@@ -1292,7 +1565,7 @@
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
-									"    jsonRes = res.json()",
+									"    jsonRes = res.json().message",
 									"    ",
 									"    // create a rotation cycle that constantly changes values",
 									"    const oldRecipeTitle = jsonRes.title",
@@ -1399,47 +1672,48 @@
 									"// get values from recipe after the PUT request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
-									"        const newRecipeTitle = res.json().title",
+									"        const newRecipeTitle = jsonRes.title",
 									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
 									"",
 									"        // set old title to new title to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
-									"        const newRecipeAbout = res.json().about",
+									"        const newRecipeAbout = jsonRes.about",
 									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
-									"        const newRecipeCategory = res.json().category",
+									"        const newRecipeCategory = jsonRes.category",
 									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
-									"        const newRecipeModifiedOn = Date.parse(res.json().modifiedOn)",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
-									"        const newRecipePrepTime = res.json().prepTime",
+									"        const newRecipePrepTime = jsonRes.prepTime",
 									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
 									"",
 									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
-									"        const newRecipeIngredients = res.json().ingredients",
+									"        const newRecipeIngredients = jsonRes.ingredients",
 									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
 									"",
 									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
-									"        const newRecipeInstructions = res.json().instructions",
+									"        const newRecipeInstructions = jsonRes.instructions",
 									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
 									"",
 									"        // set old instructions to new instructions to enable consecutive runs without fail",
@@ -1467,7 +1741,7 @@
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
-									"    jsonRes = res.json()",
+									"    jsonRes = res.json().message",
 									"    ",
 									"    // create a rotation cycle that constantly changes values",
 									"    const oldRecipeTitle = jsonRes.title",
@@ -1574,47 +1848,48 @@
 									"// get values from recipe after the PUT request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
-									"        const newRecipeTitle = res.json().title",
+									"        const newRecipeTitle = jsonRes.title",
 									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
 									"",
 									"        // set old title to new title to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
-									"        const newRecipeAbout = res.json().about",
+									"        const newRecipeAbout = jsonRes.about",
 									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
-									"        const newRecipeCategory = res.json().category",
+									"        const newRecipeCategory = jsonRes.category",
 									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
-									"        const newRecipeModifiedOn = Date.parse(res.json().modifiedOn)",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
-									"        const newRecipePrepTime = res.json().prepTime",
+									"        const newRecipePrepTime = jsonRes.prepTime",
 									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
 									"",
 									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
-									"        const newRecipeIngredients = res.json().ingredients",
+									"        const newRecipeIngredients = jsonRes.ingredients",
 									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
 									"",
 									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
-									"        const newRecipeInstructions = res.json().instructions",
+									"        const newRecipeInstructions = jsonRes.instructions",
 									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
 									"",
 									"        // set old instructions to new instructions to enable consecutive runs without fail",
@@ -1642,7 +1917,7 @@
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
-									"    jsonRes = res.json()",
+									"    jsonRes = res.json().message",
 									"    ",
 									"    // create a rotation cycle that constantly changes values",
 									"    const oldRecipeTitle = jsonRes.title",
@@ -1749,47 +2024,48 @@
 									"// get values from recipe after the PUT request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
-									"        const newRecipeTitle = res.json().title",
+									"        const newRecipeTitle = jsonRes.title",
 									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
 									"",
 									"        // set old title to new title to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
-									"        const newRecipeAbout = res.json().about",
+									"        const newRecipeAbout = jsonRes.about",
 									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
-									"        const newRecipeCategory = res.json().category",
+									"        const newRecipeCategory = jsonRes.category",
 									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
-									"        const newRecipeModifiedOn = Date.parse(res.json().modifiedOn)",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
-									"        const newRecipePrepTime = res.json().prepTime",
+									"        const newRecipePrepTime = jsonRes.prepTime",
 									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
 									"",
 									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
-									"        const newRecipeIngredients = res.json().ingredients",
+									"        const newRecipeIngredients = jsonRes.ingredients",
 									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
 									"",
 									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
-									"        const newRecipeInstructions = res.json().instructions",
+									"        const newRecipeInstructions = jsonRes.instructions",
 									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
 									"",
 									"        // set old instructions to new instructions to enable consecutive runs without fail",
@@ -1817,7 +2093,7 @@
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
-									"    jsonRes = res.json()",
+									"    jsonRes = res.json().message",
 									"    ",
 									"    // create a rotation cycle that constantly changes values",
 									"    const oldRecipeTitle = jsonRes.title",
@@ -1924,47 +2200,48 @@
 									"// get values from recipe after the PUT request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
-									"        const newRecipeTitle = res.json().title",
+									"        const newRecipeTitle = jsonRes.title",
 									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
 									"",
 									"        // set old title to new title to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
-									"        const newRecipeAbout = res.json().about",
+									"        const newRecipeAbout = jsonRes.about",
 									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
-									"        const newRecipeCategory = res.json().category",
+									"        const newRecipeCategory = jsonRes.category",
 									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
-									"        const newRecipeModifiedOn = Date.parse(res.json().modifiedOn)",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
-									"        const newRecipePrepTime = res.json().prepTime",
+									"        const newRecipePrepTime = jsonRes.prepTime",
 									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
 									"",
 									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
-									"        const newRecipeIngredients = res.json().ingredients",
+									"        const newRecipeIngredients = jsonRes.ingredients",
 									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
 									"",
 									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
-									"        const newRecipeInstructions = res.json().instructions",
+									"        const newRecipeInstructions = jsonRes.instructions",
 									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
 									"",
 									"        // set old instructions to new instructions to enable consecutive runs without fail",
@@ -1992,7 +2269,7 @@
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
-									"    jsonRes = res.json()",
+									"    jsonRes = res.json().message",
 									"    ",
 									"    // create a rotation cycle that constantly changes values",
 									"    const oldRecipeTitle = jsonRes.title",
@@ -2099,47 +2376,48 @@
 									"// get values from recipe after the PUT request",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
-									"        const newRecipeTitle = res.json().title",
+									"        const newRecipeTitle = jsonRes.title",
 									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
 									"",
 									"        // set old title to new title to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
-									"        const newRecipeAbout = res.json().about",
+									"        const newRecipeAbout = jsonRes.about",
 									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
-									"        const newRecipeCategory = res.json().category",
+									"        const newRecipeCategory = jsonRes.category",
 									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
 									"",
 									"        // set old about to new about to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
-									"        const newRecipeModifiedOn = Date.parse(res.json().modifiedOn)",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
-									"        const newRecipePrepTime = res.json().prepTime",
+									"        const newRecipePrepTime = jsonRes.prepTime",
 									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
 									"",
 									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
-									"        const newRecipeIngredients = res.json().ingredients",
+									"        const newRecipeIngredients = jsonRes.ingredients",
 									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
 									"",
 									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
 									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
-									"        const newRecipeInstructions = res.json().instructions",
+									"        const newRecipeInstructions = jsonRes.instructions",
 									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
 									"",
 									"        // set old instructions to new instructions to enable consecutive runs without fail",
@@ -2167,7 +2445,7 @@
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
-									"    jsonRes = res.json()",
+									"    jsonRes = res.json().message",
 									"    ",
 									"    // create a rotation cycle that constantly changes values",
 									"    const oldRecipeTitle = jsonRes.title",
@@ -2283,6 +2561,271 @@
 					"response": []
 				},
 				{
+					"name": "update-recipe-media",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonResponse = pm.response.json()",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// make sure no rejects were returned to the client",
+									"pm.test('No files were rejected', () => {",
+									"    const { context } = jsonResponse",
+									"    pm.expect(context).to.be.an('array').that.has.lengthOf.greaterThan(0)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "media-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "only-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "some-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { context } = pm.response.json()",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// both cleared and rejected arrays must be present",
+									"pm.test('Cleared and rejected arrays returned in an object', () => {",
+									"    pm.expect(context).to.be.an('object')",
+									"        .that.has.all.keys('cleared', 'rejected')",
+									"})",
+									"",
+									"// make sure some rejects were returned to the client",
+									"pm.test('Bad files were rejected', () => {",
+									"    const { rejected } = context",
+									"    pm.expect(rejected).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// make sure some cleared files were returned to the client",
+									"pm.test('Good files were not rejected', () => {",
+									"    const { cleared } = context",
+									"    pm.expect(cleared).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "delete-recipe",
 					"event": [
 						{
@@ -2383,6 +2926,51 @@
 							"path": [
 								"recipes",
 								"asdfasdfasdfasdfasdfasdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-recipe-media",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"media",
+								"6142bd1d47c1644e157e4aa9"
 							]
 						}
 					},

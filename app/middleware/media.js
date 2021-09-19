@@ -24,12 +24,14 @@ const FileType = require('file-type')
  * @param {object} filter Regular expression for the
  *                        acceptable MIME types.
  * 
- * @returns {[string]} Filenames of the rejected files.
+ * @returns {object} Filenames of the cleared and
+ *                   rejected files in arrays.
  */
 const sanitize = async (dir, filter = /INVALID/) => {
     try {
         if (dir) {
-            const rejects = []
+            const cleared = []
+            const rejected = []
             const files = await readdir(dir)
             for (let i = 0; i < files.length; i++) {
                 const name = files[i]
@@ -40,13 +42,14 @@ const sanitize = async (dir, filter = /INVALID/) => {
                 // if file is not legitimate, delete it
                 if (!fileType || !fileType.mime.match(filter)) {
                     await rm(filePath, { force: true })
-                    rejects.push(name)
+                    rejected.push(name)
                 } else {
                     // force permissions (just in case)
                     await chmod(filePath, 0o644)
+                    cleared.push(name)
                 }
             }
-            return rejects
+            return { cleared, rejected }
         }
         return []
     } catch (err) {

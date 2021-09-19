@@ -49,12 +49,34 @@ router.post(
     media.array('foodImages'),
     async (req, res) => {
         try {
-            const sample = req.files[0]
-            const destination = sample ? sample.destination : undefined
-            const rejects = await sanitize(destination, /image\/(jpeg|png)/)
-            return res.status(201).json(rejects)
+            const destination = req.files ? req.files[0].destination : undefined
+
+            let temp
+            if (destination === undefined) {
+                const message = `No media to upload for recipe with ID of "${req.params.id}", nothing to do.`
+                temp = quickResponse(204, message)
+            } else {
+                // clean out suspicious files and store names of rejects
+                const { cleared, rejected } = await sanitize(destination, /image\/(jpeg|png)/)
+
+                if (rejected.length === req.files.length) {
+                    // all files were rejected
+                    const message = 'The selected media was unable to be uploaded, nothing to do.'
+                    temp = quickResponse(204, message, rejected)
+                } else if (rejected.length === 0) {
+                    // all files were cleared
+                    const message = `The media for recipe with ID of "${req.params.id}" was successfully uploaded.`
+                    temp = quickResponse(201, message, cleared)
+                } else {
+                    // mixed bag
+                    const message = 'Some of the selected media was unable to be uploaded.'
+                    temp = quickResponse(201, message, { cleared, rejected })
+                }
+            }
+            const { status, data } = temp
+            return res.status(status).json(data)
         } catch (err) {
-            return quickResponse(500)
+            return res.status(quickResponse(500).status).json(quickResponse(500).data)
         }
     }
 )
@@ -66,9 +88,34 @@ router.put(
     media.array('foodImages'),
     async (req, res) => {
         try {
-            res.json(req.files)
+            const destination = req.files ? req.files[0].destination : undefined
+
+            let temp
+            if (destination === undefined) {
+                const message = `No media to upload for recipe with ID of "${req.params.id}", nothing to do.`
+                temp = quickResponse(204, message)
+            } else {
+                // clean out suspicious files and store names of rejects
+                const { cleared, rejected } = await sanitize(destination, /image\/(jpeg|png)/)
+
+                if (rejected.length === req.files.length) {
+                    // all files were rejected
+                    const message = 'The selected media was unable to be uploaded, nothing to do.'
+                    temp = quickResponse(204, message, rejected)
+                } else if (rejected.length === 0) {
+                    // all files were cleared
+                    const message = `The media for recipe with ID of "${req.params.id}" was successfully uploaded.`
+                    temp = quickResponse(201, message, cleared)
+                } else {
+                    // mixed bag
+                    const message = 'Some of the selected media was unable to be uploaded.'
+                    temp = quickResponse(201, message, { cleared, rejected })
+                }
+            }
+            const { status, data } = temp
+            return res.status(status).json(data)
         } catch (err) {
-            res.json(err)
+            return res.status(quickResponse(500).status).json(quickResponse(500).data)
         }
     }
 )
@@ -77,13 +124,14 @@ router.put(
 router.delete(
     '/media/:id',
     recipe.manageMedia,
-    async (req, res) => {
+    (req, res) => {
         try {
-            // const recipeExists = await recipe.exists(req.params.id)
-            // return res.json(recipeExists)
-            res.json()
+            const message = `The media for recipe with ID of "${req.params.id}" was successfully deleted.`
+            const { status, data } = quickResponse(200, message)
+            return res.status(status).json(data)
         } catch (err) {
-            res.json(err)
+            const { status, data } = quickResponse(500)
+            return res.status(status).json(data)
         }
     }
 )

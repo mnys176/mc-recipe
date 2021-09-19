@@ -6,8 +6,18 @@
  *******************************************************/
 
 const path = require('path')
+const {
+    readdir,
+    readFile,
+    rm,
+    mkdir,
+    rmdir,
+    chmod
+} = require('fs/promises')
+const FileType = require('file-type')
+const quickResponse = require('../util/quick-response')
 
-const media = '../media'
+const mediaDir = path.join(__dirname, '..', 'media')
 
 /**
  * Creates a media directory.
@@ -16,10 +26,10 @@ const media = '../media'
  * 
  * @param {string} id The recipe ObjectID.
  */
-const createDir = id => {
+const createDir = async id => {
     try {
-        const dir = path.join(media, id)
-        fs.mkdirSync(dir, { recursive: true })
+        const dir = path.join(mediaDir, id)
+        await mkdir(dir)
     } catch (err) {
         // ignore for now
     }
@@ -32,61 +42,15 @@ const createDir = id => {
  * 
  * @param {string} id The recipe ObjectID.
  */
-const removeDir = id => {
+const removeDir = async id => {
     try {
-        const dir = path.join(media, id)
-        fs.rmSync(dir, { recursive: true })
+        const dir = path.join(mediaDir, id)
+        await rmdir(dir, { recursive: true, force: true })
     } catch (err) {
+        throw err
         // ignore for now
     }
 }
-
-/**
- * Checks if a recipe exists in the database.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the recipe.
- * 
- * @returns {boolean} True if it does exist,
- *                    false otherwise.
- */
-const exists = async id => {
-    try {
-        return await Recipe.exists({ _id: id })
-    } catch (err) {
-        return false
-    }
-}
-
-/**
- * Creates a media directory for a recipe.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the recipe.
- */
-const addMedia = async id => {
-    // if the recipe is valid only
-    const recipeExists = await exists(id)
-    if (recipeExists) return createDir(id)
-}
-
-/**
- * Removes a media directory for a recipe.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the recipe.
- */
-const removeMedia = async id => {
-    // if the recipe is valid only
-    const recipeExists = await exists(id)
-    if (recipeExists) return removeDir(id)
-}
-
-const { readdir, readFile, rm, chmod } = require('fs/promises')
-const FileType = require('file-type')
 
 /**
  * Leverages the `file-type` module to sanitize
@@ -133,4 +97,50 @@ const sanitize = async (dir, filter = /INVALID/) => {
     }
 }
 
-module.exports = { addMedia, removeMedia, sanitize }
+const set = async (id, files = []) => {
+    try {
+        const dir = files.length > 0 ? files[0].destination : undefined
+
+        // check if no media was given to upload
+        if (dir === undefined) {
+            const message = 'No media to upload for recipe with ID of' +
+                            ` "${id}", nothing to do.`
+            return quickResponse(204, message)
+        }
+
+        // clean out suspicious files and store names of rejects
+        const mimeFilter = /image\/(jpeg|png)/
+        const { cleared, rejected } = await sanitize(dir, mimeFilter)
+
+        // check if all files were rejected by the sanitizer
+        if (rejected.length === files.length) {
+            const message = 'The selected media was unable to be uploaded,' +
+                            ' nothing to do.'
+            return quickResponse(204, message, rejected)
+        }
+
+        // check if all files were cleared by the sanitizer
+        if (rejected.length === 0) {
+            const message = 'The media for recipe with ID of' +
+                            ` "${id}" was successfully uploaded.`
+            return quickResponse(201, message, cleared)
+        }
+        const message = 'Some of the selected media was unable to be uploaded.'
+        return quickResponse(201, message, { cleared, rejected })
+    } catch (err) {
+        throw err
+        const { status, data } = quickResponse(500)
+        return res.status(status).json(data)
+    }
+}
+
+const unset = async id => {
+    try {
+        const message = `The media for recipe with ID of "${id}" was successfully deleted.`
+        return quickResponse(200, message)
+    } catch (err) {
+        return quickResponse(500)
+    }
+}
+
+module.exports = { set, unset, createDir, removeDir }

@@ -1,5 +1,5 @@
 /********************************************************
- * Title:       media.js                                *
+ * Title:       media-multer.js                         *
  * Author:      Mike Nystoriak (nystoriakm@gmail.com)   *
  * Created:     09/13/2021                              *
  * Description:                                         *
@@ -20,6 +20,6 @@ const storage = multer.diskStorage({
     }
 })
 
-const media = multer({ storage })
+const mediaMulterEngine = multer({ storage })
 
-module.exports = { media }
+module.exports = { mediaMulterEngine }

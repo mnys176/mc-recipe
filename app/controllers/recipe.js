@@ -9,43 +9,10 @@
 
 const fs = require('fs')
 const path = require('path')
+const media = require('./media')
 const Recipe = require('../models/Recipe')
 const Quantifiable = require('../util/quantify')
 const quickResponse = require('../util/quick-response')
-
-const media = 'media'
-
-/**
- * Creates a media directory.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The recipe ObjectID.
- */
-const createDir = id => {
-    try {
-        const dir = path.join(media, id)
-        fs.mkdirSync(dir, { recursive: true })
-    } catch (err) {
-        // ignore for now
-    }
-}
-
-/**
- * Removes a media directory.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The recipe ObjectID.
- */
-const removeDir = id => {
-    try {
-        const dir = path.join(media, id)
-        fs.rmSync(dir, { recursive: true })
-    } catch (err) {
-        // ignore for now
-    }
-}
 
 /**
  * Parses a quantifiable object from the frontend to
@@ -276,7 +243,7 @@ const exists = async id => {
 const addMedia = async id => {
     // if the recipe is valid only
     const recipeExists = await exists(id)
-    if (recipeExists) return createDir(id)
+    if (recipeExists) return media.createDir(id)
 }
 
 /**
@@ -289,7 +256,7 @@ const addMedia = async id => {
 const removeMedia = async id => {
     // if the recipe is valid only
     const recipeExists = await exists(id)
-    if (recipeExists) return removeDir(id)
+    if (recipeExists) return media.removeDir(id)
 }
 
 /**
@@ -302,7 +269,7 @@ const removeMedia = async id => {
  * @param {object}   res  The response.
  * @param {function} next Next middleware in line.
  */
-const manageMedia = async (req, res, next) => {
+const prepareMedia = async (req, res, next) => {
     const { id } = req.params
     if (req.method === 'POST') {
         await addMedia(id)
@@ -315,11 +282,16 @@ const manageMedia = async (req, res, next) => {
     next()
 }
 
+const setMedia = async (id, files) => media.set(id, files)
+const unsetMedia = async id => media.unset(id)
+
 module.exports = {
     fetch,
     fetchById,
     create,
     change,
     discard,
-    manageMedia
+    prepareMedia,
+    setMedia,
+    unsetMedia
 }

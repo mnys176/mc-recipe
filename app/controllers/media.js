@@ -150,7 +150,7 @@ const set = async (id, files = []) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string}      id ID of the recipe.
+ * @param {string} id ID of the recipe.
  * 
  * @returns {object} The results of the operation.
  */

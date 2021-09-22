@@ -138,7 +138,6 @@ const set = async (id, files = []) => {
         const message = 'Some of the selected media was unable to be uploaded.'
         return quickResponse(201, message, { cleared, rejected })
     } catch (err) {
-        throw err
         const { status, data } = quickResponse(500)
         return res.status(status).json(data)
     }

@@ -1,5 +1,0 @@
-# nothing in this directory should be tracked
-*
-
-# except for this, track this
-!.gitignore

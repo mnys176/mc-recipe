@@ -12,8 +12,10 @@ const multer = require('multer')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        const dir = process.env.MEDIA_ROOT.split(path.sep).at(-1)
+
         // hide media directory when invalid ID
-        const dest = path.join(req.notFound ? '' : 'media', req.params.id)
+        const dest = path.join(req.notFound ? '' : dir, req.params.id)
 
         // declutter request object
         delete req.notFound

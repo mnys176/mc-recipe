@@ -10,3 +10,6 @@ db/data/
 
 # web application
 dist/
+
+# media directories
+media/

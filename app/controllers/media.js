@@ -17,7 +17,7 @@ const {
 const FileType = require('file-type')
 const quickResponse = require('../util/quick-response')
 
-const mediaDir = path.join(__dirname, '..', 'media')
+const mediaDir = process.env.MEDIA_ROOT
 
 /**
  * Creates a media directory.

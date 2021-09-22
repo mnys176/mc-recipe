@@ -15,17 +15,19 @@ const dotenv = require('dotenv').config()
 // make connection to MongoDB asynchronously
 require('./util/mongo')
 
+// create media directory root
+require('./util/check-media')
+
 const app = express()
 const port = process.env.PORT || 8080
 const webapp = path.join(__dirname, 'webapp', 'dist')
-const media = path.join(__dirname, 'media')
 
 // accept JSON data
 app.use(express.json())
 
 // set static routes
 app.use('/', express.static(webapp))
-app.use('/media', express.static(media))
+app.use('/media', express.static(process.env.MEDIA_ROOT))
 
 // include API routes
 app.use('/api/recipes', require('./routes/recipes'))

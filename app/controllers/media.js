@@ -45,7 +45,7 @@ const createDir = async id => {
 const removeDir = async id => {
     try {
         const dir = path.join(mediaDir, id)
-        await rmdir(dir, { recursive: true, force: true })
+        await rm(dir, { recursive: true, force: true })
     } catch (err) {
         // ignore for now
     }

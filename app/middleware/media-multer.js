@@ -11,13 +11,16 @@ const path = require('path')
 const multer = require('multer')
 
 const storage = multer.diskStorage({
-    destination: async (req, file, cb) => {
-        const dest = path.join('media', req.params.id)
-        cb(null, dest)
+    destination: (req, file, cb) => {
+        // hide media directory when invalid ID
+        const dest = path.join(req.notFound ? '' : 'media', req.params.id)
+
+        // declutter request object
+        delete req.notFound
+
+        return cb(null, dest)
     },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname)
-    }
+    filename: (req, file, cb) => cb(null, file.originalname)
 })
 
 const mediaMulterEngine = multer({ storage })

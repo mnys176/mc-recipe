@@ -234,24 +234,6 @@ const exists = async id => {
 }
 
 /**
- * Creates a media directory for a recipe.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the recipe.
- */
-const addMedia = async id => media.createDir(id)
-
-/**
- * Removes a media directory for a recipe.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the recipe.
- */
-const removeMedia = async id => media.removeDir(id)
-
-/**
  * Middleware that prepares media directories based
  * on request.
  * 
@@ -264,15 +246,21 @@ const removeMedia = async id => media.removeDir(id)
 const prepareMedia = async (req, res, next) => {
     // TODO: Non-existent ID still creates directory.
     const { id } = req.params
-    if (req.method === 'POST') {
-        await addMedia(id)
-    } else if (req.method === 'PUT') {
-        await removeMedia(id)
-        await addMedia(id)
-    } else if (req.method === 'DELETE') {
-        await removeMedia(id)
+    const recipeExists = await exists(id)
+    if (!recipeExists) {
+        req.notFound = true
+        return next()
     }
-    next()
+
+    if (req.method === 'POST') {
+        await media.createDir(id)
+    } else if (req.method === 'PUT') {
+        await media.removeDir(id)
+        await media.createDir(id)
+    } else if (req.method === 'DELETE') {
+        await media.removeDir(id)
+    }
+    return next()
 }
 
 /**

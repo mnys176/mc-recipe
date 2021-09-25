@@ -90,7 +90,7 @@ const sanitize = async (dir, filter = /INVALID/) => {
             }
             return { cleared, rejected }
         }
-        return []
+        return { cleared: [], rejected: [] }
     } catch (err) {
         throw err
     }
@@ -122,24 +122,21 @@ const set = async (id, files = []) => {
         const mimeFilter = /image\/(jpeg|png)/
         const { cleared, rejected } = await sanitize(dir, mimeFilter)
 
+        let message = 'Some of the selected media was unable to be uploaded.'
+        let status = 201
+
         // check if all files were rejected by the sanitizer
         if (rejected.length === files.length) {
-            const message = 'The selected media was unable to be uploaded,' +
-                            ' nothing to do.'
-            return quickResponse(204, message, rejected)
+            message = 'The selected media was unable to be uploaded,' +
+                      ' nothing to do.'
+            status = 204
+        } else if (rejected.length === 0) {
+            message = 'The media for recipe with ID of' +
+                      ` "${id}" was successfully uploaded.`
         }
-
-        // check if all files were cleared by the sanitizer
-        if (rejected.length === 0) {
-            const message = 'The media for recipe with ID of' +
-                            ` "${id}" was successfully uploaded.`
-            return quickResponse(201, message, cleared)
-        }
-        const message = 'Some of the selected media was unable to be uploaded.'
-        return quickResponse(201, message, { cleared, rejected })
+        return quickResponse(status, message, { cleared, rejected })
     } catch (err) {
-        const { status, data } = quickResponse(500)
-        return res.status(status).json(data)
+        return quickResponse(500)
     }
 }
 

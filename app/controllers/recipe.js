@@ -276,7 +276,12 @@ const prepareMedia = async (req, res, next) => {
  * 
  * @returns {object} The results of the operation.
  */
-const setMedia = async (id, files) => await media.set(id, files)
+const setMedia = async (id, files) => {
+    const data = await media.set(id, files)
+    // console.log(data.data)
+    // if (data.data.context)
+    return data
+}
 
 /**
  * Stages a media directory for the recipe.

@@ -252,8 +252,7 @@ const prepareMedia = async (req, res, next) => {
     // skip multer entirely if recipe does not exist
     if (!recipeExists) {
         const { status, data } = quickResponse(404, notFoundMessage)
-        res.status(status).json(data)
-        return next('route')
+        return res.status(status).json(data) && next('route')
     }
 
     if (req.method === 'POST') {

@@ -10,7 +10,6 @@
 
 (async () => {
     const mongoose = require('mongoose')
-
     try {
         const { connection } = await mongoose.connect(process.env.MONGODB_URI)
         const mongoDomain = `${connection.host}:${connection.port}`

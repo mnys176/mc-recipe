@@ -244,12 +244,16 @@ const exists = async id => {
  * @param {function} next Next middleware in line.
  */
 const prepareMedia = async (req, res, next) => {
-    // TODO: Non-existent ID still creates directory.
     const { id } = req.params
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' does not exist.'
     const recipeExists = await exists(id)
+
+    // skip multer entirely if recipe does not exist
     if (!recipeExists) {
-        req.notFound = true
-        return next()
+        const { status, data } = quickResponse(404, notFoundMessage)
+        res.status(status).json(data)
+        return next('route')
     }
 
     if (req.method === 'POST') {
@@ -273,13 +277,7 @@ const prepareMedia = async (req, res, next) => {
  * 
  * @returns {object} The results of the operation.
  */
-const setMedia = async (id, files) => {
-    const notFoundMessage = `The recipe with ID of "${id}"` +
-                            ' does not exist.'
-    const recipeExists = await exists(id)
-    if (!recipeExists) return quickResponse(404, notFoundMessage)
-    return await media.set(id, files)
-}
+const setMedia = async (id, files) => await media.set(id, files)
 
 /**
  * Stages a media directory for the recipe.
@@ -290,13 +288,7 @@ const setMedia = async (id, files) => {
  * 
  * @returns {object} The results of the operation.
  */
-const unsetMedia = async id => {
-    const notFoundMessage = `The recipe with ID of "${id}"` +
-                            ' does not exist.'
-    const recipeExists = await exists(id)
-    if (!recipeExists) return quickResponse(404, notFoundMessage)
-    return await media.unset(id)
-}
+const unsetMedia = async id => await media.unset(id)
 
 module.exports = {
     fetch,

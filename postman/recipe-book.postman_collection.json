@@ -259,14 +259,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -337,14 +330,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -415,14 +401,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -493,14 +472,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -571,14 +543,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -649,14 +614,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -727,14 +685,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -805,14 +756,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -883,14 +827,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -961,14 +898,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
 									"",
 									"// count the number of recipes before the bad POST request",
 									"pm.sendRequest(req,  (err, res) => {",
@@ -1287,15 +1217,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
@@ -1463,15 +1385,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
@@ -1639,15 +1553,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
@@ -1815,15 +1721,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
@@ -1991,15 +1889,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
@@ -2167,15 +2057,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// set variables to form a request",
-									"const apiRoot = pm.collectionVariables.get('apiRoot')",
-									"const protocol = pm.collectionVariables.get('protocol')",
-									"const objectIdToDelete = pm.collectionVariables.get('recipeObjectIdToDelete')",
-									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/${objectIdToDelete}`,",
-									"    method: 'GET',",
-									"    headers: { 'Content-Type': 'application/json' }",
-									"}",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
 									"// get current values from agent before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
@@ -2408,7 +2290,15 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									""
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/recipes/6142bd1d47c1644e157e4aa9`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"pm.collectionVariables.set('postMediaTestGetRecipeById', JSON.stringify(req))"
 								],
 								"type": "text/javascript"
 							}
@@ -2417,15 +2307,41 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const jsonResponse = pm.response.json()",
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetRecipeById'))",
+									"const { context } = pm.response.json()",
 									"",
 									"// assert that status code is 201",
 									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
 									"",
-									"// make sure no rejects were returned to the client",
-									"pm.test('No files were rejected', () => {",
-									"    const { context } = jsonResponse",
-									"    pm.expect(context).to.be.an('array').that.has.lengthOf.greaterThan(0)",
+									"// both cleared and rejected arrays must be present",
+									"pm.test('Cleared and rejected arrays returned in an object', () => {",
+									"    pm.expect(context).to.be.an('object')",
+									"        .that.has.all.keys('cleared', 'rejected')",
+									"})",
+									"",
+									"// make sure some rejects were returned to the client",
+									"pm.test('Bad files were rejected', () => {",
+									"    const { rejected } = context",
+									"    pm.expect(rejected).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// make sure some cleared files were returned to the client",
+									"pm.test('Good files were not rejected', () => {",
+									"    const { cleared } = context",
+									"    pm.expect(cleared).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(1)",
+									"    })",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2442,9 +2358,13 @@
 									"key": "foodImages",
 									"type": "file",
 									"src": [
+										"media/a.out",
+										"media/bad.zip",
 										"media/cake.jpg",
-										"media/dice.png",
-										"media/doughnuts.jpg"
+										"media/evil",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneaky.sh"
 									]
 								}
 							]
@@ -2480,11 +2400,24 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 204",
 									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
 									"",
 									"// assert that absolutely nothing was returned",
-									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(1)",
+									"    })",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -2534,92 +2467,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 204",
 									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
 									"",
 									"// assert that absolutely nothing was returned",
-									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "foodImages",
-									"type": "file",
-									"src": [
-										"media/a.out",
-										"media/bad.zip",
-										"media/evil",
-										"media/hello.png",
-										"media/illegal.svg",
-										"media/main.cpp",
-										"media/sneakier.png",
-										"media/sneaky.sh"
-									]
-								}
-							]
-						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "some-rejected-media-included",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const { context } = pm.response.json()",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
 									"",
-									"// assert that status code is 201",
-									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
 									"",
-									"// both cleared and rejected arrays must be present",
-									"pm.test('Cleared and rejected arrays returned in an object', () => {",
-									"    pm.expect(context).to.be.an('object')",
-									"        .that.has.all.keys('cleared', 'rejected')",
-									"})",
-									"",
-									"// make sure some rejects were returned to the client",
-									"pm.test('Bad files were rejected', () => {",
-									"    const { rejected } = context",
-									"    pm.expect(rejected).to.be.an('array')",
-									"        .that.has.lengthOf.greaterThan(0)",
-									"})",
-									"",
-									"// make sure some cleared files were returned to the client",
-									"pm.test('Good files were not rejected', () => {",
-									"    const { cleared } = context",
-									"    pm.expect(cleared).to.be.an('array')",
-									"        .that.has.lengthOf.greaterThan(0)",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(1)",
+									"    })",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2638,9 +2502,6 @@
 									"src": [
 										"media/a.out",
 										"media/bad.zip",
-										"media/cake.jpg",
-										"media/dice.png",
-										"media/doughnuts.jpg",
 										"media/evil",
 										"media/hello.png",
 										"media/illegal.svg",
@@ -2682,8 +2543,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 404",
-									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(1)",
+									"    })",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -2728,7 +2602,15 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									""
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/recipes/6142bd1d47c1644e157e4aa9`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"pm.collectionVariables.set('putMediaTestGetRecipeById', JSON.stringify(req))"
 								],
 								"type": "text/javascript"
 							}
@@ -2737,15 +2619,43 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const jsonResponse = pm.response.json()",
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetRecipeById'))",
+									"const { context } = pm.response.json()",
 									"",
 									"// assert that status code is 201",
 									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
 									"",
-									"// make sure no rejects were returned to the client",
-									"pm.test('No files were rejected', () => {",
-									"    const { context } = jsonResponse",
-									"    pm.expect(context).to.be.an('array').that.has.lengthOf.greaterThan(0)",
+									"// both cleared and rejected arrays must be present",
+									"pm.test('Cleared and rejected arrays returned in an object', () => {",
+									"    pm.expect(context).to.be.an('object')",
+									"        .that.has.all.keys('cleared', 'rejected')",
+									"})",
+									"",
+									"// make sure some rejects were returned to the client",
+									"pm.test('Bad files were rejected', () => {",
+									"    const { rejected } = context",
+									"    pm.expect(rejected).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// make sure some cleared files were returned to the client",
+									"pm.test('Good files were not rejected', () => {",
+									"    const { cleared } = context",
+									"    pm.expect(cleared).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    console.log(res.json())",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(3)",
+									"    })",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2762,9 +2672,17 @@
 									"key": "foodImages",
 									"type": "file",
 									"src": [
+										"media/a.out",
+										"media/bad.zip",
 										"media/cake.jpg",
 										"media/dice.png",
-										"media/doughnuts.jpg"
+										"media/doughnuts.jpg",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
 									]
 								}
 							]
@@ -2800,11 +2718,24 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 204",
 									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
 									"",
 									"// assert that absolutely nothing was returned",
-									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(3)",
+									"    })",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -2854,92 +2785,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 204",
 									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
 									"",
 									"// assert that absolutely nothing was returned",
-									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "foodImages",
-									"type": "file",
-									"src": [
-										"media/a.out",
-										"media/bad.zip",
-										"media/evil",
-										"media/hello.png",
-										"media/illegal.svg",
-										"media/main.cpp",
-										"media/sneakier.png",
-										"media/sneaky.sh"
-									]
-								}
-							]
-						},
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "some-rejected-media-included",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const { context } = pm.response.json()",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
 									"",
-									"// assert that status code is 201",
-									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
 									"",
-									"// both cleared and rejected arrays must be present",
-									"pm.test('Cleared and rejected arrays returned in an object', () => {",
-									"    pm.expect(context).to.be.an('object')",
-									"        .that.has.all.keys('cleared', 'rejected')",
-									"})",
-									"",
-									"// make sure some rejects were returned to the client",
-									"pm.test('Bad files were rejected', () => {",
-									"    const { rejected } = context",
-									"    pm.expect(rejected).to.be.an('array')",
-									"        .that.has.lengthOf.greaterThan(0)",
-									"})",
-									"",
-									"// make sure some cleared files were returned to the client",
-									"pm.test('Good files were not rejected', () => {",
-									"    const { cleared } = context",
-									"    pm.expect(cleared).to.be.an('array')",
-									"        .that.has.lengthOf.greaterThan(0)",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(0)",
+									"    })",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2958,9 +2820,6 @@
 									"src": [
 										"media/a.out",
 										"media/bad.zip",
-										"media/cake.jpg",
-										"media/dice.png",
-										"media/doughnuts.jpg",
 										"media/evil",
 										"media/hello.png",
 										"media/illegal.svg",
@@ -3002,8 +2861,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 404",
-									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(0)",
+									"    })",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -3048,7 +2920,15 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									""
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/recipes/6142bd1d47c1644e157e4aa9`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"pm.collectionVariables.set('deleteMediaTestGetRecipeById', JSON.stringify(req))"
 								],
 								"type": "text/javascript"
 							}
@@ -3057,8 +2937,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('deleteMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 200",
-									"pm.test('Status code is 200', () => pm.response.to.have.status(200))"
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(0)",
+									"    })",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -3102,8 +2995,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('deleteMediaTestGetRecipeById'))",
+									"",
 									"// assert that status code is 404",
-									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+									"",
+									"// get recipe object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // recipe was updated properly in the database",
+									"    pm.test('Recipe media properly linked', () => {",
+									"        pm.expect(media.length).to.equal(0)",
+									"    })",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -3260,6 +3166,30 @@
 		},
 		{
 			"key": "oldRecipeModifiedOn",
+			"value": ""
+		},
+		{
+			"key": "oldMedia",
+			"value": ""
+		},
+		{
+			"key": "postMediaTestGetRecipe",
+			"value": ""
+		},
+		{
+			"key": "putMediaTestGetRecipe",
+			"value": ""
+		},
+		{
+			"key": "postMediaTestGetRecipeById",
+			"value": ""
+		},
+		{
+			"key": "putMediaTestGetRecipeById",
+			"value": ""
+		},
+		{
+			"key": "deleteMediaTestGetRecipeById",
 			"value": ""
 		}
 	]

@@ -277,10 +277,17 @@ const prepareMedia = async (req, res, next) => {
  * @returns {object} The results of the operation.
  */
 const setMedia = async (id, files) => {
-    const data = await media.set(id, files)
-    // console.log(data.data)
-    // if (data.data.context)
-    return data
+    const results = await media.set(id, files)
+
+    // save filenames to recipe model
+    const { context } = results.data
+    if (context) {
+        const temp = await fetchById(id)
+        const currRecipe = temp.data.message
+        currRecipe.media = context.cleared
+        currRecipe.save()
+    }
+    return results
 }
 
 /**
@@ -292,7 +299,14 @@ const setMedia = async (id, files) => {
  * 
  * @returns {object} The results of the operation.
  */
-const unsetMedia = async id => await media.unset(id)
+const unsetMedia = async id => {
+    const results = await media.unset(id)
+    const temp = await fetchById(id)
+    const currRecipe = temp.data.message
+    currRecipe.media = []
+    currRecipe.save()
+    return results
+}
 
 module.exports = {
     fetch,

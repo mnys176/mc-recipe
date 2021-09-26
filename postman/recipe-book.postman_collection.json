@@ -2282,7 +2282,12 @@
 						}
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "recipe-media",
+			"item": [
 				{
 					"name": "create-recipe-media",
 					"event": [

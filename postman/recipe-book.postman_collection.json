@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e216ed5d-0f34-47b4-ba83-3b05f2174081",
+		"_postman_id": "0e98d475-3089-48d7-89f4-5c973a1de844",
 		"name": "recipe-book",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2375,15 +2375,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
+								"6142bd1d47c1644e157e4aa9",
+								"media"
 							]
 						}
 					},
@@ -2442,15 +2442,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
+								"6142bd1d47c1644e157e4aa9",
+								"media"
 							]
 						}
 					},
@@ -2518,15 +2518,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
+								"6142bd1d47c1644e157e4aa9",
+								"media"
 							]
 						}
 					},
@@ -2586,15 +2586,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/asdfasdfasdfasdfasdfasdf",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"asdfasdfasdfasdfasdfasdf"
+								"asdfasdfasdfasdfasdfasdf",
+								"media"
 							]
 						}
 					},
@@ -2693,15 +2693,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
+								"6142bd1d47c1644e157e4aa9",
+								"media"
 							]
 						}
 					},
@@ -2760,15 +2760,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
+								"6142bd1d47c1644e157e4aa9",
+								"media"
 							]
 						}
 					},
@@ -2836,15 +2836,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
+								"6142bd1d47c1644e157e4aa9",
+								"media"
 							]
 						}
 					},
@@ -2904,15 +2904,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/asdfasdfasdfasdfasdfasdf",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"asdfasdfasdfasdfasdfasdf"
+								"asdfasdfasdfasdfasdfasdf",
+								"media"
 							]
 						}
 					},
@@ -2970,15 +2970,15 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/6142bd1d47c1644e157e4aa9",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"6142bd1d47c1644e157e4aa9"
+								"6142bd1d47c1644e157e4aa9",
+								"media"
 							]
 						}
 					},
@@ -3038,15 +3038,15 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/media/asdfasdfasdfasdfasdfasdf",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"media",
-								"asdfasdfasdfasdfasdfasdf"
+								"asdfasdfasdfasdfasdfasdf",
+								"media"
 							]
 						}
 					},

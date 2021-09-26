@@ -56,7 +56,7 @@ router.delete('/:id', async (req, res) => {
 
 // create media for a recipe
 router.post(
-    '/media/:id',
+    '/:id/media',
     recipe.prepareMedia,
     mediaMulterEngine.array('foodImages'),
     async (req, res) => {
@@ -67,7 +67,7 @@ router.post(
 
 // update media for a recipe
 router.put(
-    '/media/:id',
+    '/:id/media',
     recipe.prepareMedia,
     mediaMulterEngine.array('foodImages'),
     async (req, res) => {
@@ -78,7 +78,7 @@ router.put(
 
 // delete media for a recipe
 router.delete(
-    '/media/:id',
+    '/:id/media',
     recipe.prepareMedia,
     async (req, res) => {
         const { status, data } = await recipe.unsetMedia(req.params.id)

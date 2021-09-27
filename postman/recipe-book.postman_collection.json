@@ -2315,6 +2315,9 @@
 									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetRecipeById'))",
 									"const { context } = pm.response.json()",
 									"",
+									"// extract a filename for later",
+									"pm.collectionVariables.set('mediaFilenameToGet', context.cleared[0])",
+									"",
 									"// assert that status code is 201",
 									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
 									"",
@@ -2595,6 +2598,105 @@
 								"recipes",
 								"asdfasdfasdfasdfasdfasdf",
 								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-recipe-media",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media/{{mediaFilenameToGet}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"6142bd1d47c1644e157e4aa9",
+								"media",
+								"{{mediaFilenameToGet}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "recipe-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf/media/{{mediaFilenameToGet}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"asdfasdfasdfasdfasdfasdf",
+								"media",
+								"{{mediaFilenameToGet}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "media-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media/asdfasdfasdfasdfasdfasdfasdfasdf.jpg",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"6142bd1d47c1644e157e4aa9",
+								"media",
+								"asdfasdfasdfasdfasdfasdfasdfasdf.jpg"
 							]
 						}
 					},
@@ -3114,10 +3216,6 @@
 			"value": ""
 		},
 		{
-			"key": "deleteTestGetRecipeById",
-			"value": ""
-		},
-		{
 			"key": "putTestGetRecipeById",
 			"value": ""
 		},
@@ -3127,6 +3225,10 @@
 		},
 		{
 			"key": "oldRecipeAbout",
+			"value": ""
+		},
+		{
+			"key": "oldRecipeCategory",
 			"value": ""
 		},
 		{
@@ -3142,11 +3244,19 @@
 			"value": ""
 		},
 		{
+			"key": "oldRecipeModifiedOn",
+			"value": ""
+		},
+		{
 			"key": "newRecipeTitle",
 			"value": ""
 		},
 		{
 			"key": "newRecipeAbout",
+			"value": ""
+		},
+		{
+			"key": "newRecipeCategory",
 			"value": ""
 		},
 		{
@@ -3162,27 +3272,7 @@
 			"value": ""
 		},
 		{
-			"key": "oldRecipeCategory",
-			"value": ""
-		},
-		{
-			"key": "newRecipeCategory",
-			"value": ""
-		},
-		{
-			"key": "oldRecipeModifiedOn",
-			"value": ""
-		},
-		{
-			"key": "oldMedia",
-			"value": ""
-		},
-		{
-			"key": "postMediaTestGetRecipe",
-			"value": ""
-		},
-		{
-			"key": "putMediaTestGetRecipe",
+			"key": "deleteTestGetRecipeById",
 			"value": ""
 		},
 		{
@@ -3195,6 +3285,10 @@
 		},
 		{
 			"key": "deleteMediaTestGetRecipeById",
+			"value": ""
+		},
+		{
+			"key": "mediaFilenameToGet",
 			"value": ""
 		}
 	]

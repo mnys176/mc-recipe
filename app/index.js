@@ -27,7 +27,6 @@ app.use(express.json())
 
 // set static routes
 app.use('/', express.static(webapp))
-app.use('/media', express.static(process.env.MEDIA_ROOT))
 
 // include recipe API routes
 app.use('/api/recipes', require('./routes/recipes'))

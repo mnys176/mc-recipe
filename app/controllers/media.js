@@ -151,11 +151,38 @@ const set = async (id, files = []) => {
  */
 const unset = async id => {
     try {
-        const message = `The media for recipe with ID of "${id}" was successfully deleted.`
+        const message = 'The media for recipe with ID of' +
+                        ` "${id}" was successfully deleted.`
         return quickResponse(200, message)
     } catch (err) {
         return quickResponse(500)
     }
 }
 
-module.exports = { set, unset, createDir, removeDir }
+/**
+ * Fetches media for the recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id   ID of the recipe.
+ * @param {string} name Name of the file.
+ * 
+ * @returns {object} The results of the operation.
+ */
+const fetch = async (id, name) => {
+    try {
+        const resultPath = path.join(mediaDir, id, name)
+        const message = `The media with name of "${name}"` +
+                        ` for the recipe with ID of "${id}"` +
+                        ' was successfully retrieved.'
+        const result = await readFile(resultPath)
+        return quickResponse(200, message, result)
+    } catch (err) {
+        const message = `The media with name of "${name}"` +
+                        ` for the recipe with ID of "${id}"` +
+                        ' could not be retrieved.'
+        return quickResponse(404, message)
+    }
+}
+
+module.exports = { set, unset, fetch, createDir, removeDir }

@@ -7,7 +7,6 @@
  *     recipe Mongoose model.                         *
  ******************************************************/
 
-const fs = require('fs')
 const path = require('path')
 const media = require('./media')
 const Recipe = require('../models/Recipe')
@@ -308,6 +307,18 @@ const unsetMedia = async id => {
     return results
 }
 
+/**
+ * Fetches media for the recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id   ID of the recipe.
+ * @param {string} name Name of the file.
+ * 
+ * @returns {object} The results of the operation.
+ */
+const fetchMedia = async (id, name) => await media.fetch(id, name)
+
 module.exports = {
     fetch,
     fetchById,
@@ -316,5 +327,6 @@ module.exports = {
     discard,
     prepareMedia,
     setMedia,
-    unsetMedia
+    unsetMedia,
+    fetchMedia
 }

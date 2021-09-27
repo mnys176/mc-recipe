@@ -9,6 +9,8 @@ const express = require('express')
 const recipe = require('../controllers/recipe')
 const { mediaMulterEngine } = require('../middleware/media-multer')
 
+const path = require('path')
+
 const router = express.Router()
 
 // get all recipes
@@ -41,18 +43,18 @@ router.delete('/:id', async (req, res) => {
     return res.status(status).json(data)
 })
 
-// // get all media for a recipe
-// router.get('/media/:id', async (req, res) => {
-//     try {
-//         let { status, data } = await recipe.fetchById(req.params.id)
-//         const { media } = temp.data.message
-//         const files = await readdir(mediaPath)
-//         console.log(temp)
-//         res.end()
-//     } catch (err) {
-//         throw err
-//     }
-// })
+// get media for a recipe
+router.get('/:id/media/:filename', async (req, res) => {
+    const { id, filename } = req.params
+    const { status, data } = await recipe.fetchMedia(id, filename)
+
+    if (status === 404) return res.status(status).json(data)
+    const file = data.context
+    const type = filename.split('.')[1] === 'png' ? 'png' : 'jpeg'
+    return res.set('Content-Type', `image/${type}`)
+              .status(status)
+              .send(file)
+})
 
 // create media for a recipe
 router.post(

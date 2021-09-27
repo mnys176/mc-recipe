@@ -29,7 +29,7 @@ app.use(express.json())
 app.use('/', express.static(webapp))
 app.use('/media', express.static(process.env.MEDIA_ROOT))
 
-// include API routes
+// include recipe API routes
 app.use('/api/recipes', require('./routes/recipes'))
 
 app.listen(port, () => console.log(`Running on port: ${port}`))

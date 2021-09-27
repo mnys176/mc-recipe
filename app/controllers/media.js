@@ -1,9 +1,9 @@
-/*******************************************************
- * Title:       media.js                               *
- * Author:      Mike Nystoriak (nystoriakm@gmail.com)  *
- * Created:     09/19/2021                             *
- * Description: Manages media associated with recipes. *
- *******************************************************/
+/********************************************************
+ * Title:       media.js                                *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)   *
+ * Created:     09/19/2021                              *
+ * Description: Manages media associated with entities. *
+ ********************************************************/
 
 const path = require('path')
 const {
@@ -24,7 +24,7 @@ const mediaDir = process.env.MEDIA_ROOT
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The recipe ObjectID.
+ * @param {string} id ID of the entity.
  */
 const createDir = async id => {
     try {
@@ -40,7 +40,7 @@ const createDir = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The recipe ObjectID.
+ * @param {string} id The entity ObjectID.
  */
 const removeDir = async id => {
     try {
@@ -97,12 +97,12 @@ const sanitize = async (dir, filter = /INVALID/) => {
 }
 
 /**
- * Updates and sanitizes a media directory for a
- * recipe.
+ * Updates and sanitizes a media directory for an
+ * entity.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string}   id    ID of the recipe.
+ * @param {string}   id    ID of the entity.
  * @param {[object]} files File array created by Multer.
  * 
  * @returns {object} The results of the operation.
@@ -113,7 +113,7 @@ const set = async (id, files = []) => {
 
         // check if no media was given to upload
         if (dir === undefined) {
-            const message = 'No media to upload for recipe with ID of' +
+            const message = 'No media to upload for entity with ID of' +
                             ` "${id}", nothing to do.`
             return quickResponse(204, message)
         }
@@ -131,7 +131,7 @@ const set = async (id, files = []) => {
                       ' nothing to do.'
             status = 204
         } else if (rejected.length === 0) {
-            message = 'The media for recipe with ID of' +
+            message = 'The media for entity with ID of' +
                       ` "${id}" was successfully uploaded.`
         }
         return quickResponse(status, message, { cleared, rejected })
@@ -141,17 +141,17 @@ const set = async (id, files = []) => {
 }
 
 /**
- * Removes a media directory from a recipe.
+ * Removes a media directory from an entity.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id ID of the recipe.
+ * @param {string} id ID of the entity.
  * 
  * @returns {object} The results of the operation.
  */
 const unset = async id => {
     try {
-        const message = 'The media for recipe with ID of' +
+        const message = 'The media for entity with ID of' +
                         ` "${id}" was successfully deleted.`
         return quickResponse(200, message)
     } catch (err) {
@@ -160,11 +160,11 @@ const unset = async id => {
 }
 
 /**
- * Fetches media for the recipe.
+ * Fetches media related to the entity.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id   ID of the recipe.
+ * @param {string} id   ID of the entity.
  * @param {string} name Name of the file.
  * 
  * @returns {object} The results of the operation.
@@ -173,13 +173,13 @@ const fetch = async (id, name) => {
     try {
         const resultPath = path.join(mediaDir, id, name)
         const message = `The media with name of "${name}"` +
-                        ` for the recipe with ID of "${id}"` +
+                        ` for the entity with ID of "${id}"` +
                         ' was successfully retrieved.'
         const result = await readFile(resultPath)
         return quickResponse(200, message, result)
     } catch (err) {
         const message = `The media with name of "${name}"` +
-                        ` for the recipe with ID of "${id}"` +
+                        ` for the entity with ID of "${id}"` +
                         ' could not be retrieved.'
         return quickResponse(404, message)
     }

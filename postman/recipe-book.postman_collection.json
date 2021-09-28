@@ -97,7 +97,7 @@
 									"",
 									"// check that the recipe returned is the recipe requested",
 									"pm.test('Correct recipe returned', () => {",
-									"    const expectedId = '614009af5b338a1dd33615e3'",
+									"    const expectedId = pm.collectionVariables.get('recipeOfInterest')",
 									"    pm.expect(jsonResponse._id).to.equal(expectedId)",
 									"})"
 								],
@@ -125,14 +125,14 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/614009af5b338a1dd33615e3",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"614009af5b338a1dd33615e3"
+								"{{recipeOfInterest}}"
 							]
 						}
 					},
@@ -2298,8 +2298,9 @@
 									"// set variables to form a request",
 									"const apiRoot = pm.collectionVariables.get('apiRoot')",
 									"const protocol = pm.collectionVariables.get('protocol')",
+									"const recipeId = pm.collectionVariables.get('recipeOfInterest')",
 									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/6142bd1d47c1644e157e4aa9`,",
+									"    url: `${protocol}://${apiRoot}/recipes/${recipeId}`,",
 									"    method: 'GET',",
 									"    headers: { 'Content-Type': 'application/json' }",
 									"}",
@@ -2344,6 +2345,7 @@
 									"// get recipe object for direct validation",
 									"pm.sendRequest(req,  (err, res) => {",
 									"    if (err) throw err",
+									"    console.log(res.json())",
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
@@ -2378,14 +2380,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media"
 							]
 						}
@@ -2445,14 +2447,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media"
 							]
 						}
@@ -2521,14 +2523,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media"
 							]
 						}
@@ -2621,14 +2623,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media/{{mediaFilenameToGet}}",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media/{{mediaFilenameToGet}}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media",
 								"{{mediaFilenameToGet}}"
 							]
@@ -2687,14 +2689,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media/asdfasdfasdfasdfasdfasdfasdfasdf.jpg",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media/asdfasdfasdfasdfasdfasdfasdfasdf.jpg",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media",
 								"asdfasdfasdfasdfasdfasdfasdfasdf.jpg"
 							]
@@ -2712,8 +2714,9 @@
 									"// set variables to form a request",
 									"const apiRoot = pm.collectionVariables.get('apiRoot')",
 									"const protocol = pm.collectionVariables.get('protocol')",
+									"const recipeId = pm.collectionVariables.get('recipeOfInterest')",
 									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/6142bd1d47c1644e157e4aa9`,",
+									"    url: `${protocol}://${apiRoot}/recipes/${recipeId}`,",
 									"    method: 'GET',",
 									"    headers: { 'Content-Type': 'application/json' }",
 									"}",
@@ -2795,14 +2798,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media"
 							]
 						}
@@ -2862,14 +2865,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media"
 							]
 						}
@@ -2938,14 +2941,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media"
 							]
 						}
@@ -3030,8 +3033,9 @@
 									"// set variables to form a request",
 									"const apiRoot = pm.collectionVariables.get('apiRoot')",
 									"const protocol = pm.collectionVariables.get('protocol')",
+									"const recipeId = pm.collectionVariables.get('recipeOfInterest')",
 									"const req = {",
-									"    url: `${protocol}://${apiRoot}/recipes/6142bd1d47c1644e157e4aa9`,",
+									"    url: `${protocol}://${apiRoot}/recipes/${recipeId}`,",
 									"    method: 'GET',",
 									"    headers: { 'Content-Type': 'application/json' }",
 									"}",
@@ -3072,14 +3076,14 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/6142bd1d47c1644e157e4aa9/media",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
 								"recipes",
-								"6142bd1d47c1644e157e4aa9",
+								"{{recipeOfInterest}}",
 								"media"
 							]
 						}
@@ -3180,7 +3184,10 @@
 					"const productionDomain = '<make production domain>'",
 					"const developmentDomain = 'localhost:3000'",
 					"const apiRoot = mode === modes.PROD ? productionDomain : developmentDomain",
-					"pm.collectionVariables.set('apiRoot', `${apiRoot}/api`)"
+					"pm.collectionVariables.set('apiRoot', `${apiRoot}/api`)",
+					"",
+					"// specific recipe ID for API operations",
+					"pm.collectionVariables.set('recipeOfInterest', '614009af5b338a1dd33615e3')"
 				]
 			}
 		},
@@ -3201,7 +3208,11 @@
 		},
 		{
 			"key": "apiRoot",
-			"value": "localhost:3000"
+			"value": "localhost:3000/api"
+		},
+		{
+			"key": "recipeOfInterest",
+			"value": "614009af5b338a1dd33615e3"
 		},
 		{
 			"key": "postTestGetRecipes",

@@ -185,7 +185,6 @@ const change = async (id, json) => {
                         ' could not be updated.'
         return quickResponse(400, message, err.message)
     }
-
 }
 
 /**

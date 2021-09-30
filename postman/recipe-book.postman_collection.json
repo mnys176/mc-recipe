@@ -3159,6 +3159,164 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get-users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get response as JSON",
+									"const jsonResponse = pm.response.json().message",
+									"",
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+									"",
+									"// ensure many users are returned",
+									"pm.test('Multiple users returned', () => pm.expect(jsonResponse.length).to.greaterThan(1))",
+									"",
+									"// ensure each user is complete",
+									"pm.test('Users are complete', () => {",
+									"    const expectedUserKeys = [",
+									"        '_id',",
+									"        'name',",
+									"        'media',",
+									"        'username',",
+									"        'password',",
+									"        'email',",
+									"        'registered',",
+									"        '__v'",
+									"    ]",
+									"    jsonResponse.forEach(user => pm.expect(user).to.have.all.keys(...expectedUserKeys))",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-user-by-id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get response as JSON",
+									"const jsonResponse = pm.response.json().message",
+									"",
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+									"",
+									"// ensure user is complete",
+									"pm.test('User is complete', () => {",
+									"    const expectedUserKeys = [",
+									"        '_id',",
+									"        'name',",
+									"        'media',",
+									"        'username',",
+									"        'password',",
+									"        'email',",
+									"        'registered',",
+									"        '__v'",
+									"    ]",
+									"    pm.expect(jsonResponse).to.have.all.keys(...expectedUserKeys)",
+									"})",
+									"",
+									"// check that the user returned is the recipe requested",
+									"pm.test('Correct user returned', () => {",
+									"    const expectedId = pm.collectionVariables.get('userOfInterest')",
+									"    pm.expect(jsonResponse._id).to.equal(expectedId)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -3187,7 +3345,8 @@
 					"pm.collectionVariables.set('apiRoot', `${apiRoot}/api`)",
 					"",
 					"// specific recipe ID for API operations",
-					"pm.collectionVariables.set('recipeOfInterest', '614009af5b338a1dd33615e3')"
+					"pm.collectionVariables.set('recipeOfInterest', '614009af5b338a1dd33615e3')",
+					"pm.collectionVariables.set('userOfInterest', '61525d0aa5d095230e1fc762')"
 				]
 			}
 		},
@@ -3300,6 +3459,10 @@
 		},
 		{
 			"key": "mediaFilenameToGet",
+			"value": ""
+		},
+		{
+			"key": "userOfInterest",
 			"value": ""
 		}
 	]

@@ -43,25 +43,27 @@ const mapQuantifiable = input => {
  *
  * @param {object} Request body object.
  * 
- * @returns {object} Premature recipe.
+ * @returns {object} Premature recipe as a `Promise`.
  */
 const extractRecipe = body => {
-    // bring literal data into recipe
-    const recipeBuilder = { ...body }
+    return new Promise((resolve, reject) => {
+        // bring literal data into recipe
+        const recipeBuilder = { ...body }
 
-    // build preparation time if it exists
-    recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
+        // build preparation time if it exists
+        recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
 
-    // build ingredients if they exist
-    if (body.ingredients) {
-        recipeBuilder.ingredients = body.ingredients.map(i => {
-            return {
-                name: i.name,
-                amount: mapQuantifiable(i.amount)
-            }
-        })
-    }
-    return recipeBuilder
+        // build ingredients if they exist
+        if (body.ingredients) {
+            recipeBuilder.ingredients = body.ingredients.map(i => {
+                return {
+                    name: i.name,
+                    amount: mapQuantifiable(i.amount)
+                }
+            })
+        }
+        return resolve(recipeBuilder)
+    })
 }
 
 /**
@@ -128,15 +130,14 @@ const fetchById = async id => {
  * @returns {object} The results of the operation.
  */
 const create = async json => {
-    const newRecipe = new Recipe(extractRecipe(json))
     try {
+        const newRecipe = new Recipe(await extractRecipe(json))
         await newRecipe.save()
         const message = `The recipe with ID of "${newRecipe._id}"` +
                         ' was successfully created.'
         return quickResponse(201, message)
     } catch (err) {
-        const message = `The recipe with ID of "${newRecipe._id}"` +
-                        ' could not be created.'
+        const message = 'The recipe could not be created.'
         return quickResponse(400, message, err.message)
     }
 }
@@ -164,7 +165,7 @@ const change = async (id, json) => {
         const temp = await fetchById(id)
 
         const currRecipe = temp.data.message
-        const newRecipe = new Recipe(extractRecipe(json))
+        const newRecipe = new Recipe(await extractRecipe(json))
 
         // map new properties to recipe model
         currRecipe.title = newRecipe.title

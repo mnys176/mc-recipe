@@ -25,8 +25,7 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
-        minLength: 60,
-        maxLength: 60
+        match: /^\$2[ayb]\$.{56}$/
     },
     email: {
         type: String,

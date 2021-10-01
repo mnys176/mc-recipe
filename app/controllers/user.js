@@ -8,6 +8,7 @@
  ******************************************************/
 
 const path = require('path')
+const bcrypt = require('bcrypt')
 const media = require('./media')
 const User = require('../models/User')
 const quickResponse = require('../util/quick-response')
@@ -32,13 +33,26 @@ const quickResponse = require('../util/quick-response')
  *
  * @param {object} Request body object.
  * 
- * @returns {object} Premature user.
+ * @returns {object} Premature user as a `Promise`.
  */
-// const extractUser = body => {
-//     // bring literal data into user
-//     const recipeBuilder = { ...body }
-//     return recipeBuilder
-// }
+const extractUser = body => {
+    return new Promise((resolve, reject) => {
+        // bring literal data into user
+        const userBuilder = { ...body }
+
+        // encrypt password
+        bcrypt.hash(body.password, 14, (err, hash) => {
+            if (err) {
+                // make BCrypt error message look like Mongoose error
+                err.message = 'User validation failed: password:' +
+                              ' Path `password` is required.'
+                return reject(err)
+            }
+            userBuilder.password = hash
+            return resolve(userBuilder)
+        })
+    })
+}
 
 /**
  * Fetches all users and returns the results
@@ -91,19 +105,18 @@ const fetchById = async id => {
  * 
  * @returns {object} The results of the operation.
  */
-// const create = async json => {
-//     const newUser = new User(extractUser(json))
-//     try {
-//         await newUser.save()
-//         const message = `The user with ID of "${newUser._id}"` +
-//                         ' was successfully created.'
-//         return quickResponse(201, message)
-//     } catch (err) {
-//         const message = `The user with ID of "${newUser._id}"` +
-//                         ' could not be created.'
-//         return quickResponse(400, message, err.message)
-//     }
-// }
+const create = async json => {
+    try {
+        const newUser = new User(await extractUser(json))
+        await newUser.save()
+        const message = `The user with ID of "${newUser._id}"` +
+                        ' was successfully created.'
+        return quickResponse(201, message)
+    } catch (err) {
+        const message = 'The user could not be created.'
+        return quickResponse(400, message, err.message)
+    }
+}
 
 /**
  * Modifies a user in the database.
@@ -281,8 +294,8 @@ const fetchById = async id => {
 
 module.exports = {
     fetch,
-    fetchById
-    // create,
+    fetchById,
+    create
     // change,
     // discard,
     // prepareMedia,

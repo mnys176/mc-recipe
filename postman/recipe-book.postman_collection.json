@@ -3315,6 +3315,941 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "create-user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/users`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"",
+									"// count the number of users before the POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current recipe count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// extract and store the UUID for later",
+									"const { message } = pm.response.json()",
+									"const objectIdToDelete = message.substr(21, 24)",
+									"pm.collectionVariables.set('userObjectIdToDelete', objectIdToDelete)",
+									"",
+									"// count the number of users after the POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('One more user exists than before', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers + 1)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-first-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"middle\": \"Mercedez\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-first-invalid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Sus.an\",\n        \"middle\": \"M.\",\n        \"last\": \"Be-nz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-middle-invalid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"middle\": \"M.123\",\n        \"last\": \"'Be-nz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-last-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"middle\": \"Mercedez\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-last-invalid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"'Susan\",\n        \"middle\": \"\",\n        \"last\": \"Be-8576@nz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-invalid-short",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new12\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-invalid-bad-characters",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123!@#$%^&:\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "password-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-invalid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"su@hgv78687@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -3463,6 +4398,18 @@
 		},
 		{
 			"key": "userOfInterest",
+			"value": ""
+		},
+		{
+			"key": "postTestGetUsers",
+			"value": ""
+		},
+		{
+			"key": "numOldUsers",
+			"value": ""
+		},
+		{
+			"key": "userObjectIdToDelete",
 			"value": ""
 		}
 	]

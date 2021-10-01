@@ -25,11 +25,11 @@ router.get('/:id', async (req, res) => {
     return res.status(status).json(data)
 })
 
-// // create a user
-// router.post('/', async (req, res) => {
-//     const { status, data } = await user.create(req.body)
-//     return res.status(status).json(data)
-// })
+// create a user
+router.post('/', async (req, res) => {
+    const { status, data } = await user.create(req.body)
+    return res.status(status).json(data)
+})
 
 // // update a user
 // router.put('/:id', async (req, res) => {

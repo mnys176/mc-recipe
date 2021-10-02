@@ -31,11 +31,11 @@ router.post('/', async (req, res) => {
     return res.status(status).json(data)
 })
 
-// // update a user
-// router.put('/:id', async (req, res) => {
-//     const { status, data } = await user.change(req.params.id, req.body)
-//     return res.status(status).json(data)
-// })
+// update a user
+router.put('/:id', async (req, res) => {
+    const { status, data } = await user.change(req.params.id, req.body)
+    return res.status(status).json(data)
+})
 
 // // delete a user
 // router.delete('/:id', async (req, res) => {

@@ -41,7 +41,7 @@ const mapQuantifiable = input => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object} Request body object.
+ * @param {object} body Request body object.
  * 
  * @returns {object} Premature recipe as a `Promise`.
  */
@@ -161,7 +161,7 @@ const change = async (id, json) => {
             return quickResponse(404, message)
         }
 
-        // use method that already handles 404 Not Found
+        // use method that already handles '404 Not Found'
         const temp = await fetchById(id)
 
         const currRecipe = temp.data.message

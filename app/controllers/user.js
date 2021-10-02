@@ -23,7 +23,7 @@ const quickResponse = require('../util/quick-response')
  * 
  * @returns {boolean} True if valid, false if not.
  */
-// const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
+const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
 
 /**
  * Extracts a user object from the request
@@ -31,14 +31,19 @@ const quickResponse = require('../util/quick-response')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object} Request body object.
+ * @param {object}  body   Request body object.
+ * @param {boolean} rehash Rehash the password with
+ *                         BCrypt.
  * 
  * @returns {object} Premature user as a `Promise`.
  */
-const extractUser = body => {
+const extractUser = (body, rehash) => {
     return new Promise((resolve, reject) => {
         // bring literal data into user
         const userBuilder = { ...body }
+
+        // skip encryption if desired
+        if (!rehash) return resolve(userBuilder)
 
         // encrypt password
         bcrypt.hash(body.password, 14, (err, hash) => {
@@ -107,7 +112,7 @@ const fetchById = async id => {
  */
 const create = async json => {
     try {
-        const newUser = new User(await extractUser(json))
+        const newUser = new User(await extractUser(json, true))
         await newUser.save()
         const message = `The user with ID of "${newUser._id}"` +
                         ' was successfully created.'
@@ -129,37 +134,37 @@ const create = async json => {
  * 
  * @returns {object} The results of the operation.
  */
-// const change = async (id, json) => {
-//     try {
-//         if (!objectIdIsValid(id)) {
-//             const message = `The user with ID of "${id}"` +
-//                             ' could not be retrieved.'
-//             return quickResponse(404, message)
-//         }
+const change = async (id, json) => {
+    try {
+        if (!objectIdIsValid(id)) {
+            const message = `The user with ID of "${id}"` +
+                            ' could not be retrieved.'
+            return quickResponse(404, message)
+        }
 
-//         // use method that already handles 404 Not Found
-//         const temp = await fetchById(id)
+        // use method that already handles '404 Not Found'
+        const temp = await fetchById(id)
 
-//         const currUser = temp.data.message
-//         const newUser = new User(extractUser(json))
+        const currUser = temp.data.message
+        const newUser = new User(await extractUser(json, true))
 
-//         // map new properties to user model
-//         currUser.name = newUser.name
-//         currUser.username = newUser.username
-//         currUser.password = newUser.password
-//         currUser.email = newUser.email
+        // map new properties to user model
+        currUser.name = newUser.name
+        currUser.username = newUser.username
+        currUser.password = newUser.password
+        currUser.email = newUser.email
 
-//         await currUser.save()
+        await currUser.save()
 
-//         const message = `The user with ID of "${id}"` +
-//                         ' was successfully updated.'
-//         return quickResponse(200, message)
-//     } catch (err) {
-//         const message = `The user with ID of "${id}"` +
-//                         ' could not be updated.'
-//         return quickResponse(400, message, err.message)
-//     }
-// }
+        const message = `The user with ID of "${id}"` +
+                        ' was successfully updated.'
+        return quickResponse(200, message)
+    } catch (err) {
+        const message = `The user with ID of "${id}"` +
+                        ' could not be updated.'
+        return quickResponse(400, message, err.message)
+    }
+}
 
 /**
  * Discards a user from the database.
@@ -295,8 +300,8 @@ const create = async json => {
 module.exports = {
     fetch,
     fetchById,
-    create
-    // change,
+    create,
+    change
     // discard,
     // prepareMedia,
     // setMedia,

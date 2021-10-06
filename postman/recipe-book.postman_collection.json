@@ -4079,6 +4079,106 @@
 					"response": []
 				},
 				{
+					"name": "password-included",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.not.equal(oldUserPassword)",
+									"",
+									"        // set old password to new password to enable consecutive runs without fail",
+									"        pm.collectionVariables.set('oldUserPassword', newUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"{{newUserEmail}}\",\n    \"password\": \"$$$changedPass#@word\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "name-not-included",
 					"event": [
 						{

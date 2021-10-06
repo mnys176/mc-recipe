@@ -144,14 +144,17 @@ const change = async (id, json) => {
 
         // use method that already handles '404 Not Found'
         const temp = await fetchById(id)
-
         const currUser = temp.data.message
-        const newUser = new User(await extractUser(json, false))
+
+        // determine whether or not to change (rehash) a password
+        const makeNewPassword = json.hasOwnProperty('password')
+        const newUser = new User(await extractUser(json, makeNewPassword))
 
         // map new properties to user model
         currUser.name = newUser.name
         currUser.username = newUser.username
         currUser.email = newUser.email
+        currUser.password = newUser.password ?? currUser.password
 
         await currUser.save()
 

@@ -146,12 +146,11 @@ const change = async (id, json) => {
         const temp = await fetchById(id)
 
         const currUser = temp.data.message
-        const newUser = new User(await extractUser(json, true))
+        const newUser = new User(await extractUser(json, false))
 
         // map new properties to user model
         currUser.name = newUser.name
         currUser.username = newUser.username
-        currUser.password = newUser.password
         currUser.email = newUser.email
 
         await currUser.save()
@@ -175,22 +174,22 @@ const change = async (id, json) => {
  * 
  * @returns {object} The results of the operation.
  */
-// const discard = async id => {
-//     const notFoundMessage = `The user with ID of "${id}"` +
-//                             ' could not be retrieved.'
-//     try {
-//         if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
-//         const data = await User.findByIdAndDelete(id)
-//         if (!data) return quickResponse(404, notFoundMessage)
+const discard = async id => {
+    const notFoundMessage = `The user with ID of "${id}"` +
+                            ' could not be retrieved.'
+    try {
+        if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
+        const data = await User.findByIdAndDelete(id)
+        if (!data) return quickResponse(404, notFoundMessage)
 
-//         const message = `The user with ID of "${id}"` +
-//                         ' was successfully deleted.'
-//         return quickResponse(200, message)
-//     } catch (err) {
-//         // handle invalid IDs as 'Not Found'
-//         return quickResponse(404, notFoundMessage)
-//     }
-// }
+        const message = `The user with ID of "${id}"` +
+                        ' was successfully deleted.'
+        return quickResponse(200, message)
+    } catch (err) {
+        // handle invalid IDs as 'Not Found'
+        return quickResponse(404, notFoundMessage)
+    }
+}
 
 /**
  * Checks if a user exists in the database.
@@ -301,8 +300,8 @@ module.exports = {
     fetch,
     fetchById,
     create,
-    change
-    // discard,
+    change,
+    discard
     // prepareMedia,
     // setMedia,
     // unsetMedia,

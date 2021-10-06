@@ -37,10 +37,10 @@ router.put('/:id', async (req, res) => {
     return res.status(status).json(data)
 })
 
-// // delete a user
-// router.delete('/:id', async (req, res) => {
-//     const { status, data } = await user.discard(req.params.id)
-//     return res.status(status).json(data)
-// })
+// delete a user
+router.delete('/:id', async (req, res) => {
+    const { status, data } = await user.discard(req.params.id)
+    return res.status(status).json(data)
+})
 
 module.exports = router

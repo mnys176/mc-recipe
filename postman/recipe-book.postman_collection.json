@@ -1051,7 +1051,7 @@
 									"    headers: { 'Content-Type': 'application/json' }",
 									"}",
 									"",
-									"// get current values from agent before the PUT requests",
+									"// get current values from recipe before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    jsonRes = res.json().message",
@@ -1164,24 +1164,15 @@
 									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
 									"        const newRecipeTitle = jsonRes.title",
-									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
-									"",
-									"        // set old title to new title to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
 									"        const newRecipeAbout = jsonRes.about",
-									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
 									"        const newRecipeCategory = jsonRes.category",
-									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
 									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
@@ -1189,24 +1180,15 @@
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
 									"        const newRecipePrepTime = jsonRes.prepTime",
-									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
-									"",
-									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
 									"        const newRecipeIngredients = jsonRes.ingredients",
-									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
-									"",
-									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
 									"        const newRecipeInstructions = jsonRes.instructions",
-									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
-									"",
-									"        // set old instructions to new instructions to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(newRecipeInstructions))",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
 									"    })",
 									"})"
 								],
@@ -1219,7 +1201,7 @@
 								"exec": [
 									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
-									"// get current values from agent before the PUT requests",
+									"// get current values from recipe before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    jsonRes = res.json().message",
@@ -1233,34 +1215,7 @@
 									"    const oldRecipeCategory = jsonRes.category",
 									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"",
-									"    // new title is the old title reversed",
-									"    const newRecipeTitle = oldRecipeTitle.split(' ').reverse().join(' ')",
-									"",
-									"    // new about is the old about in reverse",
-									"    const newRecipeAbout = oldRecipeAbout.split(' ').reverse().join(' ')",
-									"",
-									"    // new preparation time is the reversed old quantity in the same units",
-									"    const newRecipePrepTime = {",
-									"        quantity: oldRecipePrepTime.readable.split('').reverse().join(''),",
-									"        unit: oldRecipePrepTime.unit",
-									"    }",
-									"",
-									"    // new ingredients are now all \"swirled\"",
-									"    const newRecipeIngredients = oldRecipeIngredients.map(i => {",
-									"        const name = i.name.split('').reverse().join('')",
-									"        const unit = i.amount.unit === 'pieces' ? 'to taste' : 'pieces'",
-									"        const quantity = i.amount.readable.split('').reverse().join('')",
-									"        return { name, amount: { quantity, unit } }",
-									"    })",
-									"",
-									"    // new instructions are the old instructions reversed",
-									"    const newRecipeInstructions = [...oldRecipeInstructions].reverse()",
-									"",
-									"    // new category is 'dinner' if the old one was 'breakfast', otherwise it's 'breakfast'",
-									"    const newRecipeCategory = oldRecipeCategory === 'breakfast' ? 'dinner' : 'breakfast'",
-									"",
-									"    // make the request and current recipe properties visible to tests",
-									"    pm.collectionVariables.set('putTestGetRecipeById', JSON.stringify(req))",
+									"    // make the current recipe properties visible to tests",
 									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
 									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
 									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
@@ -1268,12 +1223,6 @@
 									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
 									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
 									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
-									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
-									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
-									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
-									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
-									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -1332,24 +1281,15 @@
 									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
 									"        const newRecipeTitle = jsonRes.title",
-									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
-									"",
-									"        // set old title to new title to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
 									"        const newRecipeAbout = jsonRes.about",
-									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
 									"        const newRecipeCategory = jsonRes.category",
-									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
 									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
@@ -1357,24 +1297,15 @@
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
 									"        const newRecipePrepTime = jsonRes.prepTime",
-									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
-									"",
-									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
 									"        const newRecipeIngredients = jsonRes.ingredients",
-									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
-									"",
-									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
 									"        const newRecipeInstructions = jsonRes.instructions",
-									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
-									"",
-									"        // set old instructions to new instructions to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(newRecipeInstructions))",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
 									"    })",
 									"})"
 								],
@@ -1387,7 +1318,7 @@
 								"exec": [
 									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
-									"// get current values from agent before the PUT requests",
+									"// get current values from recipe before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    jsonRes = res.json().message",
@@ -1401,34 +1332,7 @@
 									"    const oldRecipeCategory = jsonRes.category",
 									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"",
-									"    // new title is the old title reversed",
-									"    const newRecipeTitle = oldRecipeTitle.split(' ').reverse().join(' ')",
-									"",
-									"    // new about is the old about in reverse",
-									"    const newRecipeAbout = oldRecipeAbout.split(' ').reverse().join(' ')",
-									"",
-									"    // new preparation time is the reversed old quantity in the same units",
-									"    const newRecipePrepTime = {",
-									"        quantity: oldRecipePrepTime.readable.split('').reverse().join(''),",
-									"        unit: oldRecipePrepTime.unit",
-									"    }",
-									"",
-									"    // new ingredients are now all \"swirled\"",
-									"    const newRecipeIngredients = oldRecipeIngredients.map(i => {",
-									"        const name = i.name.split('').reverse().join('')",
-									"        const unit = i.amount.unit === 'pieces' ? 'to taste' : 'pieces'",
-									"        const quantity = i.amount.readable.split('').reverse().join('')",
-									"        return { name, amount: { quantity, unit } }",
-									"    })",
-									"",
-									"    // new instructions are the old instructions reversed",
-									"    const newRecipeInstructions = [...oldRecipeInstructions].reverse()",
-									"",
-									"    // new category is 'dinner' if the old one was 'breakfast', otherwise it's 'breakfast'",
-									"    const newRecipeCategory = oldRecipeCategory === 'breakfast' ? 'dinner' : 'breakfast'",
-									"",
-									"    // make the request and current recipe properties visible to tests",
-									"    pm.collectionVariables.set('putTestGetRecipeById', JSON.stringify(req))",
+									"    // make the current recipe properties visible to tests",
 									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
 									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
 									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
@@ -1436,12 +1340,6 @@
 									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
 									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
 									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
-									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
-									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
-									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
-									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
-									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -1500,24 +1398,15 @@
 									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
 									"        const newRecipeTitle = jsonRes.title",
-									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
-									"",
-									"        // set old title to new title to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
 									"        const newRecipeAbout = jsonRes.about",
-									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
 									"        const newRecipeCategory = jsonRes.category",
-									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
 									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
@@ -1525,24 +1414,15 @@
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
 									"        const newRecipePrepTime = jsonRes.prepTime",
-									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
-									"",
-									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
 									"        const newRecipeIngredients = jsonRes.ingredients",
-									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
-									"",
-									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
 									"        const newRecipeInstructions = jsonRes.instructions",
-									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
-									"",
-									"        // set old instructions to new instructions to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(newRecipeInstructions))",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
 									"    })",
 									"})"
 								],
@@ -1555,7 +1435,7 @@
 								"exec": [
 									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
-									"// get current values from agent before the PUT requests",
+									"// get current values from recipe before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    jsonRes = res.json().message",
@@ -1569,34 +1449,7 @@
 									"    const oldRecipeCategory = jsonRes.category",
 									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"",
-									"    // new title is the old title reversed",
-									"    const newRecipeTitle = oldRecipeTitle.split(' ').reverse().join(' ')",
-									"",
-									"    // new about is the old about in reverse",
-									"    const newRecipeAbout = oldRecipeAbout.split(' ').reverse().join(' ')",
-									"",
-									"    // new preparation time is the reversed old quantity in the same units",
-									"    const newRecipePrepTime = {",
-									"        quantity: oldRecipePrepTime.readable.split('').reverse().join(''),",
-									"        unit: oldRecipePrepTime.unit",
-									"    }",
-									"",
-									"    // new ingredients are now all \"swirled\"",
-									"    const newRecipeIngredients = oldRecipeIngredients.map(i => {",
-									"        const name = i.name.split('').reverse().join('')",
-									"        const unit = i.amount.unit === 'pieces' ? 'to taste' : 'pieces'",
-									"        const quantity = i.amount.readable.split('').reverse().join('')",
-									"        return { name, amount: { quantity, unit } }",
-									"    })",
-									"",
-									"    // new instructions are the old instructions reversed",
-									"    const newRecipeInstructions = [...oldRecipeInstructions].reverse()",
-									"",
-									"    // new category is 'dinner' if the old one was 'breakfast', otherwise it's 'breakfast'",
-									"    const newRecipeCategory = oldRecipeCategory === 'breakfast' ? 'dinner' : 'breakfast'",
-									"",
-									"    // make the request and current recipe properties visible to tests",
-									"    pm.collectionVariables.set('putTestGetRecipeById', JSON.stringify(req))",
+									"    // make the current recipe properties visible to tests",
 									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
 									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
 									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
@@ -1604,12 +1457,6 @@
 									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
 									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
 									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
-									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
-									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
-									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
-									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
-									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -1668,24 +1515,15 @@
 									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
 									"        const newRecipeTitle = jsonRes.title",
-									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
-									"",
-									"        // set old title to new title to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
 									"        const newRecipeAbout = jsonRes.about",
-									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
 									"        const newRecipeCategory = jsonRes.category",
-									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
 									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
@@ -1693,24 +1531,15 @@
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
 									"        const newRecipePrepTime = jsonRes.prepTime",
-									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
-									"",
-									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
 									"        const newRecipeIngredients = jsonRes.ingredients",
-									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
-									"",
-									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
 									"        const newRecipeInstructions = jsonRes.instructions",
-									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
-									"",
-									"        // set old instructions to new instructions to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(newRecipeInstructions))",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
 									"    })",
 									"})"
 								],
@@ -1723,7 +1552,7 @@
 								"exec": [
 									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
-									"// get current values from agent before the PUT requests",
+									"// get current values from recipe before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    jsonRes = res.json().message",
@@ -1737,34 +1566,7 @@
 									"    const oldRecipeCategory = jsonRes.category",
 									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"",
-									"    // new title is the old title reversed",
-									"    const newRecipeTitle = oldRecipeTitle.split(' ').reverse().join(' ')",
-									"",
-									"    // new about is the old about in reverse",
-									"    const newRecipeAbout = oldRecipeAbout.split(' ').reverse().join(' ')",
-									"",
-									"    // new preparation time is the reversed old quantity in the same units",
-									"    const newRecipePrepTime = {",
-									"        quantity: oldRecipePrepTime.readable.split('').reverse().join(''),",
-									"        unit: oldRecipePrepTime.unit",
-									"    }",
-									"",
-									"    // new ingredients are now all \"swirled\"",
-									"    const newRecipeIngredients = oldRecipeIngredients.map(i => {",
-									"        const name = i.name.split('').reverse().join('')",
-									"        const unit = i.amount.unit === 'pieces' ? 'to taste' : 'pieces'",
-									"        const quantity = i.amount.readable.split('').reverse().join('')",
-									"        return { name, amount: { quantity, unit } }",
-									"    })",
-									"",
-									"    // new instructions are the old instructions reversed",
-									"    const newRecipeInstructions = [...oldRecipeInstructions].reverse()",
-									"",
-									"    // new category is 'dinner' if the old one was 'breakfast', otherwise it's 'breakfast'",
-									"    const newRecipeCategory = oldRecipeCategory === 'breakfast' ? 'dinner' : 'breakfast'",
-									"",
-									"    // make the request and current recipe properties visible to tests",
-									"    pm.collectionVariables.set('putTestGetRecipeById', JSON.stringify(req))",
+									"    // make the current recipe properties visible to tests",
 									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
 									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
 									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
@@ -1772,12 +1574,6 @@
 									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
 									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
 									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
-									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
-									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
-									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
-									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
-									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -1836,24 +1632,15 @@
 									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
 									"        const newRecipeTitle = jsonRes.title",
-									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
-									"",
-									"        // set old title to new title to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
 									"        const newRecipeAbout = jsonRes.about",
-									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
 									"        const newRecipeCategory = jsonRes.category",
-									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
 									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
@@ -1861,24 +1648,15 @@
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
 									"        const newRecipePrepTime = jsonRes.prepTime",
-									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
-									"",
-									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
 									"        const newRecipeIngredients = jsonRes.ingredients",
-									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
-									"",
-									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
 									"        const newRecipeInstructions = jsonRes.instructions",
-									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
-									"",
-									"        // set old instructions to new instructions to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(newRecipeInstructions))",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
 									"    })",
 									"})"
 								],
@@ -1891,7 +1669,7 @@
 								"exec": [
 									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
-									"// get current values from agent before the PUT requests",
+									"// get current values from recipe before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    jsonRes = res.json().message",
@@ -1905,34 +1683,7 @@
 									"    const oldRecipeCategory = jsonRes.category",
 									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"",
-									"    // new title is the old title reversed",
-									"    const newRecipeTitle = oldRecipeTitle.split(' ').reverse().join(' ')",
-									"",
-									"    // new about is the old about in reverse",
-									"    const newRecipeAbout = oldRecipeAbout.split(' ').reverse().join(' ')",
-									"",
-									"    // new preparation time is the reversed old quantity in the same units",
-									"    const newRecipePrepTime = {",
-									"        quantity: oldRecipePrepTime.readable.split('').reverse().join(''),",
-									"        unit: oldRecipePrepTime.unit",
-									"    }",
-									"",
-									"    // new ingredients are now all \"swirled\"",
-									"    const newRecipeIngredients = oldRecipeIngredients.map(i => {",
-									"        const name = i.name.split('').reverse().join('')",
-									"        const unit = i.amount.unit === 'pieces' ? 'to taste' : 'pieces'",
-									"        const quantity = i.amount.readable.split('').reverse().join('')",
-									"        return { name, amount: { quantity, unit } }",
-									"    })",
-									"",
-									"    // new instructions are the old instructions reversed",
-									"    const newRecipeInstructions = [...oldRecipeInstructions].reverse()",
-									"",
-									"    // new category is 'dinner' if the old one was 'breakfast', otherwise it's 'breakfast'",
-									"    const newRecipeCategory = oldRecipeCategory === 'breakfast' ? 'dinner' : 'breakfast'",
-									"",
-									"    // make the request and current recipe properties visible to tests",
-									"    pm.collectionVariables.set('putTestGetRecipeById', JSON.stringify(req))",
+									"    // make the current recipe properties visible to tests",
 									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
 									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
 									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
@@ -1940,12 +1691,6 @@
 									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
 									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
 									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
-									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
-									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
-									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
-									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
-									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2004,24 +1749,15 @@
 									"    const jsonRes = res.json().message",
 									"    pm.test('Recipe title has not changed', () => {",
 									"        const newRecipeTitle = jsonRes.title",
-									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)    ",
-									"",
-									"        // set old title to new title to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeTitle', newRecipeTitle)",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
 									"    })",
 									"    pm.test('Recipe about has not changed', () => {",
 									"        const newRecipeAbout = jsonRes.about",
-									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeAbout', newRecipeAbout)",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
 									"    })",
 									"    pm.test('Recipe category has not changed', () => {",
 									"        const newRecipeCategory = jsonRes.category",
-									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)    ",
-									"",
-									"        // set old about to new about to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeCategory', newRecipeCategory)",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
 									"    })",
 									"    pm.test('Recipe modification date has not changed', () => {",
 									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
@@ -2029,24 +1765,15 @@
 									"    })",
 									"    pm.test('Recipe preparation time has not changed', () => {",
 									"        const newRecipePrepTime = jsonRes.prepTime",
-									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)    ",
-									"",
-									"        // set old preparation time to new preparation time to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(newRecipePrepTime))",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
 									"    })",
 									"    pm.test('Recipe ingredients list has not changed', () => {",
 									"        const newRecipeIngredients = jsonRes.ingredients",
-									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)    ",
-									"",
-									"        // set old ingredients to new ingredients to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(newRecipeIngredients))",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
 									"    })",
 									"    pm.test('Recipe instructions set has not changed', () => {",
 									"        const newRecipeInstructions = jsonRes.instructions",
-									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)    ",
-									"",
-									"        // set old instructions to new instructions to enable consecutive runs without fail",
-									"        pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(newRecipeInstructions))",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
 									"    })",
 									"})"
 								],
@@ -2059,7 +1786,7 @@
 								"exec": [
 									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
 									"",
-									"// get current values from agent before the PUT requests",
+									"// get current values from recipe before the PUT requests",
 									"pm.sendRequest(req, (err, res) => {",
 									"    if (err) throw err",
 									"    jsonRes = res.json().message",
@@ -2073,34 +1800,7 @@
 									"    const oldRecipeCategory = jsonRes.category",
 									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
 									"",
-									"    // new title is the old title reversed",
-									"    const newRecipeTitle = oldRecipeTitle.split(' ').reverse().join(' ')",
-									"",
-									"    // new about is the old about in reverse",
-									"    const newRecipeAbout = oldRecipeAbout.split(' ').reverse().join(' ')",
-									"",
-									"    // new preparation time is the reversed old quantity in the same units",
-									"    const newRecipePrepTime = {",
-									"        quantity: oldRecipePrepTime.readable.split('').reverse().join(''),",
-									"        unit: oldRecipePrepTime.unit",
-									"    }",
-									"",
-									"    // new ingredients are now all \"swirled\"",
-									"    const newRecipeIngredients = oldRecipeIngredients.map(i => {",
-									"        const name = i.name.split('').reverse().join('')",
-									"        const unit = i.amount.unit === 'pieces' ? 'to taste' : 'pieces'",
-									"        const quantity = i.amount.readable.split('').reverse().join('')",
-									"        return { name, amount: { quantity, unit } }",
-									"    })",
-									"",
-									"    // new instructions are the old instructions reversed",
-									"    const newRecipeInstructions = [...oldRecipeInstructions].reverse()",
-									"",
-									"    // new category is 'dinner' if the old one was 'breakfast', otherwise it's 'breakfast'",
-									"    const newRecipeCategory = oldRecipeCategory === 'breakfast' ? 'dinner' : 'breakfast'",
-									"",
-									"    // make the request and current recipe properties visible to tests",
-									"    pm.collectionVariables.set('putTestGetRecipeById', JSON.stringify(req))",
+									"    // make the current recipe properties visible to tests",
 									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
 									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
 									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
@@ -2108,12 +1808,6 @@
 									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
 									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
 									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
-									"    pm.collectionVariables.set('newRecipeTitle', newRecipeTitle)",
-									"    pm.collectionVariables.set('newRecipeAbout', newRecipeAbout)",
-									"    pm.collectionVariables.set('newRecipeCategory', newRecipeCategory)",
-									"    pm.collectionVariables.set('newRecipePrepTime', JSON.stringify(newRecipePrepTime))",
-									"    pm.collectionVariables.set('newRecipeIngredients', JSON.stringify(newRecipeIngredients))",
-									"    pm.collectionVariables.set('newRecipeInstructions', JSON.stringify(newRecipeInstructions))",
 									"})"
 								],
 								"type": "text/javascript"
@@ -2191,7 +1885,6 @@
 									"    if (err) throw err",
 									"",
 									"    // test that the recipe no longer exists after the DELETE request",
-									"    console.log(res.code)",
 									"    pm.test('Recipe no longer exists after request', () => pm.expect(res.code).to.be.equal(404))",
 									"})"
 								],
@@ -3215,37 +2908,6 @@
 					"response": []
 				},
 				{
-					"name": "user-not-found",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// assert that status code is 404",
-									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{apiRoot}}"
-							],
-							"path": [
-								"users",
-								"asdfasdfasdfasdfasdfasdf"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "get-user-by-id",
 					"event": [
 						{
@@ -3311,6 +2973,37 @@
 							"path": [
 								"users",
 								"{{userOfInterest}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf"
 							]
 						}
 					},
@@ -4250,6 +3943,1246 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "update-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.not.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.not.equal(oldUserName.last)",
+									"",
+									"        // set old name to new name to enable consecutive runs without fail",
+									"        pm.collectionVariables.set('oldUserName', JSON.stringify(newUserName))",
+									"    })",
+									"    pm.test('User username has changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.not.equal(oldUserUsername)",
+									"",
+									"        // set old username to new username to enable consecutive runs without fail",
+									"        pm.collectionVariables.set('oldUserUsername', newUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.not.equal(oldUserEmail)",
+									"",
+									"        // set old email to new email to enable consecutive runs without fail",
+									"        pm.collectionVariables.set('oldUserEmail', newUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const objectIdToDelete = pm.collectionVariables.get('userObjectIdToDelete')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/users/${objectIdToDelete}`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // new name is the old name reversed",
+									"    const newUserName = {",
+									"        ...oldUserName,",
+									"        first: oldUserName.last,",
+									"        last: oldUserName.first",
+									"    }",
+									"",
+									"    // new username is the old username in reverse",
+									"    const newUserUsername = oldUserUsername.split('').reverse().join('')",
+									"",
+									"    // new email is the old email user and domain swapped",
+									"    const parts = oldUserEmail.split('@')",
+									"    const userPart = parts[0]",
+									"    const domainPart = parts[1].split('.')[0]",
+									"    const newUserEmail = `${domainPart}@${userPart}.com`",
+									"",
+									"    // make the request and current user properties visible to tests",
+									"    pm.collectionVariables.set('putTestGetUserById', JSON.stringify(req))",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"    pm.collectionVariables.set('newUserName', JSON.stringify(newUserName))",
+									"    pm.collectionVariables.set('newUserUsername', newUserUsername)",
+									"    pm.collectionVariables.set('newUserEmail', newUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-not-included",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-first-not-included",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"middle\": \"Ana\",\n        \"last\": \"Sett\"\n    },\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-first-invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"@Rita\",\n        \"middle\": \"Ana\",\n        \"last\": \"Sett\"\n    },\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-last-not-included",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Rita\",\n        \"middle\": \"Ana\"\n    },\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "name-last-invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Rita\",\n        \"middle\": \"Ana\",\n        \"last\": \"@#Sett\"\n    },\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-not-included",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-invalid-short",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"short\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-invalid-bad-characters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"@#$%^!@\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-not-included",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"{{newUserUsername}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-invalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserPassword = pm.collectionVariables.get('oldUserPassword')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User password has not changed', () => {",
+									"        const newUserPassword = jsonRes.password",
+									"        pm.expect(newUserPassword).to.equal(oldUserPassword)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserPassword = jsonRes.password",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserPassword', oldUserPassword)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"alsajknd@,amsd n@a,ms d\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const req = JSON.parse(pm.collectionVariables.get('deleteTestGetUserById'))",
+									"",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"",
+									"    // test that the user no longer exists after the DELETE request",
+									"    pm.test('User no longer exists after request', () => pm.expect(res.code).to.be.equal(404))",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const objectIdToDelete = pm.collectionVariables.get('userObjectIdToDelete')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/users/${objectIdToDelete}`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"",
+									"    // test that the user currently exists before the DELETE request",
+									"    pm.test('User exists before request', () => pm.expect(res.code).to.be.equal(200))",
+									"",
+									"    // make the request visible to tests",
+									"    pm.collectionVariables.set('deleteTestGetUserById', JSON.stringify(req))",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -4410,6 +5343,46 @@
 		},
 		{
 			"key": "userObjectIdToDelete",
+			"value": ""
+		},
+		{
+			"key": "putTestGetUserById",
+			"value": ""
+		},
+		{
+			"key": "oldUserName",
+			"value": ""
+		},
+		{
+			"key": "oldUserUsername",
+			"value": ""
+		},
+		{
+			"key": "oldUserPassword",
+			"value": ""
+		},
+		{
+			"key": "oldUserEmail",
+			"value": ""
+		},
+		{
+			"key": "newUserName",
+			"value": ""
+		},
+		{
+			"key": "newUserUsername",
+			"value": ""
+		},
+		{
+			"key": "newUserPassword",
+			"value": ""
+		},
+		{
+			"key": "newUserEmail",
+			"value": ""
+		},
+		{
+			"key": "deleteTestGetUserById",
 			"value": ""
 		}
 	]

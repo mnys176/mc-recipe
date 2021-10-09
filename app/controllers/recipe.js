@@ -270,8 +270,9 @@ const prepareMedia = async (req, res, next) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string}   id    ID of the recipe.
- * @param {[object]} files File array created by Multer.
+ * @param {string} id    ID of the recipe.
+ * @param {object} files File information provided
+ *                       by Bouncer.
  * 
  * @returns {object} The results of the operation.
  */

@@ -6,15 +6,7 @@
  ********************************************************/
 
 const path = require('path')
-const {
-    readdir,
-    readFile,
-    rm,
-    mkdir,
-    rmdir,
-    chmod
-} = require('fs/promises')
-const FileType = require('file-type')
+const { readFile, rm, mkdir } = require('fs/promises')
 const quickResponse = require('../util/quick-response')
 
 const mediaDir = process.env.MEDIA_ROOT
@@ -52,64 +44,23 @@ const removeDir = async id => {
 }
 
 /**
- * Leverages the `file-type` module to sanitize
- * a directory. This analyses the actual file
- * contents as opposed to just the extension.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} dir    Path to the directory to be
- *                        sanitized.
- * @param {object} filter Regular expression for the
- *                        acceptable MIME types.
- * 
- * @returns {object} Filenames of the cleared and
- *                   rejected files in arrays.
- */
-const sanitize = async (dir, filter = /INVALID/) => {
-    try {
-        if (dir) {
-            const cleared = []
-            const rejected = []
-            const files = await readdir(dir)
-            for (let i = 0; i < files.length; i++) {
-                const name = files[i]
-                const filePath = path.join(dir, name)
-                const data = await readFile(filePath)
-                const fileType = await FileType.fromBuffer(data)
-
-                // if file is not legitimate, delete it
-                if (!fileType || !fileType.mime.match(filter)) {
-                    await rm(filePath, { force: true })
-                    rejected.push(name)
-                } else {
-                    // force permissions (just in case)
-                    await chmod(filePath, 0o644)
-                    cleared.push(name)
-                }
-            }
-            return { cleared, rejected }
-        }
-        return { cleared: [], rejected: [] }
-    } catch (err) {
-        throw err
-    }
-}
-
-/**
  * Updates and sanitizes a media directory for an
  * entity.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string}   id    ID of the entity.
- * @param {[object]} files File array created by Multer.
+ * @param {string} id    ID of the entity.
+ * @param {object} files File information provided
+ *                       by Bouncer.
  * 
  * @returns {object} The results of the operation.
  */
-const set = async (id, files = []) => {
+const set = async (id, files) => {
     try {
-        const dir = files.length > 0 ? files[0].destination : undefined
+        const { cleared, rejected } = files
+        const dir = cleared.length > 0 || rejected.length > 0 ?
+                    process.env.MEDIA_ROOT :
+                    undefined
 
         // check if no media was given to upload
         if (dir === undefined) {
@@ -117,16 +68,11 @@ const set = async (id, files = []) => {
                             ` "${id}", nothing to do.`
             return quickResponse(204, message)
         }
-
-        // clean out suspicious files and store names of rejects
-        const mimeFilter = /image\/(jpeg|png)/
-        const { cleared, rejected } = await sanitize(dir, mimeFilter)
-
         let message = 'Some of the selected media was unable to be uploaded.'
         let status = 201
 
         // check if all files were rejected by the sanitizer
-        if (rejected.length === files.length) {
+        if (cleared.length === 0) {
             message = 'The selected media was unable to be uploaded,' +
                       ' nothing to do.'
             status = 204

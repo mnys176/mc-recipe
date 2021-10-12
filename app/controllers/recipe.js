@@ -233,39 +233,6 @@ const exists = async id => {
 }
 
 /**
- * Middleware that prepares media directories based
- * on request.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {object}   req  The request.
- * @param {object}   res  The response.
- * @param {function} next Next middleware in line.
- */
-const prepareMedia = async (req, res, next) => {
-    const { id } = req.params
-    const notFoundMessage = `The recipe with ID of "${id}"` +
-                            ' does not exist.'
-    const recipeExists = await exists(id)
-
-    // skip multer entirely if recipe does not exist
-    if (!recipeExists) {
-        const { status, data } = quickResponse(404, notFoundMessage)
-        return res.status(status).json(data) && next('route')
-    }
-
-    if (req.method === 'POST') {
-        await media.createDir(id)
-    } else if (req.method === 'PUT') {
-        await media.removeDir(id)
-        await media.createDir(id)
-    } else if (req.method === 'DELETE') {
-        await media.removeDir(id)
-    }
-    return next()
-}
-
-/**
  * Stages a media directory for the recipe.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
@@ -277,11 +244,38 @@ const prepareMedia = async (req, res, next) => {
  * @returns {object} The results of the operation.
  */
 const setMedia = async (id, files) => {
-    const results = await media.set(id, files)
+    // ensure recipe exists before continuing
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' does not exist.'
+    const recipeExists = await exists(id)
+    if (!recipeExists) return quickResponse(404, notFoundMessage)
 
     // save filenames to recipe model
+    const results = await media.set(id, files)
     const { context } = results.data
-    if (context) {
+    if (context && context.cleared.length > 0) {
+        const temp = await fetchById(id)
+        const currRecipe = temp.data.message
+        currRecipe.media = context.cleared
+        currRecipe.save()
+    }
+    return results
+}
+
+/**
+ * 
+ */
+const resetMedia = async (id, files) => {
+    // ensure recipe exists before continuing
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' does not exist.'
+    const recipeExists = await exists(id)
+    if (!recipeExists) return quickResponse(404, notFoundMessage)
+
+    // update filenames in recipe model
+    const results = await media.reset(id, files)
+    const { context } = results.data
+    if (context && context.cleared.length > 0) {
         const temp = await fetchById(id)
         const currRecipe = temp.data.message
         currRecipe.media = context.cleared
@@ -300,6 +294,13 @@ const setMedia = async (id, files) => {
  * @returns {object} The results of the operation.
  */
 const unsetMedia = async id => {
+    // ensure recipe exists before continuing
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' does not exist.'
+    const recipeExists = await exists(id)
+    if (!recipeExists) return quickResponse(404, notFoundMessage)
+
+    // remove filenames from recipe model
     const results = await media.unset(id)
     const temp = await fetchById(id)
     const currRecipe = temp.data.message
@@ -326,8 +327,8 @@ module.exports = {
     create,
     change,
     discard,
-    prepareMedia,
     setMedia,
     unsetMedia,
+    resetMedia,
     fetchMedia
 }

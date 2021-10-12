@@ -17,7 +17,7 @@ const quantifiableSchema = new Schema({
 
 const recipeSchema = new Schema({
     title: { type: String, required: true },
-    media: { type: [String], default: [] },
+    media: [String],
     uploader: { type: String, default: 'Anon Y. Mous' },
     createdOn: { type: Date, default: Date.now() },
     modifiedOn: { type: Date, default: Date.now() },

@@ -9,6 +9,8 @@
  *     check the actual file signature in its bytes.  *
  ******************************************************/
 
+const crypto = require('crypto')
+const path = require('path')
 const FileType = require('file-type')
 
 /**
@@ -20,8 +22,8 @@ const parseMultipartFormData = raw => {
               .map(rb => rb.split('0d0a0d0a'))
               .filter(rb => rb[0] !== '')
               .map(rb => {
-                   // match is equivalent to /(?<=filename=")[a-f\d+](?=")/ in hex encoding
-                   const filenamePattern = /(?<=66696c656e616d653d22)[a-f\d]+(?=22)/
+                   // match is equivalent to /(?<=filename=")[a-f\d]*(?=")/ in hex encoding
+                   const filenamePattern = /(?<=66696c656e616d653d22)[a-f\d]*(?=22)/
 
                    const output = {}
                    const matches = rb[0].match(filenamePattern)
@@ -49,6 +51,18 @@ const clearFile = async (file, pattern) => {
 /**
  * 
  */
+// const randomFilename = async (length, extension) => {
+//     return new Promise((resolve, reject) => {
+//         crypto.randomBytes(length, (err, buf) => {
+//             if (err) return reject(err)
+//             return resolve(`${buf.toString('hex')}${extension}`)
+//         })
+//     })
+// }
+
+/**
+ * 
+ */
 const sanitize = async (files, mimePattern = /^$/) => {
     const cleared = []
     const rejected = []
@@ -64,9 +78,7 @@ const sanitize = async (files, mimePattern = /^$/) => {
             rejected.push(file.name)
         }
     }))
-
-    
-    return { cleared, rejected }
+    return { cleared, rejected, filteredFiles }
 }
 
 /**
@@ -74,8 +86,13 @@ const sanitize = async (files, mimePattern = /^$/) => {
  */
 const bounce = mimePattern => async (req, res, next) => {
     if (!mimePattern || mimePattern.constructor.name !== 'RegExp') return next()
+    if (req.headers['content-length'] === '0') return next()
+
     const boundaryPattern = /(?<=boundary=).*$/
-    const boundary = `${req.headers['content-type'].match(boundaryPattern)[0]}\r\n`
+
+    // TODO: inject this into the parse method
+    // const boundary = `${req.headers['content-type'].match(boundaryPattern)[0]}\r\n`
+
     let data = ''
 
     req.setEncoding('hex')
@@ -84,8 +101,8 @@ const bounce = mimePattern => async (req, res, next) => {
         // remove excess boundaries and whitespace
         const allFiles = parseMultipartFormData(data)
         req.files = await sanitize(allFiles, mimePattern)
+        return next()
     })
-    return next()
 }
 
 module.exports = { bounce }

@@ -2063,10 +2063,14 @@
 									"key": "foodImages",
 									"type": "file",
 									"src": [
+										"media/a.out",
+										"media/bad.zip",
 										"media/cake.jpg",
+										"media/evil",
 										"media/hello.png",
 										"media/illegal.svg",
 										"media/main.cpp",
+										"media/sneakier.png",
 										"media/sneaky.sh"
 									]
 								}
@@ -2603,7 +2607,7 @@
 									"",
 									"    // recipe was updated properly in the database",
 									"    pm.test('Recipe media properly linked', () => {",
-									"        pm.expect(media.length).to.equal(0)",
+									"        pm.expect(media.length).to.equal(3)",
 									"    })",
 									"})"
 								],
@@ -2676,7 +2680,7 @@
 									"",
 									"    // recipe was updated properly in the database",
 									"    pm.test('Recipe media properly linked', () => {",
-									"        pm.expect(media.length).to.equal(0)",
+									"        pm.expect(media.length).to.equal(3)",
 									"    })",
 									"})"
 								],

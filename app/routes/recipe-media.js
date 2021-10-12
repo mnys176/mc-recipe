@@ -7,17 +7,10 @@
 
 const express = require('express')
 const recipe = require('../controllers/recipe')
-const { mediaMulterEngine } = require('../middleware/media-multer')
 const { bounce } = require('../middleware/bouncer')
 
 // include parameters from recipe routes
 const router = express.Router({ mergeParams: true })
-
-// group of middlewares for uploading media with Multer
-const processMedia = [
-    bounce(/image\/(jpeg|png)/),
-    mediaMulterEngine.array('foodImages')
-]
 
 // get media for a recipe
 router.get('/:filename', async (req, res) => {
@@ -33,19 +26,19 @@ router.get('/:filename', async (req, res) => {
 })
 
 // create media for a recipe
-router.post('/', processMedia, async (req, res) => {
+router.post('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
     const { status, data } = await recipe.setMedia(req.params.id, req.files)
     return res.status(status).json(data)
 })
 
 // update media for a recipe
-router.put('/', processMedia, async (req, res) => {
-    const { status, data } = await recipe.setMedia(req.params.id, req.files)
+router.put('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
+    const { status, data } = await recipe.resetMedia(req.params.id, req.files)
     return res.status(status).json(data)
 })
 
 // delete media for a recipe
-router.delete('/', recipe.prepareMedia, async (req, res) => {
+router.delete('/', async (req, res) => {
     const { status, data } = await recipe.unsetMedia(req.params.id)
     return res.status(status).json(data)
 })

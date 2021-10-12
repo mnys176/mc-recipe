@@ -6,7 +6,7 @@
  ********************************************************/
 
 const path = require('path')
-const { readFile, rm, mkdir } = require('fs/promises')
+const { readFile, writeFile, rm, mkdir } = require('fs/promises')
 const quickResponse = require('../util/quick-response')
 
 const mediaDir = process.env.MEDIA_ROOT
@@ -21,7 +21,7 @@ const mediaDir = process.env.MEDIA_ROOT
 const createDir = async id => {
     try {
         const dir = path.join(mediaDir, id)
-        await mkdir(dir)
+        await mkdir(dir, { recursive: true })
     } catch (err) {
         // ignore for now
     }
@@ -44,6 +44,22 @@ const removeDir = async id => {
 }
 
 /**
+ * 
+ */
+const writeToDisk = async (id, files) => {
+    // write files to disk in parallel
+    return await Promise.all(files.map(async file => {
+        try {
+            const extension = path.extname(file.name)
+            const mediaFile = path.join(mediaDir, id, file.name)
+            return await writeFile(mediaFile, file.bytes)
+        } catch (err) {
+            // ignore for now
+        }
+    }))
+}
+
+/**
  * Updates and sanitizes a media directory for an
  * entity.
  * 
@@ -57,31 +73,39 @@ const removeDir = async id => {
  */
 const set = async (id, files) => {
     try {
-        const { cleared, rejected } = files
-        const dir = cleared.length > 0 || rejected.length > 0 ?
-                    process.env.MEDIA_ROOT :
-                    undefined
-
         // check if no media was given to upload
-        if (dir === undefined) {
+        if (!files) {
             const message = 'No media to upload for entity with ID of' +
                             ` "${id}", nothing to do.`
             return quickResponse(204, message)
         }
+        const { cleared, rejected, filteredFiles } = files
+
+        // default control variables based on success
         let message = 'Some of the selected media was unable to be uploaded.'
         let status = 201
+        let writeMedia = true
 
-        // check if all files were rejected by the sanitizer
-        if (cleared.length === 0) {
+        const nothingWasCleared = cleared.length === 0
+        const nothingWasRejected = rejected.length === 0
+        if (nothingWasCleared) {
             message = 'The selected media was unable to be uploaded,' +
                       ' nothing to do.'
             status = 204
-        } else if (rejected.length === 0) {
+            writeMedia = false
+        } else if (nothingWasRejected) {
             message = 'The media for entity with ID of' +
                       ` "${id}" was successfully uploaded.`
         }
+
+        // don't write media if there is nothing to upload
+        if (writeMedia) {
+            await createDir(id)
+            await writeToDisk(id, filteredFiles)
+        }
         return quickResponse(status, message, { cleared, rejected })
     } catch (err) {
+        throw err
         return quickResponse(500)
     }
 }
@@ -99,10 +123,19 @@ const unset = async id => {
     try {
         const message = 'The media for entity with ID of' +
                         ` "${id}" was successfully deleted.`
+        await removeDir(id)
         return quickResponse(200, message)
     } catch (err) {
         return quickResponse(500)
     }
+}
+
+/**
+ * 
+ */
+const reset = async (id, files) => {
+    await removeDir(id)
+    return await set(id, files)
 }
 
 /**
@@ -131,4 +164,4 @@ const fetch = async (id, name) => {
     }
 }
 
-module.exports = { set, unset, fetch, createDir, removeDir }
+module.exports = { set, unset, reset, fetch }

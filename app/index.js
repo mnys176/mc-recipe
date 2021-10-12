@@ -15,9 +15,6 @@ const dotenv = require('dotenv').config()
 // make connection to MongoDB asynchronously
 require('./util/mongo')
 
-// create media directory root
-require('./util/check-media')
-
 const app = express()
 const port = process.env.PORT || 8080
 const webapp = path.join(__dirname, 'webapp', 'dist')

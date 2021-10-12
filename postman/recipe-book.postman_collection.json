@@ -2457,8 +2457,6 @@
 									"    if (err) throw err",
 									"    const { media } = res.json().message",
 									"",
-									"    console.log(res.json())",
-									"",
 									"    // recipe was updated properly in the database",
 									"    pm.test('Recipe media properly linked', () => {",
 									"        pm.expect(media.length).to.equal(3)",

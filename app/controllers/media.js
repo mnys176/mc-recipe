@@ -44,7 +44,13 @@ const removeDir = async id => {
 }
 
 /**
+ * Writes files to the media root.
  * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id    ID of the entity.
+ * @param {object} files File information provided
+ *                       by Bouncer.
  */
 const writeToDisk = async (id, files) => {
     // write files to disk in parallel
@@ -60,7 +66,7 @@ const writeToDisk = async (id, files) => {
 }
 
 /**
- * Updates and sanitizes a media directory for an
+ * Sets and populates a media directory for an
  * entity.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
@@ -105,7 +111,6 @@ const set = async (id, files) => {
         }
         return quickResponse(status, message, { cleared, rejected })
     } catch (err) {
-        throw err
         return quickResponse(500)
     }
 }
@@ -131,7 +136,16 @@ const unset = async id => {
 }
 
 /**
+ * Resets and populates a media directory for an
+ * entity.
  * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id    ID of the entity.
+ * @param {object} files File information provided
+ *                       by Bouncer.
+ * 
+ * @returns {object} The results of the operation.
  */
 const reset = async (id, files) => {
     await removeDir(id)

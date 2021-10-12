@@ -256,14 +256,28 @@ const setMedia = async (id, files) => {
     if (context && context.cleared.length > 0) {
         const temp = await fetchById(id)
         const currRecipe = temp.data.message
-        currRecipe.media = context.cleared
+
+        // TODO: implement a check here to prevent duplicates in model
+
+        // not an update, do not overwrite
+        currRecipe.media = [...currRecipe.media, ...context.cleared]
+
         currRecipe.save()
     }
     return results
 }
 
 /**
+ * Removes and restages a media directory for the
+ * recipe.
  * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id    ID of the recipe.
+ * @param {object} files File information provided
+ *                       by Bouncer.
+ * 
+ * @returns {object} The results of the operation.
  */
 const resetMedia = async (id, files) => {
     // ensure recipe exists before continuing

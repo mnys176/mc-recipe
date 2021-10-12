@@ -14,7 +14,15 @@ const path = require('path')
 const FileType = require('file-type')
 
 /**
+ * Parses the raw HTTP multipart body.
  * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} raw The raw, unparsed body as
+ *                     a hex string.
+ * 
+ * @returns {[object]} An array with the file
+ *                     information.
  */
 const parseMultipartFormData = raw => {
     return raw.replace(/(2d2d)?(2d){28}[a-f\d]{48}(2d2d)?0d0a/g, '|')
@@ -22,8 +30,8 @@ const parseMultipartFormData = raw => {
               .map(rb => rb.split('0d0a0d0a'))
               .filter(rb => rb[0] !== '')
               .map(rb => {
-                   // match is equivalent to /(?<=filename=")[a-f\d]*(?=")/ in hex encoding
-                   const filenamePattern = /(?<=66696c656e616d653d22)[a-f\d]*(?=22)/
+                   // match is equivalent to /(?<=filename=")[a-f\d]+(?=")/ in hex encoding
+                   const filenamePattern = /(?<=66696c656e616d653d22)[a-f\d]+(?=22)/
 
                    const output = {}
                    const matches = rb[0].match(filenamePattern)
@@ -37,7 +45,18 @@ const parseMultipartFormData = raw => {
 }
 
 /**
+ * Checks file's bytes and flags it if necessary.
  * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {object} file        File information that was
+ *                             discovered.
+ * @param {object} mimePattern A regular expression that
+ *                             explicitly describes the
+ *                             allowed MIME types.
+ * 
+ * @returns {boolean} True if the file is valid, false
+ *                    otherwise.
  */
 const clearFile = async (file, pattern) => {
     try {
@@ -48,9 +67,8 @@ const clearFile = async (file, pattern) => {
     }
 }
 
-/**
- * 
- */
+// TODO: implement this either here or somewhere else
+
 // const randomFilename = async (length, extension) => {
 //     return new Promise((resolve, reject) => {
 //         crypto.randomBytes(length, (err, buf) => {
@@ -61,7 +79,25 @@ const clearFile = async (file, pattern) => {
 // }
 
 /**
+ * Sanitizes an array of file buffers using the
+ * `file-type` module. This functionality was desired
+ * because it goes beyond simply checking the file
+ * extension and verifies the internal bytes of the file.
  * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {[object]} files       An array of objects
+ *                               containing the raw bytes
+ *                               of each file and original
+ *                               name.
+ * @param   {object} mimePattern A regular expression that
+ *                               explicitly describes the
+ *                               allowed MIME types.
+ * 
+ * @returns {object} An object containing the names and bytes
+ *                   of the cleared files as well as the
+ *                   names of any files that had an invalid
+ *                   MIME type.
  */
 const sanitize = async (files, mimePattern = /^$/) => {
     const cleared = []
@@ -82,7 +118,17 @@ const sanitize = async (files, mimePattern = /^$/) => {
 }
 
 /**
+ * Generates middleware for intercepting multipart form
+ * data submitted by the user and vets the contents of each
+ * file to give sort out any suspicious files that are
+ * faking a file extension.
  * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {object} mimePattern A regular expression that matches
+ *                             the acceptable MIME types.
+ * 
+ * @returns {object} Middleware for the sanitizing process.
  */
 const bounce = mimePattern => async (req, res, next) => {
     if (!mimePattern || mimePattern.constructor.name !== 'RegExp') return next()

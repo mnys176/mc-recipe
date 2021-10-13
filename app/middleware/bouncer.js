@@ -18,14 +18,18 @@ const FileType = require('file-type')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} raw The raw, unparsed body as
- *                     a hex string.
+ * @param {string} raw      The raw, unparsed body as
+ *                          a hex string.
+ * @param {object} boundary The multipart boundary.
  * 
  * @returns {[object]} An array with the file
  *                     information.
  */
-const parseMultipartFormData = raw => {
-    return raw.replace(/(2d2d)?(2d){28}[a-f\d]{48}(2d2d)?0d0a/g, '|')
+const parseMultipartFormData = (raw, boundary) => {
+    // convert boundary to a hex string
+    boundary = Buffer.from(boundary).toString('hex')
+    const boundaryPattern = new RegExp(`(2d){2}${boundary}(2d2d)?0d0a`, 'g')
+    return raw.replace(boundaryPattern, '|')
               .split('|')
               .map(rb => rb.split('0d0a0d0a'))
               .filter(rb => rb[0] !== '')
@@ -134,18 +138,15 @@ const bounce = mimePattern => async (req, res, next) => {
     if (!mimePattern || mimePattern.constructor.name !== 'RegExp') return next()
     if (req.headers['content-length'] === '0') return next()
 
-    const boundaryPattern = /(?<=boundary=).*$/
-
-    // TODO: inject this into the parse method
-    // const boundary = `${req.headers['content-type'].match(boundaryPattern)[0]}\r\n`
-
+    // holds raw bytes of multipart body
     let data = ''
 
     req.setEncoding('hex')
     req.on('data', chunk => data += chunk)
     req.on('end', async () => {
         // remove excess boundaries and whitespace
-        const allFiles = parseMultipartFormData(data)
+        const boundary = req.headers['content-type'].match(/(?<=boundary=).*$/)[0]
+        const allFiles = parseMultipartFormData(data, boundary)
         req.files = await sanitize(allFiles, mimePattern)
         return next()
     })

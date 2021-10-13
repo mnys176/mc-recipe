@@ -140,8 +140,8 @@ const bounce = mimePattern => async (req, res, next) => {
 
     // holds raw bytes of multipart body
     let data = ''
-
     req.setEncoding('hex')
+
     req.on('data', chunk => data += chunk)
     req.on('end', async () => {
         // remove excess boundaries and whitespace

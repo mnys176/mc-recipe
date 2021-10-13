@@ -257,11 +257,9 @@ const setMedia = async (id, files) => {
         const temp = await fetchById(id)
         const currRecipe = temp.data.message
 
-        // TODO: implement a check here to prevent duplicates in model
-
         // not an update, do not overwrite
-        currRecipe.media = [...currRecipe.media, ...context.cleared]
-
+        const uniqueMedia = new Set([...currRecipe.media, ...context.cleared])
+        currRecipe.media = Array.from(uniqueMedia)
         currRecipe.save()
     }
     return results
@@ -292,7 +290,10 @@ const resetMedia = async (id, files) => {
     if (context && context.cleared.length > 0) {
         const temp = await fetchById(id)
         const currRecipe = temp.data.message
-        currRecipe.media = context.cleared
+
+        // ensure no duplicates exist (similar to `setMedia`)
+        const uniqueMedia = new Set(context.cleared)
+        currRecipe.media = Array.from(uniqueMedia)
         currRecipe.save()
     }
     return results

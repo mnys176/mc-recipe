@@ -71,16 +71,25 @@ const clearFile = async (file, pattern) => {
     }
 }
 
-// TODO: implement this either here or somewhere else
-
-// const randomFilename = async (length, extension) => {
-//     return new Promise((resolve, reject) => {
-//         crypto.randomBytes(length, (err, buf) => {
-//             if (err) return reject(err)
-//             return resolve(`${buf.toString('hex')}${extension}`)
-//         })
-//     })
-// }
+/**
+ * "Promise-ified" version of the `crypto` module's
+ * `randomBytes` method.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {number} length The number of hexadecimal
+ *                        bytes in the string.
+ * 
+ * @returns {string} The resulting byte string.
+ */
+const randomBytes = async (length = 8) => {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(length, (err, buf) => {
+            if (err) return reject(err)
+            return resolve(buf.toString('hex'))
+        })
+    })
+}
 
 /**
  * Sanitizes an array of file buffers using the
@@ -112,7 +121,9 @@ const sanitize = async (files, mimePattern = /^$/) => {
     await Promise.all(files.map(async file => {
         const ok = await clearFile(file, mimePattern)
         if (ok) {
-            cleared.push(file.name)
+            const { name, ext } = path.parse(file.name)
+            const scramble = await randomBytes(8)
+            cleared.push(`${name}-${scramble}${ext}`)
             filteredFiles.push(file)
         } else if (file.name) {
             rejected.push(file.name)

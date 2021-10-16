@@ -1,9 +1,9 @@
-/**********************************************************
- * Title:       recipe-media.js                           *
- * Author:      Mike Nystoriak (nystoriakm@gmail.com)     *
- * Created:     09/27/2021                                *
- * Description: Set of API routes that pertains to media. *
- **********************************************************/
+/*****************************************************************
+ * Title:       recipe-media.js                                  *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)            *
+ * Created:     09/27/2021                                       *
+ * Description: Set of API routes that pertains to recipe media. *
+ *****************************************************************/
 
 const express = require('express')
 const recipe = require('../controllers/recipe')

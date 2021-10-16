@@ -258,7 +258,12 @@ const setMedia = async (id, files) => {
         const currRecipe = temp.data.message
 
         // not an update, do not overwrite
-        const uniqueMedia = new Set([...currRecipe.media, ...context.cleared])
+        const uniqueMedia = new Set([
+            ...currRecipe.media,
+            ...context.cleared.map(m => {
+                return m.unique
+            })
+        ])
         currRecipe.media = Array.from(uniqueMedia)
         currRecipe.save()
     }
@@ -292,7 +297,9 @@ const resetMedia = async (id, files) => {
         const currRecipe = temp.data.message
 
         // ensure no duplicates exist (similar to `setMedia`)
-        const uniqueMedia = new Set(context.cleared)
+        const uniqueMedia = new Set(context.cleared.map(m => {
+            return m.unique
+        }))
         currRecipe.media = Array.from(uniqueMedia)
         currRecipe.save()
     }

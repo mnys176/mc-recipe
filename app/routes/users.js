@@ -11,7 +11,7 @@ const user = require('../controllers/user')
 const router = express.Router()
 
 // include media routes
-// router.use('/:id/media', require('./user-media'))
+router.use('/:id/media', require('./user-media'))
 
 // get all recipes
 router.get('/', async (req, res) => {

@@ -48,7 +48,7 @@ const extractUser = (body, rehash) => {
         // encrypt password
         bcrypt.hash(body.password, 14, (err, hash) => {
             if (err) {
-                // make BCrypt error message look like Mongoose error
+                // make `bcrypt` error message look like Mongoose error
                 err.message = 'User validation failed: password:' +
                               ' Path `password` is required.'
                 return reject(err)
@@ -204,70 +204,74 @@ const discard = async id => {
  * @returns {boolean} True if it does exist,
  *                    false otherwise.
  */
-// const exists = async id => {
-//     try {
-//         return await User.exists({ _id: id })
-//     } catch (err) {
-//         return false
-//     }
-// }
-
-/**
- * Middleware that prepares media directories based
- * on request.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {object}   req  The request.
- * @param {object}   res  The response.
- * @param {function} next Next middleware in line.
- */
-// const prepareMedia = async (req, res, next) => {
-//     const { id } = req.params
-//     const notFoundMessage = `The user with ID of "${id}"` +
-//                             ' does not exist.'
-//     const userExists = await exists(id)
-
-//     // skip multer entirely if user does not exist
-//     if (!userExists) {
-//         const { status, data } = quickResponse(404, notFoundMessage)
-//         return res.status(status).json(data) && next('route')
-//     }
-
-//     if (req.method === 'POST') {
-//         await media.createDir(id)
-//     } else if (req.method === 'PUT') {
-//         await media.removeDir(id)
-//         await media.createDir(id)
-//     } else if (req.method === 'DELETE') {
-//         await media.removeDir(id)
-//     }
-//     return next()
-// }
+const exists = async id => {
+    try {
+        return await User.exists({ _id: id })
+    } catch (err) {
+        return false
+    }
+}
 
 /**
  * Stages a media directory for the user.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string}   id    ID of the user.
- * @param {[object]} files File array created by Multer.
+ * @param {string} id    ID of the user.
+ * @param {object} files File information provided
+ *                       by Bouncer.
  * 
  * @returns {object} The results of the operation.
  */
-// const setMedia = async (id, files) => {
-//     const results = await media.set(id, files)
+const setMedia = async (id, files) => {
+    // ensure user exists before continuing
+    const notFoundMessage = `The user with ID of "${id}"` +
+                            ' does not exist.'
+    const userExists = await exists(id)
+    if (!userExists) return quickResponse(404, notFoundMessage)
 
-//     // save filenames to user model
-//     const { context } = results.data
-//     if (context) {
-//         const temp = await fetchById(id)
-//         const currUser = temp.data.message
-//         currUser.media = context.cleared
-//         currUser.save()
-//     }
-//     return results
-// }
+    // save filenames to user model
+    const results = await media.set(id, files)
+    const { context } = results.data
+    if (context && context.cleared.length > 0) {
+        const temp = await fetchById(id)
+        const currUser = temp.data.message
+        currUser.media = context.cleared[0].unique
+        currUser.save()
+    }
+    return results
+}
+
+/**
+ * Removes and restages a media directory for the
+ * user.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id    ID of the user.
+ * @param {object} files File information provided
+ *                       by Bouncer.
+ * 
+ * @returns {object} The results of the operation.
+ */
+const resetMedia = async (id, files) => {
+    // ensure user exists before continuing
+    const notFoundMessage = `The user with ID of "${id}"` +
+                            ' does not exist.'
+    const userExists = await exists(id)
+    if (!userExists) return quickResponse(404, notFoundMessage)
+
+    // update filenames in user model
+    const results = await media.reset(id, files)
+    const { context } = results.data
+    if (context && context.cleared.length > 0) {
+        const temp = await fetchById(id)
+        const currUser = temp.data.message
+        currUser.media = context.cleared[0].unique
+        currUser.save()
+    }
+    return results
+}
 
 /**
  * Stages a media directory for the user.
@@ -278,14 +282,21 @@ const discard = async id => {
  * 
  * @returns {object} The results of the operation.
  */
-// const unsetMedia = async id => {
-//     const results = await media.unset(id)
-//     const temp = await fetchById(id)
-//     const currUser = temp.data.message
-//     currUser.media = []
-//     currUser.save()
-//     return results
-// }
+const unsetMedia = async id => {
+    // ensure user exists before continuing
+    const notFoundMessage = `The user with ID of "${id}"` +
+                            ' does not exist.'
+    const userExists = await exists(id)
+    if (!userExists) return quickResponse(404, notFoundMessage)
+
+    // remove filenames from user model
+    const results = await media.unset(id)
+    const temp = await fetchById(id)
+    const currUser = temp.data.message
+    currUser.media = ''
+    currUser.save()
+    return results
+}
 
 /**
  * Fetches media for the user.
@@ -297,16 +308,16 @@ const discard = async id => {
  * 
  * @returns {object} The results of the operation.
  */
-// const fetchMedia = async (id, name) => await media.fetch(id, name)
+const fetchMedia = async (id, name) => await media.fetch(id, name)
 
 module.exports = {
     fetch,
     fetchById,
     create,
     change,
-    discard
-    // prepareMedia,
-    // setMedia,
-    // unsetMedia,
-    // fetchMedia
+    discard,
+    setMedia,
+    resetMedia,
+    unsetMedia,
+    fetchMedia
 }

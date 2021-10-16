@@ -2010,7 +2010,7 @@
 									"const { context } = pm.response.json()",
 									"",
 									"// extract a filename for later",
-									"pm.collectionVariables.set('mediaFilenameToGet', context.cleared[0])",
+									"pm.collectionVariables.set('recipeMediaFilenameToGet', context.cleared[0].unique)",
 									"",
 									"// assert that status code is 201",
 									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
@@ -2041,7 +2041,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Only a single image was linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(1)",
 									"    })",
 									"})"
@@ -2121,7 +2121,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Still only one image linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(1)",
 									"    })",
 									"})"
@@ -2188,7 +2188,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Still only one image linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(1)",
 									"    })",
 									"})"
@@ -2261,7 +2261,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Still only one image linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(1)",
 									"    })",
 									"})"
@@ -2320,7 +2320,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media/{{mediaFilenameToGet}}",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeOfInterest}}/media/{{recipeMediaFilenameToGet}}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
@@ -2329,7 +2329,7 @@
 								"recipes",
 								"{{recipeOfInterest}}",
 								"media",
-								"{{mediaFilenameToGet}}"
+								"{{recipeMediaFilenameToGet}}"
 							]
 						}
 					},
@@ -2353,7 +2353,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf/media/{{mediaFilenameToGet}}",
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/asdfasdfasdfasdfasdfasdf/media/{{recipeMediaFilenameToGet}}",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
@@ -2362,7 +2362,7 @@
 								"recipes",
 								"asdfasdfasdfasdfasdfasdf",
 								"media",
-								"{{mediaFilenameToGet}}"
+								"{{recipeMediaFilenameToGet}}"
 							]
 						}
 					},
@@ -2458,7 +2458,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Now three recipes are linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(3)",
 									"    })",
 									"})"
@@ -2537,7 +2537,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Still only three images linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(3)",
 									"    })",
 									"})"
@@ -2604,7 +2604,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Still only three images linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(3)",
 									"    })",
 									"})"
@@ -2677,7 +2677,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('Still only three images linked to the recipe', () => {",
 									"        pm.expect(media.length).to.equal(3)",
 									"    })",
 									"})"
@@ -2754,7 +2754,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('All images were unlinked from the recipe', () => {",
 									"        pm.expect(media.length).to.equal(0)",
 									"    })",
 									"})"
@@ -2812,7 +2812,7 @@
 									"    const { media } = res.json().message",
 									"",
 									"    // recipe was updated properly in the database",
-									"    pm.test('Recipe media properly linked', () => {",
+									"    pm.test('All images still unlinked from the recipe', () => {",
 									"        pm.expect(media.length).to.equal(0)",
 									"    })",
 									"})"
@@ -5287,6 +5287,856 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "user-media",
+			"item": [
+				{
+					"name": "create-user-media",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const userId = pm.collectionVariables.get('userOfInterest')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/users/${userId}`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"pm.collectionVariables.set('postMediaTestGetUserById', JSON.stringify(req))"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetUserById'))",
+									"const { context } = pm.response.json()",
+									"",
+									"// extract a filename for later",
+									"pm.collectionVariables.set('userMediaFilenameToGet', context.cleared[0].unique)",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// both cleared and rejected arrays must be present",
+									"pm.test('Cleared and rejected arrays returned in an object', () => {",
+									"    pm.expect(context).to.be.an('object')",
+									"        .that.has.all.keys('cleared', 'rejected')",
+									"})",
+									"",
+									"// make sure some rejects were returned to the client",
+									"pm.test('Bad files were rejected', () => {",
+									"    const { rejected } = context",
+									"    pm.expect(rejected).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// make sure some cleared files were returned to the client",
+									"pm.test('Good files were not rejected', () => {",
+									"    const { cleared } = context",
+									"    pm.expect(cleared).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename now linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userImage",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/dice.png",
+										"media/evil"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "media-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userImage",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "only-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userImage",
+									"type": "file",
+									"src": "media/evil"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userImage",
+									"type": "file",
+									"src": "media/dice.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-user-media",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media/{{userMediaFilenameToGet}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media",
+								"{{userMediaFilenameToGet}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf/media/{{userMediaFilenameToGet}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf",
+								"media",
+								"{{userMediaFilenameToGet}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "media-not-found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media/asdfasdfasdfasdfasdfasdfasdfasdf.jpg",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media",
+								"asdfasdfasdfasdfasdfasdfasdfasdf.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-user-media",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const userId = pm.collectionVariables.get('userOfInterest')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/users/${userId}`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"pm.collectionVariables.set('putMediaTestGetUserById', JSON.stringify(req))"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetUserById'))",
+									"const { context } = pm.response.json()",
+									"",
+									"// assert that status code is 201",
+									"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+									"",
+									"// both cleared and rejected arrays must be present",
+									"pm.test('Cleared and rejected arrays returned in an object', () => {",
+									"    pm.expect(context).to.be.an('object')",
+									"        .that.has.all.keys('cleared', 'rejected')",
+									"})",
+									"",
+									"// make sure some rejects were returned to the client",
+									"pm.test('Bad files were rejected', () => {",
+									"    const { rejected } = context",
+									"    pm.expect(rejected).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// make sure some cleared files were returned to the client",
+									"pm.test('Good files were not rejected', () => {",
+									"    const { cleared } = context",
+									"    pm.expect(cleared).to.be.an('array')",
+									"        .that.has.lengthOf.greaterThan(0)",
+									"})",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userImage",
+									"type": "file",
+									"src": [
+										"media/bad.zip",
+										"media/cake.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "media-not-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "only-rejected-media-included",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 204",
+									"pm.test('Status code is 204', () => pm.response.to.have.status(204))",
+									"",
+									"// assert that absolutely nothing was returned",
+									"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/evil",
+										"media/hello.png",
+										"media/illegal.svg",
+										"media/main.cpp",
+										"media/sneakier.png",
+										"media/sneaky.sh"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user-media",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set variables to form a request",
+									"const apiRoot = pm.collectionVariables.get('apiRoot')",
+									"const protocol = pm.collectionVariables.get('protocol')",
+									"const userId = pm.collectionVariables.get('userOfInterest')",
+									"const req = {",
+									"    url: `${protocol}://${apiRoot}/users/${userId}`,",
+									"    method: 'GET',",
+									"    headers: { 'Content-Type': 'application/json' }",
+									"}",
+									"pm.collectionVariables.set('deleteMediaTestGetUserById', JSON.stringify(req))"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('deleteMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 200",
+									"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename no longer linked to the user', () => {",
+									"        pm.expect(media.length).to.equal(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-not-found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('deleteMediaTestGetUserById'))",
+									"",
+									"// assert that status code is 404",
+									"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename still not linked to the user', () => {",
+									"        pm.expect(media.length).to.equal(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foodImages",
+									"type": "file",
+									"src": [
+										"media/cake.jpg",
+										"media/dice.png",
+										"media/doughnuts.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/asdfasdfasdfasdfasdfasdf/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"asdfasdfasdfasdfasdfasdf",
+								"media"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -5485,6 +6335,26 @@
 		},
 		{
 			"key": "deleteTestGetUserById",
+			"value": ""
+		},
+		{
+			"key": "postMediaTestGetUserById",
+			"value": ""
+		},
+		{
+			"key": "deleteMediaTestGetUserById",
+			"value": ""
+		},
+		{
+			"key": "putMediaTestGetUserById",
+			"value": ""
+		},
+		{
+			"key": "recipeMediaFilenameToGet",
+			"value": ""
+		},
+		{
+			"key": "userMediaFilenameToGet",
 			"value": ""
 		}
 	]

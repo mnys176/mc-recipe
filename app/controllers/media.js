@@ -57,7 +57,7 @@ const writeToDisk = async (id, files) => {
     return await Promise.all(files.map(async file => {
         try {
             const extension = path.extname(file.name)
-            const mediaFile = path.join(mediaDir, id, file.name)
+            const mediaFile = path.join(mediaDir, id, file.unique)
             return await writeFile(mediaFile, file.bytes)
         } catch (err) {
             // ignore for now

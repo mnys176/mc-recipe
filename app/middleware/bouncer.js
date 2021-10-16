@@ -123,8 +123,9 @@ const sanitize = async (files, mimePattern = /^$/) => {
         if (ok) {
             const { name, ext } = path.parse(file.name)
             const scramble = await randomBytes(8)
-            cleared.push(`${name}-${scramble}${ext}`)
-            filteredFiles.push(file)
+            const unique = `${name}-${scramble}${ext}`
+            cleared.push({ original: file.name, unique })
+            filteredFiles.push({ unique, ...file})
         } else if (file.name) {
             rejected.push(file.name)
         }

@@ -1,360 +1,40 @@
-/******************************************************
- * Title:       user.js                               *
- * Author:      Mike Nystoriak (nystoriakm@gmail.com) *
- * Created:     09/29/2021                            *
- * Description:                                       *
- *     Set of functions that interact with the        *
- *     user Mongoose model.                           *
- ******************************************************/
+/**********************************************************
+ * Title:       user.js                                   *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)     *
+ * Created:     09/29/2021                                *
+ * Description: Controls the dataflow of user API routes. *
+ **********************************************************/
 
-const path = require('path')
-const bcrypt = require('bcrypt')
-const media = require('./media')
-const { User } = require('../models')
-const quickResponse = require('../util/quick-response')
-
-/**
- * Confirms that the provided ID is a MongoDB
- * ObjectID.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id Provided ObjectID.
- * 
- * @returns {boolean} True if valid, false if not.
- */
-const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
-
-/**
- * Extracts a user object from the request
- * body to be handled by Mongoose.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- *
- * @param {object}  body   Request body object.
- * @param {boolean} rehash Rehash the password with
- *                         BCrypt.
- * 
- * @returns {object} Premature user as a `Promise`.
- */
-const extractUser = (body, rehash) => {
-    return new Promise((resolve, reject) => {
-        // bring literal data into user
-        const userBuilder = { ...body }
-
-        // skip encryption if desired
-        if (!rehash) return resolve(userBuilder)
-
-        // encrypt password
-        bcrypt.hash(body.password, 14, (err, hash) => {
-            if (err) {
-                // make `bcrypt` error message look like Mongoose error
-                err.message = 'User validation failed: password:' +
-                              ' Path `password` is required.'
-                return reject(err)
-            }
-            userBuilder.password = hash
-            return resolve(userBuilder)
-        })
-    })
-}
-
-/**
- * Fetches all users and returns the results
- * to the routes to be parsed.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @returns {object} The results of the query.
- */
-const fetch = async () => {
-    try {
-        const data = await User.find()
-        return quickResponse(200, data)
-    } catch (err) {
-        // this should never happen
-        return quickResponse(500)
-    }
-}
-
-/**
- * Fetches a single user and returns the result
- * to the routes to be parsed.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the user.
- * 
- * @returns {object} The results of the query.
- */
-const fetchById = async id => {
-    const notFoundMessage = `The user with ID of "${id}"` +
-                            ' could not be retrieved.'
-    try {
-        const data = await User.findById(id)
-        if (data) return quickResponse(200, data)
-        return quickResponse(404, notFoundMessage)
-    } catch (err) {
-        // handle invalid IDs as 'Not Found'
-        return quickResponse(404, notFoundMessage)
-    }
-}
-
-/**
- * Creates a user and adds it to the database.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {object} json A JSON object with the bones
- *                      of a user.
- * 
- * @returns {object} The results of the operation.
- */
-const create = async json => {
-    try {
-        const newUser = new User(await extractUser(json, true))
-        await newUser.save()
-        const message = `The user with ID of "${newUser._id}"` +
-                        ' was successfully created.'
-        return quickResponse(201, message)
-    } catch (err) {
-        const message = 'The user could not be created.'
-        return quickResponse(400, message, err.message)
-    }
-}
-
-/**
- * Modifies a user in the database.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id   The ID of the user.
- * @param {object} json A JSON object with the bones
- *                      of a user.
- * 
- * @returns {object} The results of the operation.
- */
-const change = async (id, json) => {
-    try {
-        if (!objectIdIsValid(id)) {
-            const message = `The user with ID of "${id}"` +
-                            ' could not be retrieved.'
-            return quickResponse(404, message)
-        }
-
-        // use method that already handles '404 Not Found'
-        const temp = await fetchById(id)
-        const currUser = temp.data.message
-
-        // determine whether or not to change (rehash) a password
-        const makeNewPassword = json.hasOwnProperty('password')
-        const newUser = new User(await extractUser(json, makeNewPassword))
-
-        // map new properties to user model
-        currUser.name = newUser.name
-        currUser.username = newUser.username
-        currUser.email = newUser.email
-        currUser.password = newUser.password ?? currUser.password
-
-        await currUser.save()
-
-        const message = `The user with ID of "${id}"` +
-                        ' was successfully updated.'
-        return quickResponse(200, message)
-    } catch (err) {
-        const message = `The user with ID of "${id}"` +
-                        ' could not be updated.'
-        return quickResponse(400, message, err.message)
-    }
-}
-
-/**
- * Discards a user from the database.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the user.
- * 
- * @returns {object} The results of the operation.
- */
-const discard = async id => {
-    const notFoundMessage = `The user with ID of "${id}"` +
-                            ' could not be retrieved.'
-    try {
-        if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
-        const data = await User.findByIdAndDelete(id)
-        if (!data) return quickResponse(404, notFoundMessage)
-
-        const message = `The user with ID of "${id}"` +
-                        ' was successfully deleted.'
-        return quickResponse(200, message)
-    } catch (err) {
-        // handle invalid IDs as 'Not Found'
-        return quickResponse(404, notFoundMessage)
-    }
-}
-
-/**
- * Checks if a user exists in the database.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id The ID of the user.
- * 
- * @returns {boolean} True if it does exist,
- *                    false otherwise.
- */
-const exists = async id => {
-    try {
-        return await User.exists({ _id: id })
-    } catch (err) {
-        return false
-    }
-}
-
-/**
- * Stages a media directory for the user.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id    ID of the user.
- * @param {object} files File information provided
- *                       by Bouncer.
- * 
- * @returns {object} The results of the operation.
- */
-const setMedia = async (id, files) => {
-    // ensure user exists before continuing
-    const notFoundMessage = `The user with ID of "${id}"` +
-                            ' does not exist.'
-    const userExists = await exists(id)
-    if (!userExists) return quickResponse(404, notFoundMessage)
-
-    const temp = await fetchById(id)
-    const currUser = temp.data.message
-
-    // make sure the '204 No Content' response doesn't apply first
-    let noContentResponseNotNeeded = false
-    if (files) {
-        const mediaIncluded = Object.values(files).some(a => a.length > 0)
-        const somethingWasCleared = files.cleared.length > 0
-        noContentResponseNotNeeded = mediaIncluded && somethingWasCleared
-    }
-
-    // not an update, do not change media if it already exists
-    if (currUser.media && noContentResponseNotNeeded) {
-        const message = `The media for the user with ID of "${id}"` +
-                        ' could not be created, already exists.'
-        return quickResponse(400, message)
-    }
-
-    // save filenames to user model
-    const results = await media.set(id, files)
-    const { context } = results.data
-    if (context && context.cleared.length > 0) {
-        currUser.media = context.cleared[0].unique
-        currUser.save()
-    }
-    return results
-}
-
-/**
- * Removes and restages a media directory for the
- * user.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id    ID of the user.
- * @param {object} files File information provided
- *                       by Bouncer.
- * 
- * @returns {object} The results of the operation.
- */
-const resetMedia = async (id, files) => {
-    // ensure user exists before continuing
-    const notFoundMessage = `The user with ID of "${id}"` +
-                            ' does not exist.'
-    const userExists = await exists(id)
-    if (!userExists) return quickResponse(404, notFoundMessage)
-
-    const temp = await fetchById(id)
-    const currUser = temp.data.message
-
-    // update filenames in user model
-    const results = await media.reset(id, files)
-    const { context } = results.data
-    if (context && context.cleared.length > 0) {
-        currUser.media = context.cleared[0].unique
-        currUser.save()
-    }
-    return results
-}
-
-/**
- * Stages a media directory for the user.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id ID of the user.
- * 
- * @returns {object} The results of the operation.
- */
-const unsetMedia = async id => {
-    // ensure user exists before continuing
-    const notFoundMessage = `The user with ID of "${id}"` +
-                            ' does not exist.'
-    const userExists = await exists(id)
-    if (!userExists) return quickResponse(404, notFoundMessage)
-
-    // remove filenames from user model
-    const results = await media.unset(id)
-    const temp = await fetchById(id)
-    const currUser = temp.data.message
-    currUser.media = ''
-    currUser.save()
-    return results
-}
-
-/**
- * Fetches media for the user.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id   ID of the user.
- * @param {string} name Name of the file.
- * 
- * @returns {object} The results of the operation.
- */
-const fetchMedia = async (id, name) => await media.fetch(id, name)
+const { userService } = require('../services')
 
 const getAllUsers = async (req, res) => {
-    const { status, data } = await fetch()
+    const { status, data } = await userService.fetch()
     return res.status(status).json(data)
 }
 
 const getUserById = async (req, res) => {
-    const { status, data } = await fetchById(req.params.id)
+    const { status, data } = await userService.fetchById(req.params.id)
     return res.status(status).json(data)
 }
 
 const postUser = async (req, res) => {
-    const { status, data } = await create(req.body)
+    const { status, data } = await userService.create(req.body)
     return res.status(status).json(data)
 }
 
 const putUser = async (req, res) => {
-    const { status, data } = await change(req.params.id, req.body)
+    const { status, data } = await userService.change(req.params.id, req.body)
     return res.status(status).json(data)
 }
 
 const deleteUser = async (req, res) => {
-    const { status, data } = await discard(req.params.id)
+    const { status, data } = await userService.discard(req.params.id)
     return res.status(status).json(data)
 }
 
 const getUserMedia = async (req, res) => {
     const { id, filename } = req.params
-    const { status, data } = await fetchMedia(id, filename)
+    const { status, data } = await userService.fetchMedia(id, filename)
 
     if (status === 404) return res.status(status).json(data)
     const file = data.context
@@ -365,17 +45,17 @@ const getUserMedia = async (req, res) => {
 }
 
 const postUserMedia = async (req, res) => {
-    const { status, data } = await setMedia(req.params.id, req.files)
+    const { status, data } = await userService.setMedia(req.params.id, req.files)
     return res.status(status).json(data)
 }
 
 const putUserMedia = async (req, res) => {
-    const { status, data } = await resetMedia(req.params.id, req.files)
+    const { status, data } = await userService.resetMedia(req.params.id, req.files)
     return res.status(status).json(data)
 }
 
 const deleteUserMedia = async (req, res) => {
-    const { status, data } = await unsetMedia(req.params.id)
+    const { status, data } = await userService.unsetMedia(req.params.id)
     return res.status(status).json(data)
 }
 

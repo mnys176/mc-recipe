@@ -1,5 +1,5 @@
 /**********************************************************
- * Title:       users.js                                  *
+ * Title:       user.js                                   *
  * Author:      Mike Nystoriak (nystoriakm@gmail.com)     *
  * Created:     09/29/2021                                *
  * Description: Set of API routes that pertain to a user. *

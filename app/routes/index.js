@@ -6,6 +6,6 @@
  ******************************************************/
 
 module.exports = {
-    recipeRouter: require('./recipes'),
-    userRouter: require('./users')
+    recipeRouter: require('./recipe'),
+    userRouter: require('./user')
 }

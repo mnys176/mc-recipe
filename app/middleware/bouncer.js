@@ -164,4 +164,4 @@ const bounce = mimePattern => async (req, res, next) => {
     })
 }
 
-module.exports = { bounce }
+module.exports = bounce

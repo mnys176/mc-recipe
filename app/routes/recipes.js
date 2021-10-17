@@ -7,7 +7,7 @@
 
 const express = require('express')
 const { recipeController } = require('../controllers')
-const { bounce } = require('../middleware/bouncer')
+const { bounce } = require('../middleware')
 
 // recipe routes have nested media routes
 const recipeRouter = express.Router()

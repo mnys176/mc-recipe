@@ -6,7 +6,7 @@
  **********************************************************/
 
 const express = require('express')
-const { user } = require('../controllers')
+const { userController } = require('../controllers')
 const { bounce } = require('../middleware/bouncer')
 
 // user routes have nested media routes
@@ -18,38 +18,38 @@ userRouter.use('/:id/media', mediaRouter)
 
 // get all recipes
 userRouter.get('/', async (req, res) => {
-    const { status, data } = await user.fetch()
+    const { status, data } = await userController.fetch()
     return res.status(status).json(data)
 })
 
 // get user by ID
 userRouter.get('/:id', async (req, res) => {
-    const { status, data } = await user.fetchById(req.params.id)
+    const { status, data } = await userController.fetchById(req.params.id)
     return res.status(status).json(data)
 })
 
 // create a user
 userRouter.post('/', async (req, res) => {
-    const { status, data } = await user.create(req.body)
+    const { status, data } = await userController.create(req.body)
     return res.status(status).json(data)
 })
 
 // update a user
 userRouter.put('/:id', async (req, res) => {
-    const { status, data } = await user.change(req.params.id, req.body)
+    const { status, data } = await userController.change(req.params.id, req.body)
     return res.status(status).json(data)
 })
 
 // delete a user
 userRouter.delete('/:id', async (req, res) => {
-    const { status, data } = await user.discard(req.params.id)
+    const { status, data } = await userController.discard(req.params.id)
     return res.status(status).json(data)
 })
 
 // get media for a user
 mediaRouter.get('/:filename', async (req, res) => {
     const { id, filename } = req.params
-    const { status, data } = await user.fetchMedia(id, filename)
+    const { status, data } = await userController.fetchMedia(id, filename)
 
     if (status === 404) return res.status(status).json(data)
     const file = data.context
@@ -61,19 +61,19 @@ mediaRouter.get('/:filename', async (req, res) => {
 
 // create media for a user
 mediaRouter.post('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
-    const { status, data } = await user.setMedia(req.params.id, req.files)
+    const { status, data } = await userController.setMedia(req.params.id, req.files)
     return res.status(status).json(data)
 })
 
 // update media for a user
 mediaRouter.put('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
-    const { status, data } = await user.resetMedia(req.params.id, req.files)
+    const { status, data } = await userController.resetMedia(req.params.id, req.files)
     return res.status(status).json(data)
 })
 
 // delete media for a user
 mediaRouter.delete('/', async (req, res) => {
-    const { status, data } = await user.unsetMedia(req.params.id)
+    const { status, data } = await userController.unsetMedia(req.params.id)
     return res.status(status).json(data)
 })
 

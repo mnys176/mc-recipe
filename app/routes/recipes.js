@@ -6,7 +6,7 @@
  ************************************************************/
 
 const express = require('express')
-const { recipe } = require('../controllers')
+const { recipeController } = require('../controllers')
 const { bounce } = require('../middleware/bouncer')
 
 // recipe routes have nested media routes
@@ -18,38 +18,38 @@ recipeRouter.use('/:id/media', mediaRouter)
 
 // get all recipes
 recipeRouter.get('/', async (req, res) => {
-    const { status, data } = await recipe.fetch()
+    const { status, data } = await recipeController.fetch()
     return res.status(status).json(data)
 })
 
 // get recipe by ID
 recipeRouter.get('/:id', async (req, res) => {
-    const { status, data } = await recipe.fetchById(req.params.id)
+    const { status, data } = await recipeController.fetchById(req.params.id)
     return res.status(status).json(data)
 })
 
 // create a recipe
 recipeRouter.post('/', async (req, res) => {
-    const { status, data } = await recipe.create(req.body)
+    const { status, data } = await recipeController.create(req.body)
     return res.status(status).json(data)
 })
 
 // update a recipe
 recipeRouter.put('/:id', async (req, res) => {
-    const { status, data } = await recipe.change(req.params.id, req.body)
+    const { status, data } = await recipeController.change(req.params.id, req.body)
     return res.status(status).json(data)
 })
 
 // delete a recipe
 recipeRouter.delete('/:id', async (req, res) => {
-    const { status, data } = await recipe.discard(req.params.id)
+    const { status, data } = await recipeController.discard(req.params.id)
     return res.status(status).json(data)
 })
 
 // get media for a recipe
 mediaRouter.get('/:filename', async (req, res) => {
     const { id, filename } = req.params
-    const { status, data } = await recipe.fetchMedia(id, filename)
+    const { status, data } = await recipeController.fetchMedia(id, filename)
 
     if (status === 404) return res.status(status).json(data)
     const file = data.context
@@ -61,19 +61,19 @@ mediaRouter.get('/:filename', async (req, res) => {
 
 // create media for a recipe
 mediaRouter.post('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
-    const { status, data } = await recipe.setMedia(req.params.id, req.files)
+    const { status, data } = await recipeController.setMedia(req.params.id, req.files)
     return res.status(status).json(data)
 })
 
 // update media for a recipe
 mediaRouter.put('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
-    const { status, data } = await recipe.resetMedia(req.params.id, req.files)
+    const { status, data } = await recipeController.resetMedia(req.params.id, req.files)
     return res.status(status).json(data)
 })
 
 // delete media for a recipe
 mediaRouter.delete('/', async (req, res) => {
-    const { status, data } = await recipe.unsetMedia(req.params.id)
+    const { status, data } = await recipeController.unsetMedia(req.params.id)
     return res.status(status).json(data)
 })
 

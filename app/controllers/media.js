@@ -148,8 +148,12 @@ const unset = async id => {
  * @returns {object} The results of the operation.
  */
 const reset = async (id, files) => {
-    await removeDir(id)
-    return await set(id, files)
+    try {
+        await removeDir(id)
+        return await set(id, files)
+    } catch (err) {
+        return quickResponse(500)
+    }
 }
 
 /**

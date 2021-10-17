@@ -10,7 +10,7 @@
 const path = require('path')
 const bcrypt = require('bcrypt')
 const media = require('./media')
-const User = require('../models/User')
+const { User } = require('../models')
 const quickResponse = require('../util/quick-response')
 
 /**

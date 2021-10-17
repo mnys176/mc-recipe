@@ -6,7 +6,7 @@
  **********************************************************/
 
 const express = require('express')
-const user = require('../controllers/user')
+const { user } = require('../controllers')
 const { bounce } = require('../middleware/bouncer')
 
 // user routes have nested media routes

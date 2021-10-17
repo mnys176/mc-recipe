@@ -26,7 +26,8 @@ app.use(express.json())
 app.use('/', express.static(webapp))
 
 // include recipe API routes
-app.use('/api/recipes', require('./routes/recipes'))
-app.use('/api/users', require('./routes/users'))
+const { recipeRouter, userRouter } = require('./routes')
+app.use('/api/recipes', recipeRouter)
+app.use('/api/users', userRouter)
 
 app.listen(port, () => console.log(`Running on port: ${port}`))

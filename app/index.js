@@ -16,7 +16,7 @@ const dotenv = require('dotenv').config()
 require('./util/mongo')
 
 const app = express()
-const port = process.env.PORT || 8080
+const port = process.env.PORT ?? 8080
 const webapp = path.join(__dirname, 'webapp', 'dist')
 
 // accept JSON data

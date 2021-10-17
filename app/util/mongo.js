@@ -11,7 +11,8 @@
 (async () => {
     const mongoose = require('mongoose')
     try {
-        const { connection } = await mongoose.connect(process.env.MONGODB_URI)
+        const uri = process.env.MONGODB_URI ?? 'mongodb://localhost:27017/test'
+        const { connection } = await mongoose.connect(uri)
         const mongoDomain = `${connection.host}:${connection.port}`
         console.log(`Connection to MongoDB at ${mongoDomain} succeeded!`)
     } catch (err) {

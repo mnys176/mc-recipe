@@ -9,7 +9,7 @@ const path = require('path')
 const { readFile, writeFile, rm, mkdir } = require('fs/promises')
 const quickResponse = require('../util/quick-response')
 
-const mediaDir = process.env.MEDIA_ROOT
+const mediaDir = process.env.MEDIA_ROOT ?? path.join(__dirname, 'media')
 
 /**
  * Creates a media directory.

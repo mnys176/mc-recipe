@@ -7,40 +7,74 @@
 
 const express = require('express')
 const user = require('../controllers/user')
+const { bounce } = require('../middleware/bouncer')
 
-const router = express.Router()
+// user routes have nested media routes
+const userRouter = express.Router()
+const mediaRouter = express.Router({ mergeParams: true })
 
 // include media routes
-router.use('/:id/media', require('./user-media'))
+userRouter.use('/:id/media', mediaRouter)
 
 // get all recipes
-router.get('/', async (req, res) => {
+userRouter.get('/', async (req, res) => {
     const { status, data } = await user.fetch()
     return res.status(status).json(data)
 })
 
 // get user by ID
-router.get('/:id', async (req, res) => {
+userRouter.get('/:id', async (req, res) => {
     const { status, data } = await user.fetchById(req.params.id)
     return res.status(status).json(data)
 })
 
 // create a user
-router.post('/', async (req, res) => {
+userRouter.post('/', async (req, res) => {
     const { status, data } = await user.create(req.body)
     return res.status(status).json(data)
 })
 
 // update a user
-router.put('/:id', async (req, res) => {
+userRouter.put('/:id', async (req, res) => {
     const { status, data } = await user.change(req.params.id, req.body)
     return res.status(status).json(data)
 })
 
 // delete a user
-router.delete('/:id', async (req, res) => {
+userRouter.delete('/:id', async (req, res) => {
     const { status, data } = await user.discard(req.params.id)
     return res.status(status).json(data)
 })
 
-module.exports = router
+// get media for a user
+mediaRouter.get('/:filename', async (req, res) => {
+    const { id, filename } = req.params
+    const { status, data } = await user.fetchMedia(id, filename)
+
+    if (status === 404) return res.status(status).json(data)
+    const file = data.context
+    const type = filename.split('.')[1] === 'png' ? 'png' : 'jpeg'
+    return res.set('Content-Type', `image/${type}`)
+              .status(status)
+              .send(file)
+})
+
+// create media for a user
+mediaRouter.post('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
+    const { status, data } = await user.setMedia(req.params.id, req.files)
+    return res.status(status).json(data)
+})
+
+// update media for a user
+mediaRouter.put('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
+    const { status, data } = await user.resetMedia(req.params.id, req.files)
+    return res.status(status).json(data)
+})
+
+// delete media for a user
+mediaRouter.delete('/', async (req, res) => {
+    const { status, data } = await user.unsetMedia(req.params.id)
+    return res.status(status).json(data)
+})
+
+module.exports = userRouter

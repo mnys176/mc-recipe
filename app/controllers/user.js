@@ -29,7 +29,8 @@ const getAllUsers = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const getUserById = async (req, res) => {
-    const { status, data } = await userService.fetchById(req.params.id)
+    const { id } = req.params
+    const { status, data } = await userService.fetchById(id)
     return res.status(status).json(data)
 }
 
@@ -55,7 +56,8 @@ const postUser = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const putUser = async (req, res) => {
-    const { status, data } = await userService.change(req.params.id, req.body)
+    const { id } = req.params
+    const { status, data } = await userService.change(id, req.body)
     return res.status(status).json(data)
 }
 
@@ -68,7 +70,8 @@ const putUser = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const deleteUser = async (req, res) => {
-    const { status, data } = await userService.discard(req.params.id)
+    const { id } = req.params
+    const { status, data } = await userService.discard(id)
     return res.status(status).json(data)
 }
 
@@ -103,7 +106,8 @@ const getUserMedia = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const postUserMedia = async (req, res) => {
-    const { status, data } = await userService.setMedia(req.params.id, req.files)
+    const { id } = req.params
+    const { status, data } = await userService.setMedia(id, req.files)
     return res.status(status).json(data)
 }
 
@@ -116,7 +120,8 @@ const postUserMedia = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const putUserMedia = async (req, res) => {
-    const { status, data } = await userService.resetMedia(req.params.id, req.files)
+    const { id } = req.params
+    const { status, data } = await userService.resetMedia(id, req.files)
     return res.status(status).json(data)
 }
 
@@ -129,7 +134,8 @@ const putUserMedia = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const deleteUserMedia = async (req, res) => {
-    const { status, data } = await userService.unsetMedia(req.params.id)
+    const { id } = req.params
+    const { status, data } = await userService.unsetMedia(id)
     return res.status(status).json(data)
 }
 

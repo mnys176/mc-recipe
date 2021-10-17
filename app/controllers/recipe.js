@@ -29,7 +29,8 @@ const getAllRecipes = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const getRecipeById = async (req, res) => {
-    const { status, data } = await recipeService.fetchById(req.params.id)
+    const { id } = req.params
+    const { status, data } = await recipeService.fetchById(id)
     return res.status(status).json(data)
 }
 
@@ -55,7 +56,8 @@ const postRecipe = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const putRecipe = async (req, res) => {
-    const { status, data } = await recipeService.change(req.params.id, req.body)
+    const { id } = req.params
+    const { status, data } = await recipeService.change(id, req.body)
     return res.status(status).json(data)
 }
 
@@ -68,7 +70,8 @@ const putRecipe = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const deleteRecipe = async (req, res) => {
-    const { status, data } = await recipeService.discard(req.params.id)
+    const { id } = req.params
+    const { status, data } = await recipeService.discard(id)
     return res.status(status).json(data)
 }
 
@@ -103,7 +106,8 @@ const getRecipeMedia = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const postRecipeMedia = async (req, res) => {
-    const { status, data } = await recipeService.setMedia(req.params.id, req.files)
+    const { id } = req.params
+    const { status, data } = await recipeService.setMedia(id, req.files)
     return res.status(status).json(data)
 }
 
@@ -116,7 +120,8 @@ const postRecipeMedia = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const putRecipeMedia = async (req, res) => {
-    const { status, data } = await recipeService.resetMedia(req.params.id, req.files)
+    const { id } = req.params
+    const { status, data } = await recipeService.resetMedia(id, req.files)
     return res.status(status).json(data)
 }
 
@@ -129,7 +134,8 @@ const putRecipeMedia = async (req, res) => {
  * @param {object} res Response object from Express.
  */
 const deleteRecipeMedia = async (req, res) => {
-    const { status, data } = await recipeService.unsetMedia(req.params.id)
+    const { id } = req.params
+    const { status, data } = await recipeService.unsetMedia(id)
     return res.status(status).json(data)
 }
 

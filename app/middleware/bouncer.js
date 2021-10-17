@@ -103,7 +103,7 @@ const randomBytes = async (length = 8) => {
  *                               containing the raw bytes
  *                               of each file and original
  *                               name.
- * @param   {object} mimePattern A regular expression that
+ * @param {object}   mimePattern A regular expression that
  *                               explicitly describes the
  *                               allowed MIME types.
  * 

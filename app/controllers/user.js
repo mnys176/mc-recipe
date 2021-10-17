@@ -230,12 +230,28 @@ const setMedia = async (id, files) => {
     const userExists = await exists(id)
     if (!userExists) return quickResponse(404, notFoundMessage)
 
+    const temp = await fetchById(id)
+    const currUser = temp.data.message
+
+    // make sure the '204 No Content' response doesn't apply first
+    let noContentResponseNotNeeded = false
+    if (files) {
+        const mediaIncluded = Object.values(files).some(a => a.length > 0)
+        const somethingWasCleared = files.cleared.length > 0
+        noContentResponseNotNeeded = mediaIncluded && somethingWasCleared
+    }
+
+    // not an update, do not change media if it already exists
+    if (currUser.media && noContentResponseNotNeeded) {
+        const message = `The media for the user with ID of "${id}"` +
+                        ' could not be created, already exists.'
+        return quickResponse(400, message)
+    }
+
     // save filenames to user model
     const results = await media.set(id, files)
     const { context } = results.data
     if (context && context.cleared.length > 0) {
-        const temp = await fetchById(id)
-        const currUser = temp.data.message
         currUser.media = context.cleared[0].unique
         currUser.save()
     }
@@ -261,12 +277,13 @@ const resetMedia = async (id, files) => {
     const userExists = await exists(id)
     if (!userExists) return quickResponse(404, notFoundMessage)
 
+    const temp = await fetchById(id)
+    const currUser = temp.data.message
+
     // update filenames in user model
     const results = await media.reset(id, files)
     const { context } = results.data
     if (context && context.cleared.length > 0) {
-        const temp = await fetchById(id)
-        const currUser = temp.data.message
         currUser.media = context.cleared[0].unique
         currUser.save()
     }

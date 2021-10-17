@@ -5397,6 +5397,79 @@
 					"response": []
 				},
 				{
+					"name": "media-already-exists",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postMediaTestGetUserById'))",
+									"const { context } = pm.response.json()",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get user object for direct validation",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const { media } = res.json().message",
+									"",
+									"    // user was updated properly in the database",
+									"    pm.test('Filename now linked to the user', () => {",
+									"        pm.expect(media.length).to.greaterThan(0)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userImage",
+									"type": "file",
+									"src": [
+										"media/a.out",
+										"media/bad.zip",
+										"media/dice.png",
+										"media/evil"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userOfInterest}}/media",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userOfInterest}}",
+								"media"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "media-not-included",
 					"event": [
 						{
@@ -6194,6 +6267,10 @@
 			"value": "614009af5b338a1dd33615e3"
 		},
 		{
+			"key": "userOfInterest",
+			"value": "61525d0aa5d095230e1fc762"
+		},
+		{
 			"key": "postTestGetRecipes",
 			"value": ""
 		},
@@ -6270,19 +6347,15 @@
 			"value": ""
 		},
 		{
+			"key": "recipeMediaFilenameToGet",
+			"value": ""
+		},
+		{
 			"key": "putMediaTestGetRecipeById",
 			"value": ""
 		},
 		{
 			"key": "deleteMediaTestGetRecipeById",
-			"value": ""
-		},
-		{
-			"key": "mediaFilenameToGet",
-			"value": ""
-		},
-		{
-			"key": "userOfInterest",
 			"value": ""
 		},
 		{
@@ -6326,10 +6399,6 @@
 			"value": ""
 		},
 		{
-			"key": "newUserPassword",
-			"value": ""
-		},
-		{
 			"key": "newUserEmail",
 			"value": ""
 		},
@@ -6342,7 +6411,7 @@
 			"value": ""
 		},
 		{
-			"key": "deleteMediaTestGetUserById",
+			"key": "userMediaFilenameToGet",
 			"value": ""
 		},
 		{
@@ -6350,11 +6419,7 @@
 			"value": ""
 		},
 		{
-			"key": "recipeMediaFilenameToGet",
-			"value": ""
-		},
-		{
-			"key": "userMediaFilenameToGet",
+			"key": "deleteMediaTestGetUserById",
 			"value": ""
 		}
 	]

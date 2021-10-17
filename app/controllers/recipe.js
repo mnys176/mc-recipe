@@ -250,13 +250,13 @@ const setMedia = async (id, files) => {
     const recipeExists = await exists(id)
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
+    const temp = await fetchById(id)
+    const currRecipe = temp.data.message
+
     // save filenames to recipe model
     const results = await media.set(id, files)
     const { context } = results.data
     if (context && context.cleared.length > 0) {
-        const temp = await fetchById(id)
-        const currRecipe = temp.data.message
-
         // not an update, do not overwrite
         const uniqueMedia = new Set([
             ...currRecipe.media,
@@ -289,17 +289,15 @@ const resetMedia = async (id, files) => {
     const recipeExists = await exists(id)
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
+    const temp = await fetchById(id)
+    const currRecipe = temp.data.message
+
     // update filenames in recipe model
     const results = await media.reset(id, files)
     const { context } = results.data
     if (context && context.cleared.length > 0) {
-        const temp = await fetchById(id)
-        const currRecipe = temp.data.message
-
         // ensure no duplicates exist (similar to `setMedia`)
-        const uniqueMedia = new Set(context.cleared.map(m => {
-            return m.unique
-        }))
+        const uniqueMedia = new Set(context.cleared.map(m => m.unique))
         currRecipe.media = Array.from(uniqueMedia)
         currRecipe.save()
     }
@@ -322,10 +320,11 @@ const unsetMedia = async id => {
     const recipeExists = await exists(id)
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
-    // remove filenames from recipe model
-    const results = await media.unset(id)
     const temp = await fetchById(id)
     const currRecipe = temp.data.message
+
+    // remove filenames from recipe model
+    const results = await media.unset(id)
     currRecipe.media = []
     currRecipe.save()
     return results

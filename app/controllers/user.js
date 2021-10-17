@@ -327,14 +327,66 @@ const unsetMedia = async id => {
  */
 const fetchMedia = async (id, name) => await media.fetch(id, name)
 
+const getAllUsers = async (req, res) => {
+    const { status, data } = await fetch()
+    return res.status(status).json(data)
+}
+
+const getUserById = async (req, res) => {
+    const { status, data } = await fetchById(req.params.id)
+    return res.status(status).json(data)
+}
+
+const postUser = async (req, res) => {
+    const { status, data } = await create(req.body)
+    return res.status(status).json(data)
+}
+
+const putUser = async (req, res) => {
+    const { status, data } = await change(req.params.id, req.body)
+    return res.status(status).json(data)
+}
+
+const deleteUser = async (req, res) => {
+    const { status, data } = await discard(req.params.id)
+    return res.status(status).json(data)
+}
+
+const getUserMedia = async (req, res) => {
+    const { id, filename } = req.params
+    const { status, data } = await fetchMedia(id, filename)
+
+    if (status === 404) return res.status(status).json(data)
+    const file = data.context
+    const type = filename.split('.')[1] === 'png' ? 'png' : 'jpeg'
+    return res.set('Content-Type', `image/${type}`)
+              .status(status)
+              .send(file)
+}
+
+const postUserMedia = async (req, res) => {
+    const { status, data } = await setMedia(req.params.id, req.files)
+    return res.status(status).json(data)
+}
+
+const putUserMedia = async (req, res) => {
+    const { status, data } = await resetMedia(req.params.id, req.files)
+    return res.status(status).json(data)
+}
+
+const deleteUserMedia = async (req, res) => {
+    const { status, data } = await unsetMedia(req.params.id)
+    return res.status(status).json(data)
+}
+
 module.exports = {
-    fetch,
-    fetchById,
-    create,
-    change,
-    discard,
-    setMedia,
-    resetMedia,
-    unsetMedia,
-    fetchMedia
+    getAllUsers,
+    getUserById,
+    postUser,
+    putUser,
+    deleteUser,
+    getUserMedia,
+    postUserMedia,
+    putUserMedia,
+    deleteUserMedia
 }

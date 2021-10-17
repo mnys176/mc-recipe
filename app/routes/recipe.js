@@ -13,68 +13,18 @@ const { bounce } = require('../middleware')
 const recipeRouter = express.Router()
 const mediaRouter = express.Router({ mergeParams: true })
 
+recipeRouter.get('/', recipeController.getAllRecipes)
+recipeRouter.get('/:id', recipeController.getRecipeById)
+recipeRouter.post('/', recipeController.postRecipe)
+recipeRouter.put('/:id', recipeController.putRecipe)
+recipeRouter.delete('/:id', recipeController.deleteRecipe)
+
 // include media routes
 recipeRouter.use('/:id/media', mediaRouter)
 
-// get all recipes
-recipeRouter.get('/', async (req, res) => {
-    const { status, data } = await recipeController.fetch()
-    return res.status(status).json(data)
-})
-
-// get recipe by ID
-recipeRouter.get('/:id', async (req, res) => {
-    const { status, data } = await recipeController.fetchById(req.params.id)
-    return res.status(status).json(data)
-})
-
-// create a recipe
-recipeRouter.post('/', async (req, res) => {
-    const { status, data } = await recipeController.create(req.body)
-    return res.status(status).json(data)
-})
-
-// update a recipe
-recipeRouter.put('/:id', async (req, res) => {
-    const { status, data } = await recipeController.change(req.params.id, req.body)
-    return res.status(status).json(data)
-})
-
-// delete a recipe
-recipeRouter.delete('/:id', async (req, res) => {
-    const { status, data } = await recipeController.discard(req.params.id)
-    return res.status(status).json(data)
-})
-
-// get media for a recipe
-mediaRouter.get('/:filename', async (req, res) => {
-    const { id, filename } = req.params
-    const { status, data } = await recipeController.fetchMedia(id, filename)
-
-    if (status === 404) return res.status(status).json(data)
-    const file = data.context
-    const type = filename.split('.')[1] === 'png' ? 'png' : 'jpeg'
-    return res.set('Content-Type', `image/${type}`)
-              .status(status)
-              .send(file)
-})
-
-// create media for a recipe
-mediaRouter.post('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
-    const { status, data } = await recipeController.setMedia(req.params.id, req.files)
-    return res.status(status).json(data)
-})
-
-// update media for a recipe
-mediaRouter.put('/', bounce(/image\/(jpeg|png)/), async (req, res) => {
-    const { status, data } = await recipeController.resetMedia(req.params.id, req.files)
-    return res.status(status).json(data)
-})
-
-// delete media for a recipe
-mediaRouter.delete('/', async (req, res) => {
-    const { status, data } = await recipeController.unsetMedia(req.params.id)
-    return res.status(status).json(data)
-})
+mediaRouter.get('/:filename', recipeController.getRecipeMedia)
+mediaRouter.post('/', bounce(/image\/(jpeg|png)/), recipeController.postRecipeMedia)
+mediaRouter.put('/', bounce(/image\/(jpeg|png)/), recipeController.putRecipeMedia)
+mediaRouter.delete('/', recipeController.deleteRecipeMedia)
 
 module.exports = recipeRouter

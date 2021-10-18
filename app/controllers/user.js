@@ -47,6 +47,11 @@ const postUser = async (req, res) => {
     return res.status(status).json(data)
 }
 
+// const signIn = async (req, res) => {
+//     const { username, password } = req.body
+//     const { status, data } = await userService.signIn()
+// }
+
 /**
  * Updates a user in the database.
  * 

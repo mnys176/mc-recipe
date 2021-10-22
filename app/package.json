@@ -29,8 +29,10 @@
   "homepage": "https://github.com/mnys176/recipe-book#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "connect-mongodb-session": "^3.1.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "file-type": "^16.5.3",
     "mongoose": "^6.0.12"
   },

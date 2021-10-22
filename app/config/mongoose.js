@@ -1,5 +1,5 @@
 /************************************************************
- * Title:       mongo.js                                    *
+ * Title:       mongoose.js                                 *
  * Author:      Mike Nystoriak (nystoriakm@gmail.com)       *
  * Created:     08/27/2021                                  *
  * Description:                                             *

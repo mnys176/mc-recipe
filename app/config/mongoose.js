@@ -1,12 +1,12 @@
-/************************************************************
- * Title:       mongoose.js                                 *
- * Author:      Mike Nystoriak (nystoriakm@gmail.com)       *
- * Created:     08/27/2021                                  *
- * Description:                                             *
- *     Establishes a connection to MongoDB. This connection *
- *     is used to execute statements and queries on the     *
- *     database.                                            *
- ************************************************************/
+/***********************************************************
+ * Title:       mongoose.js                                *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)      *
+ * Created:     08/27/2021                                 *
+ * Description:                                            *
+ *     Configures a connection to MongoDB. This connection *
+ *     is used to execute statements and queries on the    *
+ *     database on models in the system.                   *
+ ***********************************************************/
 
 (async () => {
     const mongoose = require('mongoose')

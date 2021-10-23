@@ -17,6 +17,10 @@ const { recipeService } = require('../services')
  */
 const getAllRecipes = async (req, res) => {
     const { status, data } = await recipeService.fetch()
+
+    // don't send Mongoose versioning field
+    data.message.forEach(recipe => recipe.__v = undefined)
+
     return res.status(status).json(data)
 }
 
@@ -31,6 +35,10 @@ const getAllRecipes = async (req, res) => {
 const getRecipeById = async (req, res) => {
     const { id } = req.params
     const { status, data } = await recipeService.fetchById(id)
+
+    // don't send Mongoose versioning field
+    data.message.__v = undefined
+
     return res.status(status).json(data)
 }
 

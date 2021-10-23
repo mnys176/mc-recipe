@@ -1,3 +1,10 @@
+/******************************************************************
+ * Title:       sessions.js                                       *
+ * Author:      Mike Nystoriak (nystoriakm@gmail.com)             *
+ * Created:     10/22/2021                                        *
+ * Description: Configures the session management within MongoDB. *
+ ******************************************************************/
+
 const session = require('express-session')
 const MongoDBStore = require('connect-mongodb-session')(session)
 

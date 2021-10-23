@@ -12,7 +12,7 @@ const nameSchema = new Schema({
     first: { type: String, required: true, match: /^[A-Z'](\.|[A-z\-']*)$/ },
     middle: { type: String, default: '', match: /^[A-Z']?(\.|[A-z\-']*)$/ },
     last: { type: String, required: true, match: /^[A-Z'](\.|[A-z\-']*)$/ }
-})
+}, { _id: false })
 
 const userSchema = new Schema({
     name: { type: nameSchema, required: true },

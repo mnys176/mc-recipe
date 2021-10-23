@@ -15,15 +15,12 @@ const dotenv = require('dotenv').config()
 // configure Mongoose connection
 require('./config/mongoose')
 
-// configure session management
-const session = require('./config/sessions')
-
 const app = express()
 const port = process.env.PORT ?? 8080
 const webapp = path.join(__dirname, 'webapp', 'dist')
 
 // leverage session management
-app.use(session)
+app.use(require('./config/sessions'))
 
 // accept JSON data
 app.use(express.json())

@@ -37,8 +37,7 @@
 									"        'about',",
 									"        'prepTime',",
 									"        'ingredients',",
-									"        'instructions',",
-									"        '__v'",
+									"        'instructions'",
 									"    ]",
 									"    jsonResponse.forEach(recipe => pm.expect(recipe).to.have.all.keys(...expectedRecipeKeys))",
 									"})"
@@ -89,8 +88,7 @@
 									"        'about',",
 									"        'prepTime',",
 									"        'ingredients',",
-									"        'instructions',",
-									"        '__v'",
+									"        'instructions'",
 									"    ]",
 									"    pm.expect(jsonResponse).to.have.all.keys(...expectedRecipeKeys)",
 									"})",
@@ -2881,10 +2879,8 @@
 									"        'name',",
 									"        'media',",
 									"        'username',",
-									"        'password',",
 									"        'email',",
-									"        'registered',",
-									"        '__v'",
+									"        'registered'",
 									"    ]",
 									"    jsonResponse.forEach(user => pm.expect(user).to.have.all.keys(...expectedUserKeys))",
 									"})"
@@ -2929,10 +2925,8 @@
 									"        'name',",
 									"        'media',",
 									"        'username',",
-									"        'password',",
 									"        'email',",
-									"        'registered',",
-									"        '__v'",
+									"        'registered'",
 									"    ]",
 									"    pm.expect(jsonResponse).to.have.all.keys(...expectedUserKeys)",
 									"})",
@@ -3082,13 +3076,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3153,13 +3148,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3224,13 +3220,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3295,13 +3292,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3366,13 +3364,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3437,13 +3436,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3508,13 +3508,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3579,13 +3580,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3650,13 +3652,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3721,13 +3724,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3792,13 +3796,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3863,13 +3868,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},
@@ -3934,13 +3940,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{apiRoot}}/users",
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{apiRoot}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"register"
 							]
 						}
 					},

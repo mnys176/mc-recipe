@@ -17,6 +17,10 @@ const { userService } = require('../services')
  */
 const getAllUsers = async (req, res) => {
     const { status, data } = await userService.fetch()
+
+    // don't send password and Mongoose versioning field
+    data.message.forEach(user => user.password = user.__v = undefined)
+
     return res.status(status).json(data)
 }
 
@@ -31,6 +35,10 @@ const getAllUsers = async (req, res) => {
 const getUserById = async (req, res) => {
     const { id } = req.params
     const { status, data } = await userService.fetchById(id)
+
+    // don't send password and Mongoose versioning field
+    data.message.password = data.message.__v = undefined
+
     return res.status(status).json(data)
 }
 

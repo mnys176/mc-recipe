@@ -13,7 +13,15 @@ const quantifiableSchema = new Schema({
     readable: { type: String, required: true },
     numeric: Number,
     unit: { type: String, required: true }
-})
+}, { _id: false })
+
+const ingredientSchema = new Schema({
+    name: { type: String, required: true },
+    amount: {
+        type: quantifiableSchema,
+        required: true
+    }
+}, { _id: false })
 
 const recipeSchema = new Schema({
     title: { type: String, required: true },
@@ -38,13 +46,7 @@ const recipeSchema = new Schema({
     },
     prepTime: { type: quantifiableSchema, required: true },
     ingredients: {
-        type: [{
-            name: { type: String, required: true },
-            amount: {
-                type: quantifiableSchema,
-                required: true
-            }
-        }],
+        type: [ingredientSchema],
         validate: v => Array.isArray(v) && v.length > 0
     },
     instructions: {

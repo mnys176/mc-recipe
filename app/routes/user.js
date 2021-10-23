@@ -15,7 +15,7 @@ const mediaRouter = express.Router({ mergeParams: true })
 
 userRouter.get('/', userController.getAllUsers)
 userRouter.get('/:id', userController.getUserById)
-userRouter.post('/', userController.postUser)
+userRouter.post('/register', userController.postUser)
 // userRouter.post('/signin', userController.signIn)
 // userRouter.post('/signout', userController.signOut)
 userRouter.put('/:id', userController.putUser)

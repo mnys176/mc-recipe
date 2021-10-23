@@ -10,7 +10,7 @@ const { recipeService } = require('../services')
 /**
  * Gets all recipes in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -27,7 +27,7 @@ const getAllRecipes = async (req, res) => {
 /**
  * Gets a single recipe from the database by its ID.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -45,7 +45,7 @@ const getRecipeById = async (req, res) => {
 /**
  * Creates a recipe in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -58,7 +58,7 @@ const postRecipe = async (req, res) => {
 /**
  * Updates a recipe in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -72,7 +72,7 @@ const putRecipe = async (req, res) => {
 /**
  * Deletes a recipe in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -87,7 +87,7 @@ const deleteRecipe = async (req, res) => {
  * Gets an image file from the database that is linked to
  * a recipe by its unique filename.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -108,7 +108,7 @@ const getRecipeMedia = async (req, res) => {
  * Attaches an image to a recipe (only works when no media is
  * currently linked).
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -122,7 +122,7 @@ const postRecipeMedia = async (req, res) => {
 /**
  * Changes the image associated with a recipe,
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -136,7 +136,7 @@ const putRecipeMedia = async (req, res) => {
 /**
  * Removes the image associated with a recipe,
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.

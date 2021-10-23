@@ -10,7 +10,7 @@ const { userService } = require('../services')
 /**
  * Gets all users in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -27,7 +27,7 @@ const getAllUsers = async (req, res) => {
 /**
  * Gets a single user from the database by its ID.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -45,7 +45,7 @@ const getUserById = async (req, res) => {
 /**
  * Creates a user in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -55,15 +55,24 @@ const postUser = async (req, res) => {
     return res.status(status).json(data)
 }
 
-// const signIn = async (req, res) => {
-//     const { username, password } = req.body
-//     const { status, data } = await userService.signIn()
-// }
+/**
+ * Signs a user into the application.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {object} req Request object from Express.
+ * @param {object} res Response object from Express.
+ */
+const signIn = async (req, res) => {
+    const { username, password } = req.body
+    const { status, data } = await userService.signin(username, password)
+    return res.status(status).json(data)
+}
 
 /**
  * Updates a user in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -77,7 +86,7 @@ const putUser = async (req, res) => {
 /**
  * Deletes a user in the database.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -92,7 +101,7 @@ const deleteUser = async (req, res) => {
  * Gets an image file from the database that is linked to
  * a user by its unique filename.
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -113,7 +122,7 @@ const getUserMedia = async (req, res) => {
  * Attaches an image to a user (only works when no media is
  * currently linked).
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -127,7 +136,7 @@ const postUserMedia = async (req, res) => {
 /**
  * Changes the image associated with a user,
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -141,7 +150,7 @@ const putUserMedia = async (req, res) => {
 /**
  * Removes the image associated with a user,
  * 
- * @author Mike Nystoriak (nystoriakm@gmail.com)
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {object} req Request object from Express.
  * @param {object} res Response object from Express.
@@ -156,6 +165,7 @@ module.exports = {
     getAllUsers,
     getUserById,
     postUser,
+    signIn,
     putUser,
     deleteUser,
     getUserMedia,

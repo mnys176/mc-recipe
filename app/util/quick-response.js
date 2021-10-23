@@ -95,6 +95,48 @@ const badRequest = (message = 'Bad request.', context) => {
 }
 
 /**
+ * Handles a '401 Unauthorized' response that
+ * occurs when the client provides invalid credentials
+ * when attempting to access a protected resource.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ *
+ * @param {string|object} message Response payload.
+ * @param {string|object} context Additional details if
+ *                                desired.
+ * 
+ * @return {object} A JSON object containing a quick
+ *                  response.
+ */
+const unauthorized = (message = 'Unauthorized.', context) => {
+    const status = 401
+    const package = { status, data: { status, message } }
+    if (context) package.data.context = context
+    return package
+}
+
+/**
+ * Handles a '403 Forbidden' response that occurs when
+ * the client attempts to access a resource that is
+ * restricted even with valid authentication.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ *
+ * @param {string|object} message Response payload.
+ * @param {string|object} context Additional details if
+ *                                desired.
+ * 
+ * @return {object} A JSON object containing a quick
+ *                  response.
+ */
+const forbidden = (message = 'Forbidden.', context) => {
+    const status = 403
+    const package = { status, data: { status, message } }
+    if (context) package.data.context = context
+    return package
+}
+
+/**
  * Handles a '404 Not Found' response that occurs when
  * the client requests a non-existent resource.
  * 
@@ -156,6 +198,8 @@ const quickResponse = (code, message, context) => {
         case 201: return created(message, context)
         case 204: return noContent(message, context)
         case 400: return badRequest(message, context)
+        case 401: return unauthorized(message, context)
+        case 403: return forbidden(message, context)
         case 404: return notFound(message, context)
         case 500: return internalServerError(message, context)
         default: return ok(message, context)

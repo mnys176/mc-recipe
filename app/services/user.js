@@ -10,6 +10,7 @@
 const path = require('path')
 const bcrypt = require('bcrypt')
 const mediaService = require('./media')
+const authService = require('./auth')
 const { User } = require('../models')
 const quickResponse = require('../util/quick-response')
 
@@ -97,6 +98,19 @@ const fetchById = async id => {
     } catch (err) {
         // handle invalid IDs as 'Not Found'
         return quickResponse(404, notFoundMessage)
+    }
+}
+
+const signin = async (username, password) => {
+    try {
+        const data = await User.findOne({ username })
+        if (data) {
+            const hashed = data.password
+            return await authService.authenticate(password, hashed)
+        }
+        return quickResponse(401, 'Username is incorrect.')
+    } catch (err) {
+        return quickResponse(500)
     }
 }
 
@@ -294,7 +308,7 @@ const resetMedia = async (id, files) => {
  * Stages a media directory for the user.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
+ * z
  * @param {string} id ID of the user.
  * 
  * @returns {object} The results of the operation.
@@ -330,6 +344,7 @@ const fetchMedia = async (id, name) => await mediaService.fetch(id, name)
 module.exports = {
     fetch,
     fetchById,
+    signin,
     create,
     change,
     discard,

@@ -8,5 +8,6 @@
 module.exports = {
     recipeService: require('./recipe'),
     userService: require('./user'),
-    mediaService: require('./media')
+    mediaService: require('./media'),
+    authService: require('./auth')
 }

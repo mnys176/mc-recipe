@@ -28,7 +28,7 @@ app.use(express.json())
 // set static routes
 app.use('/', express.static(webapp))
 
-// include recipe API routes
+// include API routes
 const { recipeRouter, userRouter } = require('./routes')
 app.use('/api/recipes', recipeRouter)
 app.use('/api/users', userRouter)

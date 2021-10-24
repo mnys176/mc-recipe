@@ -5,7 +5,7 @@
  * Description: Controls the dataflow of recipe API routes. *
  ************************************************************/
 
-const { recipeService } = require('../services')
+const { recipeService, mediaService } = require('../services')
 
 /**
  * Gets all recipes in the database.
@@ -94,7 +94,7 @@ const deleteRecipe = async (req, res) => {
  */
 const getRecipeMedia = async (req, res) => {
     const { id, filename } = req.params
-    const { status, data } = await recipeService.fetchMedia(id, filename)
+    const { status, data } = await mediaService.fetch(id, filename)
 
     if (status === 404) return res.status(status).json(data)
     const file = data.context
@@ -105,8 +105,7 @@ const getRecipeMedia = async (req, res) => {
 }
 
 /**
- * Attaches an image to a recipe (only works when no media is
- * currently linked).
+ * Attaches images to a recipe.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -115,12 +114,25 @@ const getRecipeMedia = async (req, res) => {
  */
 const postRecipeMedia = async (req, res) => {
     const { id } = req.params
-    const { status, data } = await recipeService.setMedia(id, req.files)
-    return res.status(status).json(data)
+    // console.log(req.files)
+
+    // update recipe model with filenames
+    let temp = await recipeService.setMedia(id, req.files)
+    const recipeServiceStatus = temp.status
+    const recipeServiceData = temp.data
+    if (recipeServiceStatus === 404) {
+        return res.status(recipeServiceStatus).json(recipeServiceData)
+    }
+
+    // save the files to the disk
+    temp = await mediaService.set(id, req.files)
+    const mediaServiceStatus = temp.status
+    const mediaServiceData = temp.data
+    return res.status(mediaServiceStatus).json(mediaServiceData)
 }
 
 /**
- * Changes the image associated with a recipe,
+ * Changes the images associated with a recipe,
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -129,12 +141,24 @@ const postRecipeMedia = async (req, res) => {
  */
 const putRecipeMedia = async (req, res) => {
     const { id } = req.params
-    const { status, data } = await recipeService.resetMedia(id, req.files)
-    return res.status(status).json(data)
+
+    // update recipe model with filenames
+    let temp = await recipeService.resetMedia(id, req.files)
+    const recipeServiceStatus = temp.status
+    const recipeServiceData = temp.data
+    if (recipeServiceStatus === 404) {
+        return res.status(recipeServiceStatus).json(recipeServiceData)
+    }
+
+    // save the files to the disk
+    temp = await mediaService.reset(id, req.files)
+    const mediaServiceStatus = temp.status
+    const mediaServiceData = temp.data
+    return res.status(mediaServiceStatus).json(mediaServiceData)
 }
 
 /**
- * Removes the image associated with a recipe,
+ * Removes the images associated with a recipe,
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -143,8 +167,20 @@ const putRecipeMedia = async (req, res) => {
  */
 const deleteRecipeMedia = async (req, res) => {
     const { id } = req.params
-    const { status, data } = await recipeService.unsetMedia(id)
-    return res.status(status).json(data)
+
+    // update recipe model with filenames
+    let temp = await recipeService.unsetMedia(id)
+    const recipeServiceStatus = temp.status
+    const recipeServiceData = temp.data
+    if (recipeServiceStatus === 404) {
+        return res.status(recipeServiceStatus).json(recipeServiceData)
+    }
+
+    // remove the files from the disk
+    temp = await mediaService.unset(id)
+    const mediaServiceStatus = temp.status
+    const mediaServiceData = temp.data
+    return res.status(mediaServiceStatus).json(mediaServiceData)
 }
 
 module.exports = {

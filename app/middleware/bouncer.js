@@ -148,7 +148,10 @@ const sanitize = async (files, mimePattern = /^$/) => {
  */
 const bounce = mimePattern => async (req, res, next) => {
     if (!mimePattern || mimePattern.constructor.name !== 'RegExp') return next()
-    if (req.headers['content-length'] === '0') return next()
+    if (req.headers['content-length'] === '0') {
+        req.files = { cleared: [], rejected: [], filteredFiles: [] }
+        return next()
+    }
 
     // holds raw bytes of multipart body
     let data = ''

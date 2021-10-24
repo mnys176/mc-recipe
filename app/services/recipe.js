@@ -233,7 +233,7 @@ const exists = async id => {
 }
 
 /**
- * Stages a media directory for the recipe.
+ * Adds a link to a media file to a recipe.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -251,28 +251,25 @@ const setMedia = async (id, files) => {
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
     const temp = await fetchById(id)
-    const currRecipe = temp.data.message
+    const recipe = temp.data.message
 
     // save filenames to recipe model
-    const results = await mediaService.set(id, files)
-    const { context } = results.data
-    if (context && context.cleared.length > 0) {
+    if (files.cleared.length > 0) {
         // not an update, do not overwrite
         const uniqueMedia = new Set([
-            ...currRecipe.media,
-            ...context.cleared.map(m => {
-                return m.unique
-            })
+            ...recipe.media,
+            ...files.cleared.map(m => m.unique)
         ])
-        currRecipe.media = Array.from(uniqueMedia)
-        currRecipe.save()
+        recipe.media = Array.from(uniqueMedia)
+        recipe.save()
     }
-    return results
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully linked to the new media.'
+    return quickResponse(200, successMessage)
 }
 
 /**
- * Removes and restages a media directory for the
- * recipe.
+ * Overwrites media names in a recipe.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -290,22 +287,22 @@ const resetMedia = async (id, files) => {
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
     const temp = await fetchById(id)
-    const currRecipe = temp.data.message
+    const recipe = temp.data.message
 
     // update filenames in recipe model
-    const results = await mediaService.reset(id, files)
-    const { context } = results.data
-    if (context && context.cleared.length > 0) {
+    if (files.cleared.length > 0) {
         // ensure no duplicates exist (similar to `setMedia`)
-        const uniqueMedia = new Set(context.cleared.map(m => m.unique))
-        currRecipe.media = Array.from(uniqueMedia)
-        currRecipe.save()
+        const uniqueMedia = new Set(files.cleared.map(m => m.unique))
+        recipe.media = Array.from(uniqueMedia)
+        recipe.save()
     }
-    return results
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully updated to the new media.'
+    return quickResponse(200, successMessage)
 }
 
 /**
- * Stages a media directory for the recipe.
+ * Unlinks media names from a recipe.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -321,26 +318,17 @@ const unsetMedia = async id => {
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
     const temp = await fetchById(id)
-    const currRecipe = temp.data.message
+    const recipe = temp.data.message
 
     // remove filenames from recipe model
-    const results = await mediaService.unset(id)
-    currRecipe.media = []
-    currRecipe.save()
-    return results
-}
+    // const results = await mediaService.unset(id)
+    recipe.media = []
+    recipe.save()
 
-/**
- * Fetches media for the recipe.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id   ID of the recipe.
- * @param {string} name Name of the file.
- * 
- * @returns {object} The results of the operation.
- */
-const fetchMedia = async (id, name) => await mediaService.fetch(id, name)
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully updated with no media.'
+    return quickResponse(200, successMessage)
+}
 
 module.exports = {
     fetch,
@@ -350,6 +338,5 @@ module.exports = {
     discard,
     setMedia,
     unsetMedia,
-    resetMedia,
-    fetchMedia
+    resetMedia
 }

@@ -114,7 +114,6 @@ const getRecipeMedia = async (req, res) => {
  */
 const postRecipeMedia = async (req, res) => {
     const { id } = req.params
-    // console.log(req.files)
 
     // update recipe model with filenames
     let temp = await recipeService.setMedia(id, req.files)
@@ -151,7 +150,7 @@ const putRecipeMedia = async (req, res) => {
     }
 
     // save the files to the disk
-    temp = await mediaService.reset(id, req.files)
+    temp = await mediaService.set(id, req.files, true)
     const mediaServiceStatus = temp.status
     const mediaServiceData = temp.data
     return res.status(mediaServiceStatus).json(mediaServiceData)

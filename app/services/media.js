@@ -71,13 +71,15 @@ const writeToDisk = async (id, files) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    ID of the entity.
- * @param {object} files File information provided
- *                       by Bouncer.
+ * @param {string}  id        ID of the entity.
+ * @param {object}  files     File information provided
+ *                            by Bouncer.
+ * @param {boolean} overwrite Overwrite the current
+ *                            directory
  * 
  * @returns {object} The results of the operation.
  */
-const set = async (id, files) => {
+const set = async (id, files, overwrite = false) => {
     try {
         // check if no media was given to upload
         if (files.cleared.length === 0 && files.rejected.length === 0) {
@@ -106,6 +108,7 @@ const set = async (id, files) => {
 
         // don't write media if there is nothing to upload
         if (writeMedia) {
+            if (overwrite) await removeDir(id)
             await createDir(id)
             await writeToDisk(id, filteredFiles)
         }
@@ -130,57 +133,6 @@ const unset = async id => {
                         ` "${id}" was successfully deleted.`
         await removeDir(id)
         return quickResponse(200, message)
-    } catch (err) {
-        return quickResponse(500)
-    }
-}
-
-/**
- * Resets and populates a media directory for an
- * entity.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id    ID of the entity.
- * @param {object} files File information provided
- *                       by Bouncer.
- * 
- * @returns {object} The results of the operation.
- */
-const reset = async (id, files) => {
-    try {
-        // check if no media was given to upload
-        if (files.cleared.length === 0 && files.rejected.length === 0) {
-            const message = 'No media to upload for entity with ID of' +
-                            ` "${id}", nothing to do.`
-            return quickResponse(204, message)
-        }
-        const { cleared, rejected, filteredFiles } = files
-
-        // default control variables based on success
-        let message = 'Some of the selected media was unable to be uploaded.'
-        let status = 201
-        let writeMedia = true
-
-        const nothingWasCleared = cleared.length === 0
-        const nothingWasRejected = rejected.length === 0
-        if (nothingWasCleared) {
-            message = 'The selected media was unable to be uploaded,' +
-                      ' nothing to do.'
-            status = 204
-            writeMedia = false
-        } else if (nothingWasRejected) {
-            message = 'The media for entity with ID of' +
-                      ` "${id}" was successfully uploaded.`
-        }
-
-        // don't write media if there is nothing to upload
-        if (writeMedia) {
-            await removeDir(id)
-            await createDir(id)
-            await writeToDisk(id, filteredFiles)
-        }
-        return quickResponse(status, message, { cleared, rejected })
     } catch (err) {
         return quickResponse(500)
     }
@@ -212,4 +164,4 @@ const fetch = async (id, name) => {
     }
 }
 
-module.exports = { set, unset, reset, fetch }
+module.exports = { set, unset, fetch }

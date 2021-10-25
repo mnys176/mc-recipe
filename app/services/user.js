@@ -227,7 +227,7 @@ const exists = async id => {
 }
 
 /**
- * Stages a media directory for the user.
+ * Adds a link to a media file to a recipe.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -245,7 +245,7 @@ const setMedia = async (id, files) => {
     if (!userExists) return quickResponse(404, notFoundMessage)
 
     const temp = await fetchById(id)
-    const currUser = temp.data.message
+    const user = temp.data.message
 
     // make sure the '204 No Content' response doesn't apply first
     let noContentResponseNotNeeded = false
@@ -256,25 +256,24 @@ const setMedia = async (id, files) => {
     }
 
     // not an update, do not change media if it already exists
-    if (currUser.media && noContentResponseNotNeeded) {
+    if (user.media && noContentResponseNotNeeded) {
         const message = `The media for the user with ID of "${id}"` +
                         ' could not be created, already exists.'
         return quickResponse(400, message)
     }
 
     // save filenames to user model
-    const results = await mediaService.set(id, files)
-    const { context } = results.data
-    if (context && context.cleared.length > 0) {
-        currUser.media = context.cleared[0].unique
-        currUser.save()
+    if (files.cleared.length > 0) {
+        user.media = files.cleared[0].unique
+        user.save()
     }
-    return results
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully linked to the new media.'
+    return quickResponse(200, successMessage)
 }
 
 /**
- * Removes and restages a media directory for the
- * user.
+ * Overwrites media names in a user.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -292,20 +291,20 @@ const resetMedia = async (id, files) => {
     if (!userExists) return quickResponse(404, notFoundMessage)
 
     const temp = await fetchById(id)
-    const currUser = temp.data.message
+    const user = temp.data.message
 
     // update filenames in user model
-    const results = await mediaService.reset(id, files)
-    const { context } = results.data
-    if (context && context.cleared.length > 0) {
-        currUser.media = context.cleared[0].unique
-        currUser.save()
+    if (files.cleared.length > 0) {
+        user.media = files.cleared[0].unique
+        user.save()
     }
-    return results
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully updated to the new media.'
+    return quickResponse(200, successMessage)
 }
 
 /**
- * Stages a media directory for the user.
+ * Unlinks media names from a user.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * z
@@ -320,26 +319,17 @@ const unsetMedia = async id => {
     const userExists = await exists(id)
     if (!userExists) return quickResponse(404, notFoundMessage)
 
-    // remove filenames from user model
-    const results = await mediaService.unset(id)
     const temp = await fetchById(id)
-    const currUser = temp.data.message
-    currUser.media = ''
-    currUser.save()
-    return results
-}
+    const user = temp.data.message
 
-/**
- * Fetches media for the user.
- * 
- * @author Mike Nystoriak <nystoriakm@gmail.com>
- * 
- * @param {string} id   ID of the user.
- * @param {string} name Name of the file.
- * 
- * @returns {object} The results of the operation.
- */
-const fetchMedia = async (id, name) => await mediaService.fetch(id, name)
+    // remove filenames from user model
+    user.media = ''
+    user.save()
+
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully updated with no media.'
+    return quickResponse(200, successMessage)
+}
 
 module.exports = {
     fetch,
@@ -350,6 +340,5 @@ module.exports = {
     discard,
     setMedia,
     resetMedia,
-    unsetMedia,
-    fetchMedia
+    unsetMedia
 }

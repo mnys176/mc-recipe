@@ -116,7 +116,7 @@ const postRecipeMedia = async (req, res) => {
     const { id } = req.params
 
     // update recipe model with filenames
-    let temp = await recipeService.setMedia(id, req.files)
+    const temp = await recipeService.setMedia(id, req.files)
     const recipeServiceStatus = temp.status
     const recipeServiceData = temp.data
     if (recipeServiceStatus === 404) {
@@ -124,10 +124,8 @@ const postRecipeMedia = async (req, res) => {
     }
 
     // save the files to the disk
-    temp = await mediaService.set(id, req.files)
-    const mediaServiceStatus = temp.status
-    const mediaServiceData = temp.data
-    return res.status(mediaServiceStatus).json(mediaServiceData)
+    const { status, data } = await mediaService.set(id, req.files)
+    return res.status(status).json(data)
 }
 
 /**
@@ -142,7 +140,7 @@ const putRecipeMedia = async (req, res) => {
     const { id } = req.params
 
     // update recipe model with filenames
-    let temp = await recipeService.resetMedia(id, req.files)
+    const temp = await recipeService.resetMedia(id, req.files)
     const recipeServiceStatus = temp.status
     const recipeServiceData = temp.data
     if (recipeServiceStatus === 404) {
@@ -150,10 +148,8 @@ const putRecipeMedia = async (req, res) => {
     }
 
     // save the files to the disk
-    temp = await mediaService.set(id, req.files, true)
-    const mediaServiceStatus = temp.status
-    const mediaServiceData = temp.data
-    return res.status(mediaServiceStatus).json(mediaServiceData)
+    const { status, data } = await mediaService.set(id, req.files, true)
+    return res.status(status).json(data)
 }
 
 /**
@@ -168,18 +164,18 @@ const deleteRecipeMedia = async (req, res) => {
     const { id } = req.params
 
     // update recipe model with filenames
-    let temp = await recipeService.unsetMedia(id)
+    const temp = await recipeService.unsetMedia(id)
     const recipeServiceStatus = temp.status
     const recipeServiceData = temp.data
-    if (recipeServiceStatus === 404) {
+
+    // only defer to the media service if recipe service call succeeds
+    if (recipeServiceStatus !== 200) {
         return res.status(recipeServiceStatus).json(recipeServiceData)
     }
 
     // remove the files from the disk
-    temp = await mediaService.unset(id)
-    const mediaServiceStatus = temp.status
-    const mediaServiceData = temp.data
-    return res.status(mediaServiceStatus).json(mediaServiceData)
+    const { status, data } = await mediaService.unset(id)
+    return res.status(status).json(data)
 }
 
 module.exports = {

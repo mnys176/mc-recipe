@@ -321,7 +321,6 @@ const unsetMedia = async id => {
     const recipe = temp.data.message
 
     // remove filenames from recipe model
-    // const results = await mediaService.unset(id)
     recipe.media = []
     recipe.save()
 

@@ -5,7 +5,7 @@
  * Description: Controls the dataflow of user API routes. *
  **********************************************************/
 
-const { userService } = require('../services')
+const { userService, mediaService } = require('../services')
 
 /**
  * Gets all users in the database.
@@ -108,7 +108,7 @@ const deleteUser = async (req, res) => {
  */
 const getUserMedia = async (req, res) => {
     const { id, filename } = req.params
-    const { status, data } = await userService.fetchMedia(id, filename)
+    const { status, data } = await mediaService.fetch(id, filename)
 
     if (status === 404) return res.status(status).json(data)
     const file = data.context
@@ -129,7 +129,19 @@ const getUserMedia = async (req, res) => {
  */
 const postUserMedia = async (req, res) => {
     const { id } = req.params
-    const { status, data } = await userService.setMedia(id, req.files)
+
+    // update user model with filenames
+    const temp = await userService.setMedia(id, req.files)
+    const userServiceStatus = temp.status
+    const userServiceData = temp.data
+
+    // only defer to the media service if user service call succeeds
+    if (userServiceStatus !== 200) {
+        return res.status(userServiceStatus).json(userServiceData)
+    }
+
+    // save the files to the disk
+    const { status, data } = await mediaService.set(id, req.files)
     return res.status(status).json(data)
 }
 
@@ -143,7 +155,17 @@ const postUserMedia = async (req, res) => {
  */
 const putUserMedia = async (req, res) => {
     const { id } = req.params
-    const { status, data } = await userService.resetMedia(id, req.files)
+
+    // update user model with filenames
+    const temp = await userService.resetMedia(id, req.files)
+    const userServiceStatus = temp.status
+    const userServiceData = temp.data
+    if (userServiceStatus === 404) {
+        return res.status(userServiceStatus).json(userServiceData)
+    }
+
+    // save the files to the disk
+    const { status, data } = await mediaService.set(id, req.files, true)
     return res.status(status).json(data)
 }
 
@@ -157,7 +179,17 @@ const putUserMedia = async (req, res) => {
  */
 const deleteUserMedia = async (req, res) => {
     const { id } = req.params
-    const { status, data } = await userService.unsetMedia(id)
+
+    // update user model with filenames
+    const temp = await userService.unsetMedia(id)
+    const userServiceStatus = temp.status
+    const userServiceData = temp.data
+    if (userServiceStatus === 404) {
+        return res.status(userServiceStatus).json(userServiceData)
+    }
+
+    // remove the files from the disk
+    const { status, data } = await mediaService.unset(id)
     return res.status(status).json(data)
 }
 

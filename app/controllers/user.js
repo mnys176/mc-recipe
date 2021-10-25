@@ -5,7 +5,7 @@
  * Description: Controls the dataflow of user API routes. *
  **********************************************************/
 
-const { userService, mediaService } = require('../services')
+const { userService, mediaService, authService } = require('../services')
 
 /**
  * Gets all users in the database.
@@ -65,7 +65,7 @@ const postUser = async (req, res) => {
  */
 const signIn = async (req, res) => {
     const { username, password } = req.body
-    const { status, data } = await userService.signin(username, password)
+    const { status, data } = await authService.authenticate(username, password)
     return res.status(status).json(data)
 }
 

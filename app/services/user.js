@@ -10,7 +10,6 @@
 const path = require('path')
 const bcrypt = require('bcrypt')
 const mediaService = require('./media')
-const authService = require('./auth')
 const { User } = require('../models')
 const quickResponse = require('../util/quick-response')
 
@@ -43,8 +42,12 @@ const extractUser = (body, rehash) => {
         // bring literal data into user
         const userBuilder = { ...body }
 
+        // TODO: Refactor so that `req` is not a parameter.
+
         // skip encryption if desired
         if (!rehash) return resolve(userBuilder)
+
+        // TODO: Encrypt the password in `auth.js`.
 
         // encrypt password
         bcrypt.hash(body.password, 14, (err, hash) => {
@@ -62,7 +65,7 @@ const extractUser = (body, rehash) => {
 
 /**
  * Fetches all users and returns the results
- * to the routes to be parsed.
+ * to the controller to be parsed.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -79,8 +82,8 @@ const fetch = async () => {
 }
 
 /**
- * Fetches a single user and returns the result
- * to the routes to be parsed.
+ * Fetches a single user by its ID and returns the result
+ * to the controller to be parsed.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -98,19 +101,6 @@ const fetchById = async id => {
     } catch (err) {
         // handle invalid IDs as 'Not Found'
         return quickResponse(404, notFoundMessage)
-    }
-}
-
-const signin = async (username, password) => {
-    try {
-        const data = await User.findOne({ username })
-        if (data) {
-            const hashed = data.password
-            return await authService.authenticate(password, hashed)
-        }
-        return quickResponse(401, 'Username is incorrect.')
-    } catch (err) {
-        return quickResponse(500)
     }
 }
 
@@ -334,7 +324,6 @@ const unsetMedia = async id => {
 module.exports = {
     fetch,
     fetchById,
-    signin,
     create,
     change,
     discard,

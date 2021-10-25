@@ -50,6 +50,8 @@ const extractRecipe = body => {
         // bring literal data into recipe
         const recipeBuilder = { ...body }
 
+        // TODO: Refactor so that `req` is not a parameter.
+
         // build preparation time if it exists
         recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
 
@@ -80,7 +82,7 @@ const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
 
 /**
  * Fetches all recipes and returns the results
- * to the routes to be parsed.
+ * to the controller to be parsed.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -97,8 +99,8 @@ const fetch = async () => {
 }
 
 /**
- * Fetches a single recipe and returns the result
- * to the routes to be parsed.
+ * Fetches a single recipe by its ID and returns the result
+ * to the controller to be parsed.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 

@@ -7,10 +7,24 @@
 
 const bcrypt = require('bcrypt')
 const quickResponse = require('../util/quick-response')
+const { User } = require('../models')
 
-const authenticate = async (plain, hashed) => {
+/**
+ * Authenticates a user into the application using
+ * the `bcrypt` module.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} username - Username of the user.
+ * @param {string} password - Password of the user.
+ */
+const authenticate = async (username, password) => {
     try {
-        if (await bcrypt.compare(plain, hashed)) {
+        const user = await User.findOne({ username })
+        if (!user) return quickResponse(401, 'Username is incorrect.')
+
+        const hashed = user.password
+        if (await bcrypt.compare(password, hashed)) {
             return quickResponse(200, 'Sign-in was successful.')
         }
         return quickResponse(401, 'Password is incorrect.')

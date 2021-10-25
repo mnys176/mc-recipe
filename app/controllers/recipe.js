@@ -96,7 +96,7 @@ const getRecipeMedia = async (req, res) => {
     const { id, filename } = req.params
     const { status, data } = await mediaService.fetch(id, filename)
 
-    if (status === 404) return res.status(status).json(data)
+    if (status !== 200) return res.status(status).json(data)
     const file = data.context
     const type = filename.split('.')[1] === 'png' ? 'png' : 'jpeg'
     return res.set('Content-Type', `image/${type}`)

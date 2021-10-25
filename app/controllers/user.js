@@ -160,7 +160,9 @@ const putUserMedia = async (req, res) => {
     const temp = await userService.resetMedia(id, req.files)
     const userServiceStatus = temp.status
     const userServiceData = temp.data
-    if (userServiceStatus === 404) {
+
+    // only defer to the media service if user service call succeeds
+    if (userServiceStatus !== 200) {
         return res.status(userServiceStatus).json(userServiceData)
     }
 
@@ -184,7 +186,9 @@ const deleteUserMedia = async (req, res) => {
     const temp = await userService.unsetMedia(id)
     const userServiceStatus = temp.status
     const userServiceData = temp.data
-    if (userServiceStatus === 404) {
+
+    // only defer to the media service if user service call succeeds
+    if (userServiceStatus !== 200) {
         return res.status(userServiceStatus).json(userServiceData)
     }
 

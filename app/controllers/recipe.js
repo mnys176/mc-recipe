@@ -119,7 +119,9 @@ const postRecipeMedia = async (req, res) => {
     const temp = await recipeService.setMedia(id, req.files)
     const recipeServiceStatus = temp.status
     const recipeServiceData = temp.data
-    if (recipeServiceStatus === 404) {
+
+    // only defer to the media service if recipe service call succeeds
+    if (recipeServiceStatus !== 200) {
         return res.status(recipeServiceStatus).json(recipeServiceData)
     }
 
@@ -143,7 +145,9 @@ const putRecipeMedia = async (req, res) => {
     const temp = await recipeService.resetMedia(id, req.files)
     const recipeServiceStatus = temp.status
     const recipeServiceData = temp.data
-    if (recipeServiceStatus === 404) {
+
+    // only defer to the media service if recipe service call succeeds
+    if (recipeServiceStatus !== 200) {
         return res.status(recipeServiceStatus).json(recipeServiceData)
     }
 

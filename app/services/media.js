@@ -16,7 +16,7 @@ const mediaDir = process.env.MEDIA_ROOT ?? path.join(__dirname, 'media')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id ID of the entity.
+ * @param {string} id - ID of the entity.
  */
 const createDir = async id => {
     try {
@@ -32,7 +32,7 @@ const createDir = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The entity ObjectID.
+ * @param {string} id - The entity ObjectID.
  */
 const removeDir = async id => {
     try {
@@ -48,9 +48,9 @@ const removeDir = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    ID of the entity.
- * @param {object} files File information provided
- *                       by Bouncer.
+ * @param {string} id    - ID of the entity.
+ * @param {object} files - File information provided
+ *                         by Bouncer.
  */
 const writeToDisk = async (id, files) => {
     // write files to disk in parallel
@@ -71,11 +71,11 @@ const writeToDisk = async (id, files) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string}  id        ID of the entity.
- * @param {object}  files     File information provided
- *                            by Bouncer.
- * @param {boolean} overwrite Overwrite the current
- *                            directory
+ * @param {string}  id        - ID of the entity.
+ * @param {object}  files     - File information provided
+ *                              by Bouncer.
+ * @param {boolean} overwrite - Overwrite the current
+ *                              directory
  * 
  * @returns {object} The results of the operation.
  */
@@ -123,7 +123,7 @@ const set = async (id, files, overwrite = false) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id ID of the entity.
+ * @param {string} id - ID of the entity.
  * 
  * @returns {object} The results of the operation.
  */
@@ -143,8 +143,8 @@ const unset = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id   ID of the entity.
- * @param {string} name Name of the file.
+ * @param {string} id   - ID of the entity.
+ * @param {string} name - Name of the file.
  * 
  * @returns {object} The results of the operation.
  */

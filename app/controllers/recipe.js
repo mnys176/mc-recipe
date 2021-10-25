@@ -12,8 +12,8 @@ const { recipeService, mediaService } = require('../services')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const getAllRecipes = async (req, res) => {
     const { status, data } = await recipeService.fetch()
@@ -29,8 +29,8 @@ const getAllRecipes = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const getRecipeById = async (req, res) => {
     const { id } = req.params
@@ -47,8 +47,8 @@ const getRecipeById = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const postRecipe = async (req, res) => {
     const { status, data } = await recipeService.create(req.body)
@@ -60,8 +60,8 @@ const postRecipe = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const putRecipe = async (req, res) => {
     const { id } = req.params
@@ -74,8 +74,8 @@ const putRecipe = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const deleteRecipe = async (req, res) => {
     const { id } = req.params
@@ -89,8 +89,8 @@ const deleteRecipe = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const getRecipeMedia = async (req, res) => {
     const { id, filename } = req.params
@@ -109,8 +109,8 @@ const getRecipeMedia = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const postRecipeMedia = async (req, res) => {
     const { id } = req.params
@@ -135,8 +135,8 @@ const postRecipeMedia = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const putRecipeMedia = async (req, res) => {
     const { id } = req.params
@@ -161,8 +161,8 @@ const putRecipeMedia = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const deleteRecipeMedia = async (req, res) => {
     const { id } = req.params

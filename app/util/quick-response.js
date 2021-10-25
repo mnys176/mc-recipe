@@ -15,9 +15,9 @@
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -35,9 +35,9 @@ const ok = (message = 'OK.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -58,9 +58,9 @@ const created = (message = 'Created.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -80,9 +80,9 @@ const noContent = (message = 'No content.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -101,9 +101,9 @@ const badRequest = (message = 'Bad request.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -122,9 +122,9 @@ const unauthorized = (message = 'Unauthorized.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -142,9 +142,9 @@ const forbidden = (message = 'Forbidden.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -163,9 +163,9 @@ const notFound = (message = 'Not found.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {string|object} message Response payload.
- * @param {string|object} context Additional details if
- *                                desired.
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.
@@ -183,12 +183,12 @@ const internalServerError = (message = 'Internal server error.', context) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {number}        code    Status code.
- * @param {string|object} message Optional message that acts as
- *                                the payload.
- * @param {string|object} context Optional information that goes
- *                                into a bit more detail about
- *                                the context.
+ * @param {number}        code    - Status code.
+ * @param {string|object} message - Optional message that acts as
+ *                                  the payload.
+ * @param {string|object} context - Optional information that goes
+ *                                  into a bit more detail about
+ *                                  the context.
  * 
  * @return {object} A JSON object containing a quick
  *                  response.

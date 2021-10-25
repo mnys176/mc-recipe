@@ -12,8 +12,8 @@ const { userService, mediaService } = require('../services')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const getAllUsers = async (req, res) => {
     const { status, data } = await userService.fetch()
@@ -29,8 +29,8 @@ const getAllUsers = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const getUserById = async (req, res) => {
     const { id } = req.params
@@ -47,8 +47,8 @@ const getUserById = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const postUser = async (req, res) => {
     const { status, data } = await userService.create(req.body)
@@ -60,8 +60,8 @@ const postUser = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const signIn = async (req, res) => {
     const { username, password } = req.body
@@ -74,8 +74,8 @@ const signIn = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const putUser = async (req, res) => {
     const { id } = req.params
@@ -88,8 +88,8 @@ const putUser = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const deleteUser = async (req, res) => {
     const { id } = req.params
@@ -103,8 +103,8 @@ const deleteUser = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const getUserMedia = async (req, res) => {
     const { id, filename } = req.params
@@ -124,8 +124,8 @@ const getUserMedia = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const postUserMedia = async (req, res) => {
     const { id } = req.params
@@ -150,8 +150,8 @@ const postUserMedia = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const putUserMedia = async (req, res) => {
     const { id } = req.params
@@ -176,8 +176,8 @@ const putUserMedia = async (req, res) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} req Request object from Express.
- * @param {object} res Response object from Express.
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
  */
 const deleteUserMedia = async (req, res) => {
     const { id } = req.params

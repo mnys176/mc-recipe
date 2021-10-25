@@ -18,11 +18,11 @@ const FileType = require('file-type')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} raw      The raw, unparsed body as
- *                          a hex string.
- * @param {object} boundary The multipart boundary.
+ * @param {string} raw      - The raw, unparsed body as
+ *                            a hex string.
+ * @param {object} boundary - The multipart boundary.
  * 
- * @returns {[object]} An array with the file
+ * @returns {object[]} An array with the file
  *                     information.
  */
 const parseMultipartFormData = (raw, boundary) => {
@@ -53,11 +53,11 @@ const parseMultipartFormData = (raw, boundary) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} file        File information that was
- *                             discovered.
- * @param {object} mimePattern A regular expression that
- *                             explicitly describes the
- *                             allowed MIME types.
+ * @param {object} file        - File information that was
+ *                               discovered.
+ * @param {object} mimePattern - A regular expression that
+ *                               explicitly describes the
+ *                               allowed MIME types.
  * 
  * @returns {boolean} True if the file is valid, false
  *                    otherwise.
@@ -77,8 +77,8 @@ const clearFile = async (file, pattern) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {number} length The number of hexadecimal
- *                        bytes in the string.
+ * @param {number} length - The number of hexadecimal
+ *                          bytes in the string.
  * 
  * @returns {string} The resulting byte string.
  */
@@ -99,13 +99,13 @@ const randomBytes = async (length = 8) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {[object]} files       An array of objects
- *                               containing the raw bytes
- *                               of each file and original
- *                               name.
- * @param {object}   mimePattern A regular expression that
- *                               explicitly describes the
- *                               allowed MIME types.
+ * @param {object[]} files       - An array of objects
+ *                                 containing the raw bytes
+ *                                 of each file and original
+ *                                 name.
+ * @param {object}   mimePattern - A regular expression that
+ *                                 explicitly describes the
+ *                                 allowed MIME types.
  * 
  * @returns {object} An object containing the names and bytes
  *                   of the cleared files as well as the
@@ -141,8 +141,8 @@ const sanitize = async (files, mimePattern = /^$/) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} mimePattern A regular expression that matches
- *                             the acceptable MIME types.
+ * @param {object} mimePattern - A regular expression that matches
+ *                               the acceptable MIME types.
  * 
  * @returns {object} Middleware for the sanitizing process.
  */

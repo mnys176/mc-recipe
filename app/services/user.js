@@ -3,8 +3,8 @@
  * Author:      Mike Nystoriak (nystoriakm@gmail.com) *
  * Created:     09/29/2021                            *
  * Description:                                       *
- *     Set of functions that interact with the        *
- *     user Mongoose model.                           *
+ *       Set of functions that interact with the        *
+ *       user Mongoose model.                           *
  ******************************************************/
 
 const path = require('path')
@@ -20,7 +20,7 @@ const quickResponse = require('../util/quick-response')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id Provided ObjectID.
+ * @param {string} id - Provided ObjectID.
  * 
  * @returns {boolean} True if valid, false if not.
  */
@@ -32,9 +32,9 @@ const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object}  body   Request body object.
- * @param {boolean} rehash Rehash the password with
- *                         BCrypt.
+ * @param {object}  body   - Request body object.
+ * @param {boolean} rehash - Rehash the password with
+ *                           the `bcrypt` module.
  * 
  * @returns {object} Premature user as a `Promise`.
  */
@@ -84,7 +84,7 @@ const fetch = async () => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The ID of the user.
+ * @param {string} id - The ID of the user.
  * 
  * @returns {object} The results of the query.
  */
@@ -119,8 +119,8 @@ const signin = async (username, password) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} json A JSON object with the bones
- *                      of a user.
+ * @param {object} json - A JSON object with the bones
+ *                        of a user.
  * 
  * @returns {object} The results of the operation.
  */
@@ -142,9 +142,9 @@ const create = async json => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id   The ID of the user.
- * @param {object} json A JSON object with the bones
- *                      of a user.
+ * @param {string} id   - The ID of the user.
+ * @param {object} json - A JSON object with the bones
+ *                        of a user.
  * 
  * @returns {object} The results of the operation.
  */
@@ -187,7 +187,7 @@ const change = async (id, json) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The ID of the user.
+ * @param {string} id - The ID of the user.
  * 
  * @returns {object} The results of the operation.
  */
@@ -213,10 +213,10 @@ const discard = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The ID of the user.
+ * @param {string} id - The ID of the user.
  * 
  * @returns {boolean} True if it does exist,
- *                    false otherwise.
+ *                      false otherwise.
  */
 const exists = async id => {
     try {
@@ -231,9 +231,9 @@ const exists = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    ID of the user.
- * @param {object} files File information provided
- *                       by Bouncer.
+ * @param {string} id    - ID of the user.
+ * @param {object} files - File information provided
+ *                         by Bouncer.
  * 
  * @returns {object} The results of the operation.
  */
@@ -277,9 +277,9 @@ const setMedia = async (id, files) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    ID of the user.
- * @param {object} files File information provided
- *                       by Bouncer.
+ * @param {string} id    - ID of the user.
+ * @param {object} files - File information provided
+ *                         by Bouncer.
  * 
  * @returns {object} The results of the operation.
  */
@@ -307,8 +307,8 @@ const resetMedia = async (id, files) => {
  * Unlinks media names from a user.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
- * z
- * @param {string} id ID of the user.
+ *
+ * @param {string} id - ID of the user.
  * 
  * @returns {object} The results of the operation.
  */

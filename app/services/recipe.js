@@ -3,8 +3,8 @@
  * Author:      Mike Nystoriak (nystoriakm@gmail.com) *
  * Created:     09/15/2021                            *
  * Description:                                       *
- *     Set of functions that interact with the        *
- *     recipe Mongoose model.                         *
+ *       Set of functions that interact with the        *
+ *       recipe Mongoose model.                         *
  ******************************************************/
 
 const path = require('path')
@@ -19,7 +19,7 @@ const quickResponse = require('../util/quick-response')
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object} input Frontend quantifiable.
+ * @param {object} input - Frontend quantifiable.
  * 
  * @returns {object} Backend quantifiable.
  */
@@ -41,7 +41,7 @@ const mapQuantifiable = input => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object} body Request body object.
+ * @param {object} body - Request body object.
  * 
  * @returns {object} Premature recipe as a `Promise`.
  */
@@ -72,7 +72,7 @@ const extractRecipe = body => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id Provided ObjectID.
+ * @param {string} id - Provided ObjectID.
  * 
  * @returns {boolean} True if valid, false if not.
  */
@@ -102,7 +102,7 @@ const fetch = async () => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The ID of the recipe.
+ * @param {string} id - The ID of the recipe.
  * 
  * @returns {object} The results of the query.
  */
@@ -124,8 +124,8 @@ const fetchById = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} json A JSON object with the bones
- *                      of a recipe.
+ * @param {object} json - A JSON object with the bones
+ *                        of a recipe.
  * 
  * @returns {object} The results of the operation.
  */
@@ -147,9 +147,9 @@ const create = async json => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id   The ID of the recipe.
- * @param {object} json A JSON object with the bones
- *                      of a recipe.
+ * @param {string} id   - The ID of the recipe.
+ * @param {object} json - A JSON object with the bones
+ *                        of a recipe.
  * 
  * @returns {object} The results of the operation.
  */
@@ -193,7 +193,7 @@ const change = async (id, json) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The ID of the recipe.
+ * @param {string} id - The ID of the recipe.
  * 
  * @returns {object} The results of the operation.
  */
@@ -219,10 +219,10 @@ const discard = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id The ID of the recipe.
+ * @param {string} id - The ID of the recipe.
  * 
  * @returns {boolean} True if it does exist,
- *                    false otherwise.
+ *                      false otherwise.
  */
 const exists = async id => {
     try {
@@ -237,9 +237,9 @@ const exists = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    ID of the recipe.
- * @param {object} files File information provided
- *                       by Bouncer.
+ * @param {string} id    - ID of the recipe.
+ * @param {object} files - File information provided
+ *                         by Bouncer.
  * 
  * @returns {object} The results of the operation.
  */
@@ -273,9 +273,9 @@ const setMedia = async (id, files) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    ID of the recipe.
- * @param {object} files File information provided
- *                       by Bouncer.
+ * @param {string} id    - ID of the recipe.
+ * @param {object} files - File information provided
+ *                         by Bouncer.
  * 
  * @returns {object} The results of the operation.
  */
@@ -306,7 +306,7 @@ const resetMedia = async (id, files) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id ID of the recipe.
+ * @param {string} id - ID of the recipe.
  * 
  * @returns {object} The results of the operation.
  */

@@ -42,8 +42,6 @@ const extractUser = (body, rehash) => {
         // bring literal data into user
         const userBuilder = { ...body }
 
-        // TODO: Refactor so that `req` is not a parameter.
-
         // skip encryption if desired
         if (!rehash) return resolve(userBuilder)
 

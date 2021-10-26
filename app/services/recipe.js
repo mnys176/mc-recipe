@@ -50,8 +50,6 @@ const extractRecipe = body => {
         // bring literal data into recipe
         const recipeBuilder = { ...body }
 
-        // TODO: Refactor so that `req` is not a parameter.
-
         // build preparation time if it exists
         recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
 

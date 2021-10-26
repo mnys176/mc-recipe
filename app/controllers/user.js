@@ -51,7 +51,8 @@ const getUserById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postUser = async (req, res) => {
-    const { status, data } = await userService.create(req.body)
+    const userBuilder = { ...req.body }
+    const { status, data } = await userService.create(userBuilder)
     return res.status(status).json(data)
 }
 

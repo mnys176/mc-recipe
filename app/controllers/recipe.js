@@ -51,7 +51,8 @@ const getRecipeById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postRecipe = async (req, res) => {
-    const { status, data } = await recipeService.create(req.body)
+    const recipeBuilder = { ...req.body }
+    const { status, data } = await recipeService.create(recipeBuilder)
     return res.status(status).json(data)
 }
 

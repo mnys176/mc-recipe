@@ -26,37 +26,35 @@ const quickResponse = require('../util/quick-response')
 const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
 
 /**
- * Extracts a user object from the request
- * body to be handled by Mongoose.
+ * Coerces a starter object into a user. The final
+ * result should meet the requirements for the `User`
+ * model handled by the `mongoose` module.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object}  body   - Request body object.
- * @param {boolean} rehash - Rehash the password with
- *                           the `bcrypt` module.
+ * @param {object}  builder - Request body object.
+ * @param {boolean} rehash  - Rehash the password with
+ *                            the `bcrypt` module.
  * 
  * @returns {object} Premature user as a `Promise`.
  */
-const extractUser = (body, rehash) => {
+const buildUser = (builder, rehash) => {
     return new Promise((resolve, reject) => {
-        // bring literal data into user
-        const userBuilder = { ...body }
-
         // skip encryption if desired
-        if (!rehash) return resolve(userBuilder)
+        if (!rehash) return resolve(builder)
 
         // TODO: Encrypt the password in `auth.js`.
 
         // encrypt password
-        bcrypt.hash(body.password, 14, (err, hash) => {
+        bcrypt.hash(builder.password, 14, (err, hash) => {
             if (err) {
                 // make `bcrypt` error message look like Mongoose error
                 err.message = 'User validation failed: password:' +
                               ' Path `password` is required.'
                 return reject(err)
             }
-            userBuilder.password = hash
-            return resolve(userBuilder)
+            builder.password = hash
+            return resolve(builder)
         })
     })
 }
@@ -107,14 +105,14 @@ const fetchById = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} json - A JSON object with the bones
- *                        of a user.
+ * @param {object} builder - A JSON object with the bones
+ *                           of a user.
  * 
  * @returns {object} The results of the operation.
  */
-const create = async json => {
+const create = async builder => {
     try {
-        const newUser = new User(await extractUser(json, true))
+        const newUser = new User(await buildUser(builder, true))
         await newUser.save()
         const message = `The user with ID of "${newUser._id}"` +
                         ' was successfully created.'
@@ -130,13 +128,13 @@ const create = async json => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id   - The ID of the user.
- * @param {object} json - A JSON object with the bones
- *                        of a user.
+ * @param {string} id      - The ID of the user.
+ * @param {object} builder - A JSON object with the bones
+ *                           of a user.
  * 
  * @returns {object} The results of the operation.
  */
-const change = async (id, json) => {
+const change = async (id, builder) => {
     try {
         if (!objectIdIsValid(id)) {
             const message = `The user with ID of "${id}"` +
@@ -149,8 +147,8 @@ const change = async (id, json) => {
         const currUser = temp.data.message
 
         // determine whether or not to change (rehash) a password
-        const makeNewPassword = json.hasOwnProperty('password')
-        const newUser = new User(await extractUser(json, makeNewPassword))
+        const makeNewPassword = builder.hasOwnProperty('password')
+        const newUser = new User(await extractUser(builder, makeNewPassword))
 
         // map new properties to user model
         currUser.name = newUser.name

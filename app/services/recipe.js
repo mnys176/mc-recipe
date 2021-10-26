@@ -36,33 +36,31 @@ const mapQuantifiable = input => {
 }
 
 /**
- * Extracts a recipe object from the request
- * body to be handled by Mongoose.
+ * Coerces a starter object into a recipe. The final
+ * result should meet the requirements for the `Recipe`
+ * model handled by the `mongoose` module.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object} body - Request body object.
+ * @param {object} builder - Builder object.
  * 
  * @returns {object} Premature recipe as a `Promise`.
  */
-const extractRecipe = body => {
+const buildRecipe = builder => {
     return new Promise((resolve, reject) => {
-        // bring literal data into recipe
-        const recipeBuilder = { ...body }
-
         // build preparation time if it exists
-        recipeBuilder.prepTime = mapQuantifiable(body.prepTime)
+        builder.prepTime = mapQuantifiable(builder.prepTime)
 
         // build ingredients if they exist
-        if (body.ingredients) {
-            recipeBuilder.ingredients = body.ingredients.map(i => {
+        if (builder.ingredients) {
+            builder.ingredients = builder.ingredients.map(i => {
                 return {
                     name: i.name,
                     amount: mapQuantifiable(i.amount)
                 }
             })
         }
-        return resolve(recipeBuilder)
+        return resolve(builder)
     })
 }
 
@@ -124,14 +122,14 @@ const fetchById = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} json - A JSON object with the bones
- *                        of a recipe.
+ * @param {object} builder - A JSON object with the bones
+ *                           of a recipe.
  * 
  * @returns {object} The results of the operation.
  */
-const create = async json => {
+const create = async builder => {
     try {
-        const newRecipe = new Recipe(await extractRecipe(json))
+        const newRecipe = new Recipe(await buildRecipe(builder))
         await newRecipe.save()
         const message = `The recipe with ID of "${newRecipe._id}"` +
                         ' was successfully created.'
@@ -147,13 +145,13 @@ const create = async json => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id   - The ID of the recipe.
- * @param {object} json - A JSON object with the bones
- *                        of a recipe.
+ * @param {string} id      - The ID of the recipe.
+ * @param {object} builder - A JSON object with the bones
+ *                           of a recipe.
  * 
  * @returns {object} The results of the operation.
  */
-const change = async (id, json) => {
+const change = async (id, builder) => {
     try {
         if (!objectIdIsValid(id)) {
             const message = `The recipe with ID of "${id}"` +
@@ -165,7 +163,7 @@ const change = async (id, json) => {
         const temp = await fetchById(id)
 
         const currRecipe = temp.data.message
-        const newRecipe = new Recipe(await extractRecipe(json))
+        const newRecipe = new Recipe(await buildRecipe(builder))
 
         // map new properties to recipe model
         currRecipe.title = newRecipe.title

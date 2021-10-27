@@ -10,6 +10,25 @@ const quickResponse = require('../util/quick-response')
 const { User } = require('../models')
 
 /**
+ * Generates a hashed version of the given plaintext.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} plain - Plaintext to be hashed with
+ *                         the `bcrypt` module.
+ * 
+ * @returns {string} Hashed password.
+ */
+const hash = async plain => {
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(plain, 14, (err, hash) => {
+            if (err) return reject(err)
+            return resolve(hash)
+        })
+    })
+}
+
+/**
  * Authenticates a user into the application.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
@@ -35,29 +54,24 @@ const authenticate = async (username, password) => {
 }
 
 /**
- * Generates a hashed version of the given password.
+ * Hashes a plaintext password.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} password - Password in plaintext.
+ * @param {string} plaintext - Plaintext password.
  * 
  * @returns {object} The results of the operation.
  */
-const hashPassword = async plain => {
-    return new Promise((resolve, reject) => {
-        bcrypt.hash(plain, 14, (err, hash) => {
-            let message = ''
-            if (err) {
-                // make `bcrypt` error message look like Mongoose error
-                err.message = 'User validation failed: password:' +
-                              ' Path `password` is required.'
-                message = 'Password creation was unsuccessful.'
-                return reject(quickResponse(400, message, err.message))
-            }
-            message = 'Password creation was successful.'
-            return resolve(quickResponse(200, message, hash))
-        })
-    })
+const hashPassword = async plaintext => {
+    try {
+        const message = 'Password generation was successful.'
+        return quickResponse(200, message, await hash(plaintext))
+    } catch (err) {
+        // make `bcrypt` error message look like Mongoose error
+        const message = 'The user could not be created.'
+        err.message = 'User validation failed: password:' +
+                      ' Path `password` is required.'
+        return quickResponse(400, message, err.message)
+    }
 }
-
 module.exports = { authenticate, hashPassword }

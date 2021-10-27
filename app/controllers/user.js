@@ -81,7 +81,21 @@ const postUser = async (req, res) => {
 const signIn = async (req, res) => {
     const { username, password } = req.body
     const { status, data } = await authService.authenticate(username, password)
+    if (status === 200) req.session.isAuth = true
     return res.status(status).json(data)
+}
+
+/**
+ * Signs a user out of the application.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {object} req - Request object from Express.
+ * @param {object} res - Response object from Express.
+ */
+const signOut = async (req, res) => {
+    req.session.destroy()
+    return res.status(200).json('Signed out')
 }
 
 /**
@@ -235,6 +249,7 @@ module.exports = {
     getUserById,
     postUser,
     signIn,
+    signOut,
     putUser,
     deleteUser,
     getUserMedia,

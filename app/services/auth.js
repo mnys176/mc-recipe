@@ -10,13 +10,14 @@ const quickResponse = require('../util/quick-response')
 const { User } = require('../models')
 
 /**
- * Authenticates a user into the application using
- * the `bcrypt` module.
+ * Authenticates a user into the application.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {string} username - Username of the user.
  * @param {string} password - Password of the user.
+ * 
+ * @returns {object} The results of the operation.
  */
 const authenticate = async (username, password) => {
     try {
@@ -33,4 +34,30 @@ const authenticate = async (username, password) => {
     }
 }
 
-module.exports = { authenticate }
+/**
+ * Generates a hashed version of the given password.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} password - Password in plaintext.
+ * 
+ * @returns {object} The results of the operation.
+ */
+const hashPassword = async plain => {
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(plain, 14, (err, hash) => {
+            let message = ''
+            if (err) {
+                // make `bcrypt` error message look like Mongoose error
+                err.message = 'User validation failed: password:' +
+                              ' Path `password` is required.'
+                message = 'Password creation was unsuccessful.'
+                return reject(quickResponse(400, message, err.message))
+            }
+            message = 'Password creation was successful.'
+            return resolve(quickResponse(200, message, hash))
+        })
+    })
+}
+
+module.exports = { authenticate, hashPassword }

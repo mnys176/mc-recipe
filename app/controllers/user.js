@@ -51,11 +51,20 @@ const getUserById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postUser = async (req, res) => {
+    // hash the password
+    const temp = await authService.hashPassword(req.body.password)
+    const authServiceStatus = temp.status
+    const authServiceData = temp.data
+    if (authServiceStatus !== 200) {
+        return res.status(authServiceStatus).json(authServiceData)
+    }
+    const hashedPassword = authServiceData.context
+
     // cherry-pick fields from body (more secure)
     const { status, data } = await userService.create(
         req.body.name,
         req.body.username,
-        req.body.password,
+        hashedPassword,
         req.body.email
     )
     return res.status(status).json(data)
@@ -84,12 +93,24 @@ const signIn = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const putUser = async (req, res) => {
-    const { id } = req.params
+    // hash the password (if its included in the request body)
+    let hashedPassword
+    if (req.body.password) {
+        const temp = await authService.hashPassword(req.body.password)
+        const authServiceStatus = temp.status
+        const authServiceData = temp.data
+        if (authServiceStatus !== 200) {
+            return res.status(authServiceStatus).json(authServiceData)
+        }
+        hashedPassword = authServiceData.context
+    }
+
+    // cherry-pick fields from body (more secure)
     const { status, data } = await userService.change(
-        id,
+        req.params.id,
         req.body.name,
         req.body.username,
-        req.body.password,
+        hashedPassword,
         req.body.email
     )
     return res.status(status).json(data)

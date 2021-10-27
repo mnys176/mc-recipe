@@ -8,7 +8,6 @@
  ******************************************************/
 
 const path = require('path')
-const bcrypt = require('bcrypt')
 const mediaService = require('./media')
 const { User } = require('../models')
 const quickResponse = require('../util/quick-response')
@@ -33,30 +32,12 @@ const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
  * @param {object} builder - Builder object.
- * @param {boolean} rehash - Rehash the password with
- *                           the `bcrypt` module.
  * 
  * @returns {object} Premature user as a `Promise`.
  */
-const buildUser = (builder, rehash) => {
-    return new Promise((resolve, reject) => {
-        // skip encryption if desired
-        if (!rehash) return resolve(builder)
-
-        // TODO: Encrypt the password in `auth.js`.
-
-        // encrypt password
-        bcrypt.hash(builder.password, 14, (err, hash) => {
-            if (err) {
-                // make `bcrypt` error message look like Mongoose error
-                err.message = 'User validation failed: password:' +
-                              ' Path `password` is required.'
-                return reject(err)
-            }
-            builder.password = hash
-            return resolve(builder)
-        })
-    })
+const buildUser = builder => {
+    // useless method kept for extension
+    return new Promise((resolve, reject) => resolve(builder))
 }
 
 /**
@@ -115,7 +96,7 @@ const fetchById = async id => {
 const create = async (name, username, password, email) => {
     try {
         const builder = { name, username, password, email }
-        const newUser = new User(await buildUser(builder, true))
+        const newUser = new User(await buildUser(builder))
         await newUser.save()
         const message = `The user with ID of "${newUser._id}"` +
                         ' was successfully created.'
@@ -151,10 +132,8 @@ const change = async (id, name, username, password, email) => {
         const temp = await fetchById(id)
         const currUser = temp.data.message
 
-        // determine whether or not to change (rehash) a password
-        const makeNewPassword = password !== undefined
         const builder = { name, username, password, email }
-        const newUser = new User(await buildUser(builder, makeNewPassword))
+        const newUser = new User(await buildUser(builder))
 
         // map new properties to user model
         currUser.name = newUser.name

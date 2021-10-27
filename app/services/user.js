@@ -3,8 +3,8 @@
  * Author:      Mike Nystoriak (nystoriakm@gmail.com) *
  * Created:     09/29/2021                            *
  * Description:                                       *
- *       Set of functions that interact with the        *
- *       user Mongoose model.                           *
+ *       Set of functions that interact with the      *
+ *       user Mongoose model.                         *
  ******************************************************/
 
 const path = require('path')

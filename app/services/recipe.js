@@ -122,13 +122,42 @@ const fetchById = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} builder - A JSON object with the bones
- *                           of a recipe.
+ * @param {string}   title        - Recipe title.
+ * @param {string}   about        - Recipe description.
+ * @param {string}   uploader     - Username of the user that
+ *                                  uploaded the recipe.
+ * @param {object}   prepTime     - Recipe preparation time
+ *                                  as a `Quantifiable`.
+ * @param {string}   category     - Recipe category, either
+ *                                  'breakfast', 'lunch',
+ *                                  'dinner', 'appetizer', or
+ *                                  'dessert'.
+ * @param {object[]} ingredients  - Recipe ingredients with each
+ *                                  ingredient having a
+ *                                  `Quantifiable` and name.
+ * @param {string[]} instructions - Recipe instruction steps.
  * 
  * @returns {object} The results of the operation.
  */
-const create = async builder => {
+const create = async (
+    title,
+    about,
+    uploader,
+    prepTime,
+    category,
+    ingredients,
+    instructions
+) => {
     try {
+        const builder = {
+            title,
+            about,
+            uploader,
+            prepTime,
+            category,
+            ingredients,
+            instructions
+        }
         const newRecipe = new Recipe(await buildRecipe(builder))
         await newRecipe.save()
         const message = `The recipe with ID of "${newRecipe._id}"` +
@@ -145,13 +174,34 @@ const create = async builder => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id      - The ID of the recipe.
- * @param {object} builder - A JSON object with the bones
- *                           of a recipe.
+ * @param {string}   id           - Recipe ID.
+ * @param {string}   title        - Recipe title.
+ * @param {string}   about        - Recipe description.
+ * @param {string}   uploader     - Username of the user that
+ *                                  uploaded the recipe.
+ * @param {object}   prepTime     - Recipe preparation time
+ *                                  as a `Quantifiable`.
+ * @param {string}   category     - Recipe category, either
+ *                                  'breakfast', 'lunch',
+ *                                  'dinner', 'appetizer', or
+ *                                  'dessert'.
+ * @param {object[]} ingredients  - Recipe ingredients with each
+ *                                  ingredient having a
+ *                                  `Quantifiable` and name.
+ * @param {string[]} instructions - Recipe instruction steps.
  * 
  * @returns {object} The results of the operation.
  */
-const change = async (id, builder) => {
+const change = async (
+    id,
+    title,
+    about,
+    uploader,
+    prepTime,
+    category,
+    ingredients,
+    instructions
+) => {
     try {
         if (!objectIdIsValid(id)) {
             const message = `The recipe with ID of "${id}"` +
@@ -161,8 +211,17 @@ const change = async (id, builder) => {
 
         // use method that already handles '404 Not Found'
         const temp = await fetchById(id)
-
         const currRecipe = temp.data.message
+
+        const builder = {
+            title,
+            about,
+            uploader,
+            prepTime,
+            category,
+            ingredients,
+            instructions
+        }
         const newRecipe = new Recipe(await buildRecipe(builder))
 
         // map new properties to recipe model

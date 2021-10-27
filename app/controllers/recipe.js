@@ -51,8 +51,16 @@ const getRecipeById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postRecipe = async (req, res) => {
-    const recipeBuilder = { ...req.body }
-    const { status, data } = await recipeService.create(recipeBuilder)
+    // cherry-pick fields from body (more secure)
+    const { status, data } = await recipeService.create(
+        req.body.title,
+        req.body.about,
+        req.body.uploader,
+        req.body.prepTime,
+        req.body.category,
+        req.body.ingredients,
+        req.body.instructions
+    )
     return res.status(status).json(data)
 }
 
@@ -65,8 +73,17 @@ const postRecipe = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const putRecipe = async (req, res) => {
-    const { id } = req.params
-    const { status, data } = await recipeService.change(id, req.body)
+    // cherry-pick fields from body (more secure)
+    const { status, data } = await recipeService.change(
+        req.params.id,
+        req.body.title,
+        req.body.about,
+        req.body.uploader,
+        req.body.prepTime,
+        req.body.category,
+        req.body.ingredients,
+        req.body.instructions
+    )
     return res.status(status).json(data)
 }
 

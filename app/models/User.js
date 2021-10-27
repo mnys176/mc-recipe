@@ -19,9 +19,10 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
-        match: /^\w+$/,
+        unique: true,
         minLength: 6,
-        unique: true
+        maxLength: 128,
+        match: /^\w{6,128}$/
     },
     password: {
         type: String,
@@ -31,8 +32,9 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
-        match: /^[\w\.]+@\w+(\.\w+)+$/,
-        unique: true
+        unique: true,
+        maxLength: 128,
+        match: /^[\w\.]+@\w+(\.\w+)+$/
     },
     media: { type: String, default: '' },
     registered: { type: Number, default: Date.now() }

@@ -51,8 +51,13 @@ const getUserById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postUser = async (req, res) => {
-    const userBuilder = { ...req.body }
-    const { status, data } = await userService.create(userBuilder)
+    // cherry-pick fields from body (more secure)
+    const { status, data } = await userService.create(
+        req.body.name,
+        req.body.username,
+        req.body.password,
+        req.body.email
+    )
     return res.status(status).json(data)
 }
 
@@ -80,7 +85,13 @@ const signIn = async (req, res) => {
  */
 const putUser = async (req, res) => {
     const { id } = req.params
-    const { status, data } = await userService.change(id, req.body)
+    const { status, data } = await userService.change(
+        id,
+        req.body.name,
+        req.body.username,
+        req.body.password,
+        req.body.email
+    )
     return res.status(status).json(data)
 }
 

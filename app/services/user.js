@@ -32,9 +32,9 @@ const objectIdIsValid = id => id.match(/^[a-f\d]{24}$/i)
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  *
- * @param {object}  builder - Request body object.
- * @param {boolean} rehash  - Rehash the password with
- *                            the `bcrypt` module.
+ * @param {object} builder - Builder object.
+ * @param {boolean} rehash - Rehash the password with
+ *                           the `bcrypt` module.
  * 
  * @returns {object} Premature user as a `Promise`.
  */
@@ -105,13 +105,16 @@ const fetchById = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {object} builder - A JSON object with the bones
- *                           of a user.
+ * @param {string} name     - User name.
+ * @param {string} username - User username.
+ * @param {string} password - User password (hashed).
+ * @param {string} email    - User E-mail.
  * 
  * @returns {object} The results of the operation.
  */
-const create = async builder => {
+const create = async (name, username, password, email) => {
     try {
+        const builder = { name, username, password, email }
         const newUser = new User(await buildUser(builder, true))
         await newUser.save()
         const message = `The user with ID of "${newUser._id}"` +
@@ -128,13 +131,15 @@ const create = async builder => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id      - The ID of the user.
- * @param {object} builder - A JSON object with the bones
- *                           of a user.
+ * @param {string} id       - The ID of the user.
+ * @param {string} name     - User name.
+ * @param {string} username - User username.
+ * @param {string} password - User password (hashed).
+ * @param {string} email    - User E-mail.
  * 
  * @returns {object} The results of the operation.
  */
-const change = async (id, builder) => {
+const change = async (id, name, username, password, email) => {
     try {
         if (!objectIdIsValid(id)) {
             const message = `The user with ID of "${id}"` +
@@ -147,8 +152,9 @@ const change = async (id, builder) => {
         const currUser = temp.data.message
 
         // determine whether or not to change (rehash) a password
-        const makeNewPassword = builder.hasOwnProperty('password')
-        const newUser = new User(await extractUser(builder, makeNewPassword))
+        const makeNewPassword = password !== undefined
+        const builder = { name, username, password, email }
+        const newUser = new User(await buildUser(builder, makeNewPassword))
 
         // map new properties to user model
         currUser.name = newUser.name

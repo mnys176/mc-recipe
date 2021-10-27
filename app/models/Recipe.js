@@ -24,7 +24,14 @@ const ingredientSchema = new Schema({
 }, { _id: false })
 
 const recipeSchema = new Schema({
-    title: { type: String, required: true },
+    title: {
+        type: String,
+        required: true,
+        unique: true,
+        minLength: 4,
+        maxLength: 128,
+        match: /^[\w'\/#! ]{4,}$/
+    },
     media: [String],
     uploader: { type: String, default: 'Anon Y. Mous' },
     createdOn: { type: Date, default: Date.now() },
@@ -40,9 +47,13 @@ const recipeSchema = new Schema({
             'dessert'
         ]
     },
+
+    // `default` cannot be an arrow function because of `this`
     about: {
         type: String,
-        default: 'A recipe created by Anon Y. Mous.'
+        default: function() {
+            return `A recipe created by ${this.uploader}.`
+        }
     },
     prepTime: { type: quantifiableSchema, required: true },
     ingredients: {

@@ -301,7 +301,291 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"raw": "{\n    \"title\": \"Mike's Small Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-short",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"",
+									"// count the number of recipes before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldRecipes = res.json().message.length",
+									"",
+									"    // make the request and current recipe count visible to tests",
+									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of recipes exists', () => {",
+									"        const numNewRecipes = res.json().message.length",
+									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"xx\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-long",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"",
+									"// count the number of recipes before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldRecipes = res.json().message.length",
+									"",
+									"    // make the request and current recipe count visible to tests",
+									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of recipes exists', () => {",
+									"        const numNewRecipes = res.json().message.length",
+									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-bad-characters",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"",
+									"// count the number of recipes before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldRecipes = res.json().message.length",
+									"",
+									"    // make the request and current recipe count visible to tests",
+									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of recipes exists', () => {",
+									"        const numNewRecipes = res.json().message.length",
+									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"'Boom!/Chicken's #great_time' is OK, but '@@@' is not\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-already-exists",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"",
+									"// count the number of recipes before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldRecipes = res.json().message.length",
+									"",
+									"    // make the request and current recipe count visible to tests",
+									"    pm.collectionVariables.set('postTestGetRecipes', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldRecipes', numOldRecipes)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetRecipes'))",
+									"const numOldRecipes = pm.collectionVariables.get('numOldRecipes')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of recipes exists', () => {",
+									"        const numNewRecipes = res.json().message.length",
+									"        pm.expect(numNewRecipes).to.be.equal(numOldRecipes)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mike's Small Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1233,6 +1517,474 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"{{recipeObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-short",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"const oldRecipeTitle = pm.collectionVariables.get('oldRecipeTitle')",
+									"const oldRecipeAbout = pm.collectionVariables.get('oldRecipeAbout')",
+									"const oldRecipeCategory = pm.collectionVariables.get('oldRecipeCategory')",
+									"const oldRecipeModifiedOn = pm.collectionVariables.get('oldRecipeModifiedOn')",
+									"const oldRecipePrepTime = JSON.parse(pm.collectionVariables.get('oldRecipePrepTime'))",
+									"const oldRecipeIngredients = JSON.parse(pm.collectionVariables.get('oldRecipeIngredients'))",
+									"const oldRecipeInstructions = JSON.parse(pm.collectionVariables.get('oldRecipeInstructions'))",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from recipe after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('Recipe title has not changed', () => {",
+									"        const newRecipeTitle = jsonRes.title",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
+									"    })",
+									"    pm.test('Recipe about has not changed', () => {",
+									"        const newRecipeAbout = jsonRes.about",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
+									"    })",
+									"    pm.test('Recipe category has not changed', () => {",
+									"        const newRecipeCategory = jsonRes.category",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
+									"    })",
+									"    pm.test('Recipe modification date has not changed', () => {",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
+									"    })",
+									"    pm.test('Recipe preparation time has not changed', () => {",
+									"        const newRecipePrepTime = jsonRes.prepTime",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
+									"    })",
+									"    pm.test('Recipe ingredients list has not changed', () => {",
+									"        const newRecipeIngredients = jsonRes.ingredients",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
+									"    })",
+									"    pm.test('Recipe instructions set has not changed', () => {",
+									"        const newRecipeInstructions = jsonRes.instructions",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"",
+									"// get current values from recipe before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldRecipeTitle = jsonRes.title",
+									"    const oldRecipeAbout = jsonRes.about",
+									"    const oldRecipePrepTime = jsonRes.prepTime",
+									"    const oldRecipeIngredients = jsonRes.ingredients",
+									"    const oldRecipeInstructions = jsonRes.instructions",
+									"    const oldRecipeCategory = jsonRes.category",
+									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"",
+									"    // make the current recipe properties visible to tests",
+									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
+									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
+									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
+									"    pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(oldRecipePrepTime))",
+									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
+									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
+									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"xx\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"{{recipeObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-long",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"const oldRecipeTitle = pm.collectionVariables.get('oldRecipeTitle')",
+									"const oldRecipeAbout = pm.collectionVariables.get('oldRecipeAbout')",
+									"const oldRecipeCategory = pm.collectionVariables.get('oldRecipeCategory')",
+									"const oldRecipeModifiedOn = pm.collectionVariables.get('oldRecipeModifiedOn')",
+									"const oldRecipePrepTime = JSON.parse(pm.collectionVariables.get('oldRecipePrepTime'))",
+									"const oldRecipeIngredients = JSON.parse(pm.collectionVariables.get('oldRecipeIngredients'))",
+									"const oldRecipeInstructions = JSON.parse(pm.collectionVariables.get('oldRecipeInstructions'))",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from recipe after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('Recipe title has not changed', () => {",
+									"        const newRecipeTitle = jsonRes.title",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
+									"    })",
+									"    pm.test('Recipe about has not changed', () => {",
+									"        const newRecipeAbout = jsonRes.about",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
+									"    })",
+									"    pm.test('Recipe category has not changed', () => {",
+									"        const newRecipeCategory = jsonRes.category",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
+									"    })",
+									"    pm.test('Recipe modification date has not changed', () => {",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
+									"    })",
+									"    pm.test('Recipe preparation time has not changed', () => {",
+									"        const newRecipePrepTime = jsonRes.prepTime",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
+									"    })",
+									"    pm.test('Recipe ingredients list has not changed', () => {",
+									"        const newRecipeIngredients = jsonRes.ingredients",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
+									"    })",
+									"    pm.test('Recipe instructions set has not changed', () => {",
+									"        const newRecipeInstructions = jsonRes.instructions",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"",
+									"// get current values from recipe before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldRecipeTitle = jsonRes.title",
+									"    const oldRecipeAbout = jsonRes.about",
+									"    const oldRecipePrepTime = jsonRes.prepTime",
+									"    const oldRecipeIngredients = jsonRes.ingredients",
+									"    const oldRecipeInstructions = jsonRes.instructions",
+									"    const oldRecipeCategory = jsonRes.category",
+									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"",
+									"    // make the current recipe properties visible to tests",
+									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
+									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
+									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
+									"    pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(oldRecipePrepTime))",
+									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
+									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
+									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"{{recipeObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-bad-characters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"const oldRecipeTitle = pm.collectionVariables.get('oldRecipeTitle')",
+									"const oldRecipeAbout = pm.collectionVariables.get('oldRecipeAbout')",
+									"const oldRecipeCategory = pm.collectionVariables.get('oldRecipeCategory')",
+									"const oldRecipeModifiedOn = pm.collectionVariables.get('oldRecipeModifiedOn')",
+									"const oldRecipePrepTime = JSON.parse(pm.collectionVariables.get('oldRecipePrepTime'))",
+									"const oldRecipeIngredients = JSON.parse(pm.collectionVariables.get('oldRecipeIngredients'))",
+									"const oldRecipeInstructions = JSON.parse(pm.collectionVariables.get('oldRecipeInstructions'))",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from recipe after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('Recipe title has not changed', () => {",
+									"        const newRecipeTitle = jsonRes.title",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
+									"    })",
+									"    pm.test('Recipe about has not changed', () => {",
+									"        const newRecipeAbout = jsonRes.about",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
+									"    })",
+									"    pm.test('Recipe category has not changed', () => {",
+									"        const newRecipeCategory = jsonRes.category",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
+									"    })",
+									"    pm.test('Recipe modification date has not changed', () => {",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
+									"    })",
+									"    pm.test('Recipe preparation time has not changed', () => {",
+									"        const newRecipePrepTime = jsonRes.prepTime",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
+									"    })",
+									"    pm.test('Recipe ingredients list has not changed', () => {",
+									"        const newRecipeIngredients = jsonRes.ingredients",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
+									"    })",
+									"    pm.test('Recipe instructions set has not changed', () => {",
+									"        const newRecipeInstructions = jsonRes.instructions",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"",
+									"// get current values from recipe before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldRecipeTitle = jsonRes.title",
+									"    const oldRecipeAbout = jsonRes.about",
+									"    const oldRecipePrepTime = jsonRes.prepTime",
+									"    const oldRecipeIngredients = jsonRes.ingredients",
+									"    const oldRecipeInstructions = jsonRes.instructions",
+									"    const oldRecipeCategory = jsonRes.category",
+									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"",
+									"    // make the current recipe properties visible to tests",
+									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
+									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
+									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
+									"    pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(oldRecipePrepTime))",
+									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
+									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
+									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"'Boom!/Chicken's #great_time' is OK, but '@@@' is not\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/recipes/{{recipeObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"recipes",
+								"{{recipeObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "title-invalid-already-exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"const oldRecipeTitle = pm.collectionVariables.get('oldRecipeTitle')",
+									"const oldRecipeAbout = pm.collectionVariables.get('oldRecipeAbout')",
+									"const oldRecipeCategory = pm.collectionVariables.get('oldRecipeCategory')",
+									"const oldRecipeModifiedOn = pm.collectionVariables.get('oldRecipeModifiedOn')",
+									"const oldRecipePrepTime = JSON.parse(pm.collectionVariables.get('oldRecipePrepTime'))",
+									"const oldRecipeIngredients = JSON.parse(pm.collectionVariables.get('oldRecipeIngredients'))",
+									"const oldRecipeInstructions = JSON.parse(pm.collectionVariables.get('oldRecipeInstructions'))",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from recipe after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('Recipe title has not changed', () => {",
+									"        const newRecipeTitle = jsonRes.title",
+									"        pm.expect(newRecipeTitle).to.equal(oldRecipeTitle)",
+									"    })",
+									"    pm.test('Recipe about has not changed', () => {",
+									"        const newRecipeAbout = jsonRes.about",
+									"        pm.expect(newRecipeAbout).to.equal(oldRecipeAbout)",
+									"    })",
+									"    pm.test('Recipe category has not changed', () => {",
+									"        const newRecipeCategory = jsonRes.category",
+									"        pm.expect(newRecipeCategory).to.equal(oldRecipeCategory)",
+									"    })",
+									"    pm.test('Recipe modification date has not changed', () => {",
+									"        const newRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"        pm.expect(newRecipeModifiedOn).to.equal(oldRecipeModifiedOn)    ",
+									"    })",
+									"    pm.test('Recipe preparation time has not changed', () => {",
+									"        const newRecipePrepTime = jsonRes.prepTime",
+									"        pm.expect(newRecipePrepTime).to.deep.equal(oldRecipePrepTime)",
+									"    })",
+									"    pm.test('Recipe ingredients list has not changed', () => {",
+									"        const newRecipeIngredients = jsonRes.ingredients",
+									"        pm.expect(newRecipeIngredients).to.deep.equal(oldRecipeIngredients)",
+									"    })",
+									"    pm.test('Recipe instructions set has not changed', () => {",
+									"        const newRecipeInstructions = jsonRes.instructions",
+									"        pm.expect(newRecipeInstructions).to.deep.equal(oldRecipeInstructions)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetRecipeById'))",
+									"",
+									"// get current values from recipe before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldRecipeTitle = jsonRes.title",
+									"    const oldRecipeAbout = jsonRes.about",
+									"    const oldRecipePrepTime = jsonRes.prepTime",
+									"    const oldRecipeIngredients = jsonRes.ingredients",
+									"    const oldRecipeInstructions = jsonRes.instructions",
+									"    const oldRecipeCategory = jsonRes.category",
+									"    const oldRecipeModifiedOn = Date.parse(jsonRes.modifiedOn)",
+									"",
+									"    // make the current recipe properties visible to tests",
+									"    pm.collectionVariables.set('oldRecipeTitle', oldRecipeTitle)",
+									"    pm.collectionVariables.set('oldRecipeAbout', oldRecipeAbout)",
+									"    pm.collectionVariables.set('oldRecipeCategory', oldRecipeCategory)",
+									"    pm.collectionVariables.set('oldRecipePrepTime', JSON.stringify(oldRecipePrepTime))",
+									"    pm.collectionVariables.set('oldRecipeIngredients', JSON.stringify(oldRecipeIngredients))",
+									"    pm.collectionVariables.set('oldRecipeInstructions', JSON.stringify(oldRecipeInstructions))",
+									"    pm.collectionVariables.set('oldRecipeModifiedOn', oldRecipeModifiedOn)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Linda's Cake\",\n    \"about\": \"{{newRecipeAbout}}\",\n    \"category\": \"{{newRecipeCategory}}\",\n    \"prepTime\": {{newRecipePrepTime}},\n    \"ingredients\": {{newRecipeIngredients}},\n    \"instructions\": {{newRecipeInstructions}}\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3282,7 +4034,7 @@
 					"response": []
 				},
 				{
-					"name": "name-first-invalid",
+					"name": "name-first-invalid-bad-characters",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -3354,7 +4106,7 @@
 					"response": []
 				},
 				{
-					"name": "name-middle-invalid",
+					"name": "name-middle-invalid-bad-characters",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -3498,7 +4250,7 @@
 					"response": []
 				},
 				{
-					"name": "name-last-invalid",
+					"name": "name-last-invalid-bad-characters",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -3714,6 +4466,78 @@
 					"response": []
 				},
 				{
+					"name": "username-invalid-long",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "username-invalid-bad-characters",
 					"event": [
 						{
@@ -3765,6 +4589,78 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123!@#$%^&:\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-invalid-already-exists",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3930,7 +4826,79 @@
 					"response": []
 				},
 				{
-					"name": "email-invalid",
+					"name": "email-invalid-long",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susans@exampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexampleexample.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-invalid-bad-characters",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -3981,6 +4949,78 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"su@hgv78687@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/register",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-invalid-already-exists",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"",
+									"// count the number of users before the bad POST request",
+									"pm.sendRequest(req,  (err, res) => {",
+									"    if (err) throw err",
+									"    const numOldUsers = res.json().message.length",
+									"",
+									"    // make the request and current user count visible to tests",
+									"    pm.collectionVariables.set('postTestGetUsers', JSON.stringify(req))",
+									"    pm.collectionVariables.set('numOldUsers', numOldUsers)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('postTestGetUsers'))",
+									"const numOldUsers = pm.collectionVariables.get('numOldUsers')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// count the number of recipes after the bad POST request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    pm.test('Same number of users exists', () => {",
+									"        const numNewUsers = res.json().message.length",
+									"        pm.expect(numNewUsers).to.be.equal(numOldUsers)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {\n        \"first\": \"Susan\",\n        \"last\": \"Benz\"\n    },\n    \"username\": \"new123123\",\n    \"password\": \"P@ssword23!\",\n    \"email\": \"susan@example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4399,7 +5439,7 @@
 					"response": []
 				},
 				{
-					"name": "name-first-invalid",
+					"name": "name-first-invalid-bad-characters",
 					"event": [
 						{
 							"listen": "test",
@@ -4579,7 +5619,7 @@
 					"response": []
 				},
 				{
-					"name": "name-last-invalid",
+					"name": "name-last-invalid-bad-characters",
 					"event": [
 						{
 							"listen": "test",
@@ -4849,6 +5889,96 @@
 					"response": []
 				},
 				{
+					"name": "username-invalid-long",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"longggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "username-invalid-bad-characters",
 					"event": [
 						{
@@ -4918,6 +6048,96 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"@#$%^!@\",\n    \"email\": \"{{newUserEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username-invalid-already-exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"Bale7Passive\",\n    \"email\": \"{{newUserEmail}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5029,7 +6249,7 @@
 					"response": []
 				},
 				{
-					"name": "email-invalid",
+					"name": "email-invalid-bad-characters",
 					"event": [
 						{
 							"listen": "test",
@@ -5098,6 +6318,96 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"alsajknd@,amsd n@a,ms d\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/{{userObjectIdToDelete}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"{{userObjectIdToDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "email-invalid-already-exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// get relevant collection variables",
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"const oldUserName = JSON.parse(pm.collectionVariables.get('oldUserName'))",
+									"const oldUserUsername = pm.collectionVariables.get('oldUserUsername')",
+									"const oldUserEmail = pm.collectionVariables.get('oldUserEmail')",
+									"",
+									"// assert that status code is 400",
+									"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+									"",
+									"// get values from user after the PUT request",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    const jsonRes = res.json().message",
+									"    pm.test('User name has not changed', () => {",
+									"        const newUserName = jsonRes.name",
+									"        pm.expect(newUserName.first).to.equal(oldUserName.first)",
+									"        pm.expect(newUserName.last).to.equal(oldUserName.last)",
+									"    })",
+									"    pm.test('User username has not changed', () => {",
+									"        const newUserUsername = jsonRes.username",
+									"        pm.expect(newUserUsername).to.equal(oldUserUsername)",
+									"    })",
+									"    pm.test('User email has not changed', () => {",
+									"        const newUserEmail = jsonRes.email",
+									"        pm.expect(newUserEmail).to.equal(oldUserEmail)",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const req = JSON.parse(pm.collectionVariables.get('putTestGetUserById'))",
+									"",
+									"// get current values from user before the PUT requests",
+									"pm.sendRequest(req, (err, res) => {",
+									"    if (err) throw err",
+									"    jsonRes = res.json().message",
+									"    ",
+									"    // create a rotation cycle that constantly changes values",
+									"    const oldUserName = jsonRes.name",
+									"    const oldUserUsername = jsonRes.username",
+									"    const oldUserEmail = jsonRes.email",
+									"",
+									"    // make the current user properties visible to tests",
+									"    pm.collectionVariables.set('oldUserName', JSON.stringify(oldUserName))",
+									"    pm.collectionVariables.set('oldUserUsername', oldUserUsername)",
+									"    pm.collectionVariables.set('oldUserEmail', oldUserEmail)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": {{newUserName}},\n    \"username\": \"{{newUserUsername}}\",\n    \"email\": \"mcfaddenbruce@techade.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

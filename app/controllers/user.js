@@ -80,6 +80,8 @@ const postUser = async (req, res) => {
  */
 const signIn = async (req, res) => {
     const { username, password } = req.body
+
+    // authenticate user
     const temp = await authService.authenticate(username, password)
     const authServiceStatus = temp.status
     const authServiceData = temp.data
@@ -87,8 +89,11 @@ const signIn = async (req, res) => {
         return res.status(authServiceStatus).json(authServiceData)
     }
     
-    await userService.signIn(username)
-    res.json({})
+    // sign them in
+    const { status, data } = await userService.signIn(username)
+    if (status === 200) req.session.isAuthenticated = true
+
+    return res.status(status).json(data)
 }
 
 /**
@@ -100,8 +105,10 @@ const signIn = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const signOut = async (req, res) => {
-    req.session.destroy()
-    return res.status(200).json('Signed out')
+    const { username, password } = req.body
+    const { status, data } = await userService.signOut(username)
+    if (status === 200) req.session.destroy()
+    return res.status(status).json(data)
 }
 
 /**

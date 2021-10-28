@@ -86,7 +86,7 @@ const fetchById = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} name     - User name.
+ * @param {object} name     - User name.
  * @param {string} username - User username.
  * @param {string} password - User password (hashed).
  * @param {string} email    - User E-mail.
@@ -113,7 +113,7 @@ const create = async (name, username, password, email) => {
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
  * @param {string} id       - The ID of the user.
- * @param {string} name     - User name.
+ * @param {object} name     - User name.
  * @param {string} username - User username.
  * @param {string} password - User password (hashed).
  * @param {string} email    - User E-mail.
@@ -304,6 +304,8 @@ const unsetMedia = async id => {
 const signIn = async username => {
     const notFoundMessage = `The user with username of "${username}"` +
                             ' does not exist.'
+    const badRequestMessage = `The user with username of "${username}"` +
+                              ' is already signed in.'
     const successMessage = `The user with username of "${username}"` +
                            ' was signed into the application.'
     try {
@@ -311,8 +313,32 @@ const signIn = async username => {
         if (!user) return quickResponse(404, notFoundMessage)
 
         // check if user is already signed in
-        if (user.active) 
+        if (user.active) return quickResponse(400, badRequestMessage)
+
         user.active = true
+        user.save()
+
+        return quickResponse(200, successMessage)
+    } catch (err) {
+        return quickResponse(500)
+    }
+}
+
+const signOut = async username => {
+    const notFoundMessage = `The user with username of "${username}"` +
+                            ' does not exist.'
+    const badRequestMessage = `The user with username of "${username}"` +
+                              ' is already signed out.'
+    const successMessage = `The user with username of "${username}"` +
+                           ' was signed out of the application.'
+    try {
+        const user = await User.findOne({ username })
+        if (!user) return quickResponse(404, notFoundMessage)
+
+        // check if user is already signed out
+        if (!user.active) return quickResponse(400, badRequestMessage)
+
+        user.active = false
         user.save()
 
         return quickResponse(200, successMessage)
@@ -330,5 +356,6 @@ module.exports = {
     setMedia,
     resetMedia,
     unsetMedia,
-    signIn
+    signIn,
+    signOut
 }

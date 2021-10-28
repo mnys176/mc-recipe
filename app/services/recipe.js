@@ -148,6 +148,9 @@ const create = async (
     ingredients,
     instructions
 ) => {
+    const badRequestMessage = 'The recipe could not be created.'
+    const createdMessage = 'The recipe with ID of "<>"' +
+                           ' was successfully created.'
     try {
         const builder = {
             title,
@@ -160,12 +163,9 @@ const create = async (
         }
         const newRecipe = new Recipe(await buildRecipe(builder))
         await newRecipe.save()
-        const message = `The recipe with ID of "${newRecipe._id}"` +
-                        ' was successfully created.'
-        return quickResponse(201, message)
+        return quickResponse(201, createdMessage.replace('<>', newRecipe._id))
     } catch (err) {
-        const message = 'The recipe could not be created.'
-        return quickResponse(400, message, err.message)
+        return quickResponse(400, badRequestMessage, err.message)
     }
 }
 
@@ -202,11 +202,15 @@ const change = async (
     ingredients,
     instructions
 ) => {
+    const notFoundMessage = `The recipe with ID of "${id}"` +
+                            ' could not be retrieved.'
+    const badRequestMessage = `The recipe with ID of "${id}"` +
+                              ' could not be updated.'
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully updated.'
     try {
         if (!objectIdIsValid(id)) {
-            const message = `The recipe with ID of "${id}"` +
-                            ' could not be retrieved.'
-            return quickResponse(404, message)
+            return quickResponse(404, notFoundMessage)
         }
 
         // use method that already handles '404 Not Found'
@@ -232,16 +236,11 @@ const change = async (
         currRecipe.prepTime = newRecipe.prepTime
         currRecipe.ingredients = newRecipe.ingredients
         currRecipe.instructions = newRecipe.instructions
-
         await currRecipe.save()
 
-        const message = `The recipe with ID of "${id}"` +
-                        ' was successfully updated.'
-        return quickResponse(200, message)
+        return quickResponse(200, successMessage)
     } catch (err) {
-        const message = `The recipe with ID of "${id}"` +
-                        ' could not be updated.'
-        return quickResponse(400, message, err.message)
+        return quickResponse(400, badRequestMessage, err.message)
     }
 }
 
@@ -257,14 +256,13 @@ const change = async (
 const discard = async id => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' could not be retrieved.'
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully deleted.'
     try {
         if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
         const data = await Recipe.findByIdAndDelete(id)
         if (!data) return quickResponse(404, notFoundMessage)
-
-        const message = `The recipe with ID of "${id}"` +
-                        ' was successfully deleted.'
-        return quickResponse(200, message)
+        return quickResponse(200, successMessage)
     } catch (err) {
         // handle invalid IDs as 'Not Found'
         return quickResponse(404, notFoundMessage)
@@ -301,9 +299,12 @@ const exists = async id => {
  * @returns {object} The results of the operation.
  */
 const setMedia = async (id, files) => {
-    // ensure recipe exists before continuing
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully linked to the new media.'
+
+    // ensure recipe exists before continuing
     const recipeExists = await exists(id)
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
@@ -320,8 +321,6 @@ const setMedia = async (id, files) => {
         recipe.media = Array.from(uniqueMedia)
         recipe.save()
     }
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully linked to the new media.'
     return quickResponse(200, successMessage)
 }
 
@@ -337,9 +336,12 @@ const setMedia = async (id, files) => {
  * @returns {object} The results of the operation.
  */
 const resetMedia = async (id, files) => {
-    // ensure recipe exists before continuing
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully updated to the new media.'
+
+    // ensure recipe exists before continuing
     const recipeExists = await exists(id)
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
@@ -353,8 +355,6 @@ const resetMedia = async (id, files) => {
         recipe.media = Array.from(uniqueMedia)
         recipe.save()
     }
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully updated to the new media.'
     return quickResponse(200, successMessage)
 }
 
@@ -368,9 +368,12 @@ const resetMedia = async (id, files) => {
  * @returns {object} The results of the operation.
  */
 const unsetMedia = async id => {
-    // ensure recipe exists before continuing
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
+    const successMessage = `The recipe with ID of "${id}"` +
+                           ' was successfully updated with no media.'
+
+    // ensure recipe exists before continuing
     const recipeExists = await exists(id)
     if (!recipeExists) return quickResponse(404, notFoundMessage)
 
@@ -381,8 +384,6 @@ const unsetMedia = async id => {
     recipe.media = []
     recipe.save()
 
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully updated with no media.'
     return quickResponse(200, successMessage)
 }
 

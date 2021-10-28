@@ -94,16 +94,16 @@ const fetchById = async id => {
  * @returns {object} The results of the operation.
  */
 const create = async (name, username, password, email) => {
+    const badRequestMessage = 'The user could not be created.'
+    const createdMessage = 'The user with ID of "<>"' +
+                           ' was successfully created.'
     try {
         const builder = { name, username, password, email }
         const newUser = new User(await buildUser(builder))
         await newUser.save()
-        const message = `The user with ID of "${newUser._id}"` +
-                        ' was successfully created.'
-        return quickResponse(201, message)
+        return quickResponse(201, createdMessage.replace('<>', newUser._id))
     } catch (err) {
-        const message = 'The user could not be created.'
-        return quickResponse(400, message, err.message)
+        return quickResponse(400, badRequestMessage, err.message)
     }
 }
 
@@ -121,12 +121,14 @@ const create = async (name, username, password, email) => {
  * @returns {object} The results of the operation.
  */
 const change = async (id, name, username, password, email) => {
-    try {
-        if (!objectIdIsValid(id)) {
-            const message = `The user with ID of "${id}"` +
+    const notFoundMessage = `The user with ID of "${id}"` +
                             ' could not be retrieved.'
-            return quickResponse(404, message)
-        }
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully updated.'
+    const badRequestMessage = `The user with ID of "${id}"` +
+                              ' could not be updated.'
+    try {
+        if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
 
         // use method that already handles '404 Not Found'
         const temp = await fetchById(id)
@@ -140,16 +142,11 @@ const change = async (id, name, username, password, email) => {
         currUser.username = newUser.username
         currUser.email = newUser.email
         currUser.password = newUser.password ?? currUser.password
-
         await currUser.save()
 
-        const message = `The user with ID of "${id}"` +
-                        ' was successfully updated.'
-        return quickResponse(200, message)
+        return quickResponse(200, successMessage)
     } catch (err) {
-        const message = `The user with ID of "${id}"` +
-                        ' could not be updated.'
-        return quickResponse(400, message, err.message)
+        return quickResponse(400, badRequestMessage, err.message)
     }
 }
 
@@ -165,14 +162,13 @@ const change = async (id, name, username, password, email) => {
 const discard = async id => {
     const notFoundMessage = `The user with ID of "${id}"` +
                             ' could not be retrieved.'
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully deleted.'
     try {
         if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
         const data = await User.findByIdAndDelete(id)
         if (!data) return quickResponse(404, notFoundMessage)
-
-        const message = `The user with ID of "${id}"` +
-                        ' was successfully deleted.'
-        return quickResponse(200, message)
+        return quickResponse(200, successMessage)
     } catch (err) {
         // handle invalid IDs as 'Not Found'
         return quickResponse(404, notFoundMessage)
@@ -209,9 +205,12 @@ const exists = async id => {
  * @returns {object} The results of the operation.
  */
 const setMedia = async (id, files) => {
-    // ensure user exists before continuing
     const notFoundMessage = `The user with ID of "${id}"` +
                             ' does not exist.'
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully linked to the new media.'
+
+    // ensure user exists before continuing
     const userExists = await exists(id)
     if (!userExists) return quickResponse(404, notFoundMessage)
 
@@ -238,8 +237,6 @@ const setMedia = async (id, files) => {
         user.media = files.cleared[0].unique
         user.save()
     }
-    const successMessage = `The user with ID of "${id}"` +
-                           ' was successfully linked to the new media.'
     return quickResponse(200, successMessage)
 }
 
@@ -255,9 +252,12 @@ const setMedia = async (id, files) => {
  * @returns {object} The results of the operation.
  */
 const resetMedia = async (id, files) => {
-    // ensure user exists before continuing
     const notFoundMessage = `The user with ID of "${id}"` +
                             ' does not exist.'
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully updated to the new media.'
+
+    // ensure user exists before continuing
     const userExists = await exists(id)
     if (!userExists) return quickResponse(404, notFoundMessage)
 
@@ -269,8 +269,6 @@ const resetMedia = async (id, files) => {
         user.media = files.cleared[0].unique
         user.save()
     }
-    const successMessage = `The user with ID of "${id}"` +
-                           ' was successfully updated to the new media.'
     return quickResponse(200, successMessage)
 }
 
@@ -284,9 +282,12 @@ const resetMedia = async (id, files) => {
  * @returns {object} The results of the operation.
  */
 const unsetMedia = async id => {
-    // ensure user exists before continuing
     const notFoundMessage = `The user with ID of "${id}"` +
                             ' does not exist.'
+    const successMessage = `The user with ID of "${id}"` +
+                           ' was successfully updated with no media.'
+
+    // ensure user exists before continuing
     const userExists = await exists(id)
     if (!userExists) return quickResponse(404, notFoundMessage)
 
@@ -297,9 +298,27 @@ const unsetMedia = async id => {
     user.media = ''
     user.save()
 
-    const successMessage = `The user with ID of "${id}"` +
-                           ' was successfully updated with no media.'
     return quickResponse(200, successMessage)
+}
+
+const signIn = async username => {
+    const notFoundMessage = `The user with username of "${username}"` +
+                            ' does not exist.'
+    const successMessage = `The user with username of "${username}"` +
+                           ' was signed into the application.'
+    try {
+        const user = await User.findOne({ username })
+        if (!user) return quickResponse(404, notFoundMessage)
+
+        // check if user is already signed in
+        if (user.active) 
+        user.active = true
+        user.save()
+
+        return quickResponse(200, successMessage)
+    } catch (err) {
+        return quickResponse(500)
+    }
 }
 
 module.exports = {
@@ -310,5 +329,6 @@ module.exports = {
     discard,
     setMedia,
     resetMedia,
-    unsetMedia
+    unsetMedia,
+    signIn
 }

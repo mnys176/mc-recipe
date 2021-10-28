@@ -80,30 +80,37 @@ const writeToDisk = async (id, files) => {
  * @returns {object} The results of the operation.
  */
 const set = async (id, files, overwrite = false) => {
+    const noContentMessage = 'No media to upload for entity with ID of' +
+                             ` "${id}", nothing to do.`
+    const createdMessage = 'The media for entity with ID of' +
+                           ` "${id}" was successfully uploaded.`
     try {
-        // check if no media was given to upload
-        if (files.cleared.length === 0 && files.rejected.length === 0) {
-            const message = 'No media to upload for entity with ID of' +
-                            ` "${id}", nothing to do.`
-            return quickResponse(204, message)
-        }
         const { cleared, rejected, filteredFiles } = files
+        const nothingWasCleared = cleared.length === 0
+        const nothingWasRejected = rejected.length === 0
+
+        // check if no media was given to upload
+        if (nothingWasCleared && nothingWasRejected) {
+            return quickResponse(204, noContentMessage)
+        }
+
+        // snippets used to modify messages based on outcome
+        const someRep = createdMessage
+        const someSub = 'Some of the selected media was unable to be uploaded.'
+        const noneRep = `No media to upload for entity with ID of "${id}"`
+        const noneSub = 'The selected media was unable to be uploaded'
 
         // default control variables based on success
-        let message = 'Some of the selected media was unable to be uploaded.'
+        let message = createdMessage.replace(someRep, someSub)
         let status = 201
         let writeMedia = true
 
-        const nothingWasCleared = cleared.length === 0
-        const nothingWasRejected = rejected.length === 0
         if (nothingWasCleared) {
-            message = 'The selected media was unable to be uploaded,' +
-                      ' nothing to do.'
+            message = noContentMessage.replace(noneRep, noneSub)
             status = 204
             writeMedia = false
         } else if (nothingWasRejected) {
-            message = 'The media for entity with ID of' +
-                      ` "${id}" was successfully uploaded.`
+            message = createdMessage
         }
 
         // don't write media if there is nothing to upload
@@ -128,11 +135,11 @@ const set = async (id, files, overwrite = false) => {
  * @returns {object} The results of the operation.
  */
 const unset = async id => {
+    const successMessage = 'The media for entity with ID of' +
+                           ` "${id}" was successfully deleted.`
     try {
-        const message = 'The media for entity with ID of' +
-                        ` "${id}" was successfully deleted.`
         await removeDir(id)
-        return quickResponse(200, message)
+        return quickResponse(200, successMessage)
     } catch (err) {
         return quickResponse(500)
     }
@@ -149,18 +156,15 @@ const unset = async id => {
  * @returns {object} The results of the operation.
  */
 const fetch = async (id, name) => {
+    const notFoundMessage = `The media with name of "${name}"` +
+                            ` for the entity with ID of "${id}"` +
+                            ' could not be retrieved.'
     try {
         const resultPath = path.join(mediaDir, id, name)
-        const message = `The media with name of "${name}"` +
-                        ` for the entity with ID of "${id}"` +
-                        ' was successfully retrieved.'
         const result = await readFile(resultPath)
-        return quickResponse(200, message, result)
+        return quickResponse(200, result)
     } catch (err) {
-        const message = `The media with name of "${name}"` +
-                        ` for the entity with ID of "${id}"` +
-                        ' could not be retrieved.'
-        return quickResponse(404, message)
+        return quickResponse(404, notFoundMessage)
     }
 }
 

@@ -80,9 +80,15 @@ const postUser = async (req, res) => {
  */
 const signIn = async (req, res) => {
     const { username, password } = req.body
-    const { status, data } = await authService.authenticate(username, password)
-    if (status === 200) req.session.isAuth = true
-    return res.status(status).json(data)
+    const temp = await authService.authenticate(username, password)
+    const authServiceStatus = temp.status
+    const authServiceData = temp.data
+    if (authServiceStatus !== 200) {
+        return res.status(authServiceStatus).json(authServiceData)
+    }
+    
+    await userService.signIn(username)
+    res.json({})
 }
 
 /**
@@ -158,7 +164,7 @@ const getUserMedia = async (req, res) => {
     const { status, data } = await mediaService.fetch(id, filename)
 
     if (status !== 200) return res.status(status).json(data)
-    const file = data.context
+    const file = data.message
     const type = filename.split('.')[1] === 'png' ? 'png' : 'jpeg'
     return res.set('Content-Type', `image/${type}`)
               .status(status)

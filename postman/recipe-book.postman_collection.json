@@ -301,7 +301,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Mike's Small Peach\",\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
+							"raw": "{\n    \"prepTime\": { \"quantity\": \"1/2\", \"unit\": \"h\" },\n    \"category\": \"lunch\",\n    \"ingredients\": [\n        {\n            \"name\": \"big peach\",\n            \"amount\": { \"quantity\": \"140\", \"unit\": \"lb\" }\n        }\n    ],\n    \"instructions\": [\n        \"Get a peach.\",\n        \"Make it big.\",\n        \"Big peach.\"\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3629,6 +3629,7 @@
 									"    const expectedUserKeys = [",
 									"        '_id',",
 									"        'name',",
+									"        'active',",
 									"        'media',",
 									"        'username',",
 									"        'email',",
@@ -3675,6 +3676,7 @@
 									"    const expectedUserKeys = [",
 									"        '_id',",
 									"        'name',",
+									"        'active',",
 									"        'media',",
 									"        'username',",
 									"        'email',",
@@ -3884,6 +3886,54 @@
 							"path": [
 								"users",
 								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sign-user-out",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{apiRoot}}/users/signout",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{apiRoot}}"
+							],
+							"path": [
+								"users",
+								"signout"
 							]
 						}
 					},

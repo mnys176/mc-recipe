@@ -8,7 +8,6 @@
  ******************************************************/
 
 const path = require('path')
-const mediaService = require('./media')
 const { User } = require('../models')
 const quickResponse = require('../util/quick-response')
 

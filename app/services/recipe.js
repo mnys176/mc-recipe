@@ -8,7 +8,6 @@
  ******************************************************/
 
 const path = require('path')
-const mediaService = require('./media')
 const { Recipe } = require('../models')
 const Quantifiable = require('../util/quantify')
 const quickResponse = require('../util/quick-response')

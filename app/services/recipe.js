@@ -290,17 +290,17 @@ const exists = async id => {
 }
 
 /**
- * Adds a link to a media file to a recipe.
+ * Adds links to media files to a recipe.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    - ID of the recipe.
- * @param {object} files - File information provided
- *                         by Bouncer.
+ * @param {string}   id        - ID of the recipe.
+ * @param {string[]} filenames - Filenames of the
+ *                               cleared media.
  * 
  * @returns {object} The results of the operation.
  */
-const setMedia = async (id, files) => {
+const setMedia = async (id, filenames) => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
     const okMessage = `The recipe with ID of "${id}"` +
@@ -314,11 +314,11 @@ const setMedia = async (id, files) => {
     const recipe = temp.data.message
 
     // save filenames to recipe model
-    if (files.cleared.length > 0) {
+    if (filenames.length > 0) {
         // not an update, do not overwrite
         const uniqueMedia = new Set([
             ...recipe.media,
-            ...files.cleared.map(m => m.unique)
+            ...filenames.map(m => m.unique)
         ])
         recipe.media = Array.from(uniqueMedia)
         recipe.save()
@@ -331,13 +331,13 @@ const setMedia = async (id, files) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    - ID of the recipe.
- * @param {object} files - File information provided
- *                         by Bouncer.
+ * @param {string}   id        - ID of the recipe.
+ * @param {string[]} filenames - Filenames of the
+ *                               cleared media.
  * 
  * @returns {object} The results of the operation.
  */
-const resetMedia = async (id, files) => {
+const resetMedia = async (id, filenames) => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
     const okMessage = `The recipe with ID of "${id}"` +
@@ -351,9 +351,9 @@ const resetMedia = async (id, files) => {
     const recipe = temp.data.message
 
     // update filenames in recipe model
-    if (files.cleared.length > 0) {
+    if (filenames.length > 0) {
         // ensure no duplicates exist (similar to `setMedia`)
-        const uniqueMedia = new Set(files.cleared.map(m => m.unique))
+        const uniqueMedia = new Set(filenames.map(m => m.unique))
         recipe.media = Array.from(uniqueMedia)
         recipe.save()
     }

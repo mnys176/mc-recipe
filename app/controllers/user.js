@@ -191,7 +191,8 @@ const postUserMedia = async (req, res) => {
     const { id } = req.params
 
     // update user model with filenames
-    const temp = await userService.setMedia(id, req.files)
+    const filename = req.files.cleared[0] ? req.files.cleared[0].unique : ''
+    const temp = await userService.setMedia(id, filename)
     const userServiceStatus = temp.status
     const userServiceData = temp.data
 
@@ -217,7 +218,8 @@ const putUserMedia = async (req, res) => {
     const { id } = req.params
 
     // update user model with filenames
-    const temp = await userService.resetMedia(id, req.files)
+    const filename = req.files.cleared[0] ? req.files.cleared[0].unique : ''
+    const temp = await userService.resetMedia(id, filename)
     const userServiceStatus = temp.status
     const userServiceData = temp.data
 

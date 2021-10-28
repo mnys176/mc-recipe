@@ -202,13 +202,13 @@ const exists = async id => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    - ID of the user.
- * @param {object} files - File information provided
- *                         by Bouncer.
+ * @param {string} id       - ID of the user.
+ * @param {string} filename - Filename of the cleared
+ *                            media.
  * 
  * @returns {object} The results of the operation.
  */
-const setMedia = async (id, files) => {
+const setMedia = async (id, filename = '') => {
     const notFoundMessage = `The user with ID of "${id}"` +
                             ' does not exist.'
     const badRequestMessage = `The media for the user with ID of "${id}"` +
@@ -224,12 +224,7 @@ const setMedia = async (id, files) => {
     const user = temp.data.message
 
     // make sure the '204 No Content' response doesn't apply first
-    let noContentResponseNotNeeded = false
-    if (files) {
-        const mediaIncluded = Object.values(files).some(a => a.length > 0)
-        const somethingWasCleared = files.cleared.length > 0
-        noContentResponseNotNeeded = mediaIncluded && somethingWasCleared
-    }
+    const noContentResponseNotNeeded = filename.length > 0
 
     // not an update, do not change media if it already exists
     if (user.media && noContentResponseNotNeeded) {
@@ -237,8 +232,8 @@ const setMedia = async (id, files) => {
     }
 
     // save filenames to user model
-    if (files.cleared.length > 0) {
-        user.media = files.cleared[0].unique
+    if (noContentResponseNotNeeded) {
+        user.media = filename
         user.save()
     }
     return quickResponse(200, okMessage)
@@ -249,13 +244,13 @@ const setMedia = async (id, files) => {
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
- * @param {string} id    - ID of the user.
- * @param {object} files - File information provided
- *                         by Bouncer.
+ * @param {string} id       - ID of the user.
+ * @param {string} filename - Filename of the cleared
+ *                            media.
  * 
  * @returns {object} The results of the operation.
  */
-const resetMedia = async (id, files) => {
+const resetMedia = async (id, filename) => {
     const notFoundMessage = `The user with ID of "${id}"` +
                             ' does not exist.'
     const okMessage = `The user with ID of "${id}"` +
@@ -269,8 +264,8 @@ const resetMedia = async (id, files) => {
     const user = temp.data.message
 
     // update filenames in user model
-    if (files.cleared.length > 0) {
-        user.media = files.cleared[0].unique
+    if (filename.length > 0) {
+        user.media = filename
         user.save()
     }
     return quickResponse(200, okMessage)

@@ -134,7 +134,7 @@ const postRecipeMedia = async (req, res) => {
     const { id } = req.params
 
     // update recipe model with filenames
-    const temp = await recipeService.setMedia(id, req.files)
+    const temp = await recipeService.setMedia(id, req.files.cleared)
     const recipeServiceStatus = temp.status
     const recipeServiceData = temp.data
 
@@ -160,7 +160,7 @@ const putRecipeMedia = async (req, res) => {
     const { id } = req.params
 
     // update recipe model with filenames
-    const temp = await recipeService.resetMedia(id, req.files)
+    const temp = await recipeService.resetMedia(id, req.files.cleared)
     const recipeServiceStatus = temp.status
     const recipeServiceData = temp.data
 

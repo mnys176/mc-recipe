@@ -206,8 +206,8 @@ const change = async (
                             ' could not be retrieved.'
     const badRequestMessage = `The recipe with ID of "${id}"` +
                               ' could not be updated.'
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully updated.'
+    const okMessage = `The recipe with ID of "${id}"` +
+                      ' was successfully updated.'
     try {
         if (!objectIdIsValid(id)) {
             return quickResponse(404, notFoundMessage)
@@ -238,7 +238,7 @@ const change = async (
         currRecipe.instructions = newRecipe.instructions
         await currRecipe.save()
 
-        return quickResponse(200, successMessage)
+        return quickResponse(200, okMessage)
     } catch (err) {
         return quickResponse(400, badRequestMessage, err.message)
     }
@@ -256,13 +256,15 @@ const change = async (
 const discard = async id => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' could not be retrieved.'
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully deleted.'
+    const okMessage = `The recipe with ID of "${id}"` +
+                      ' was successfully deleted.'
     try {
-        if (!objectIdIsValid(id)) return quickResponse(404, notFoundMessage)
+        if (!objectIdIsValid(id)) {
+            return quickResponse(404, notFoundMessage)
+        }
         const data = await Recipe.findByIdAndDelete(id)
         if (!data) return quickResponse(404, notFoundMessage)
-        return quickResponse(200, successMessage)
+        return quickResponse(200, okMessage)
     } catch (err) {
         // handle invalid IDs as 'Not Found'
         return quickResponse(404, notFoundMessage)
@@ -301,8 +303,8 @@ const exists = async id => {
 const setMedia = async (id, files) => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully linked to the new media.'
+    const okMessage = `The recipe with ID of "${id}"` +
+                      ' was successfully linked to the new media.'
 
     // ensure recipe exists before continuing
     const recipeExists = await exists(id)
@@ -321,7 +323,7 @@ const setMedia = async (id, files) => {
         recipe.media = Array.from(uniqueMedia)
         recipe.save()
     }
-    return quickResponse(200, successMessage)
+    return quickResponse(200, okMessage)
 }
 
 /**
@@ -338,8 +340,8 @@ const setMedia = async (id, files) => {
 const resetMedia = async (id, files) => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully updated to the new media.'
+    const okMessage = `The recipe with ID of "${id}"` +
+                      ' was successfully updated to the new media.'
 
     // ensure recipe exists before continuing
     const recipeExists = await exists(id)
@@ -355,7 +357,7 @@ const resetMedia = async (id, files) => {
         recipe.media = Array.from(uniqueMedia)
         recipe.save()
     }
-    return quickResponse(200, successMessage)
+    return quickResponse(200, okMessage)
 }
 
 /**
@@ -370,8 +372,8 @@ const resetMedia = async (id, files) => {
 const unsetMedia = async id => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' does not exist.'
-    const successMessage = `The recipe with ID of "${id}"` +
-                           ' was successfully updated with no media.'
+    const okMessage = `The recipe with ID of "${id}"` +
+                      ' was successfully updated with no media.'
 
     // ensure recipe exists before continuing
     const recipeExists = await exists(id)
@@ -384,7 +386,7 @@ const unsetMedia = async id => {
     recipe.media = []
     recipe.save()
 
-    return quickResponse(200, successMessage)
+    return quickResponse(200, okMessage)
 }
 
 module.exports = {

@@ -135,11 +135,11 @@ const set = async (id, files, overwrite = false) => {
  * @returns {object} The results of the operation.
  */
 const unset = async id => {
-    const successMessage = 'The media for entity with ID of' +
-                           ` "${id}" was successfully deleted.`
+    const okMessage = 'The media for entity with ID of' +
+                      ` "${id}" was successfully deleted.`
     try {
         await removeDir(id)
-        return quickResponse(200, successMessage)
+        return quickResponse(200, okMessage)
     } catch (err) {
         return quickResponse(500)
     }

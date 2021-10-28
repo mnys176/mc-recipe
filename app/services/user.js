@@ -305,6 +305,16 @@ const unsetMedia = async id => {
     return quickResponse(200, okMessage)
 }
 
+/**
+ * Signs the user with the given username
+ * into the application.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} username - User username.
+ * 
+ * @returns {object} The results of the operation.
+ */
 const signIn = async username => {
     const notFoundMessage = `The user with username of "${username}"` +
                             ' does not exist.'
@@ -328,6 +338,16 @@ const signIn = async username => {
     }
 }
 
+/**
+ * Signs the user with the given username
+ * out of the application.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} username - User username.
+ * 
+ * @returns {object} The results of the operation.
+ */
 const signOut = async username => {
     const notFoundMessage = `The user with username of "${username}"` +
                             ' does not exist.'

@@ -3,8 +3,8 @@
  * Author:      Mike Nystoriak (nystoriakm@gmail.com) *
  * Created:     09/15/2021                            *
  * Description:                                       *
- *       Set of functions that interact with the        *
- *       recipe Mongoose model.                         *
+ *       Set of functions that interact with the      *
+ *       recipe Mongoose model.                       *
  ******************************************************/
 
 const path = require('path')

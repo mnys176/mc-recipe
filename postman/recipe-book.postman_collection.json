@@ -5391,121 +5391,556 @@
 					"name": "authenticate",
 					"item": [
 						{
-							"name": "sign-user-in",
+							"name": "general",
+							"item": [
+								{
+									"name": "sign-user-in",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// set variables to form a request",
+													"const apiRoot = pm.collectionVariables.get('apiRoot')",
+													"const protocol = pm.collectionVariables.get('protocol')",
+													"const createUserReq = {",
+													"    url: `${protocol}://${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Susan', middle: 'M.', last: 'Benz' },",
+													"            username: 'newer123',",
+													"            password: 'newP@ssword23!',",
+													"            email: 'new_susan@example.com'",
+													"        })",
+													"    }",
+													"}",
+													"",
+													"// create a user to be signed into the application",
+													"pm.sendRequest(createUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // do not recreate the user request every time",
+													"    if (res.code === 201) {",
+													"        const { message } = res.json()",
+													"        const userToGet = message.substr(21, 24)",
+													"        const getUserToSignInReq = { url: `${protocol}://${apiRoot}/users/${userToGet}` }",
+													"        pm.collectionVariables.set('getUserToSignInReq', JSON.stringify(getUserToSignInReq))",
+													"    }",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 200",
+													"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+													"",
+													"// get relevant collection variables",
+													"const getUserToSignInReq = JSON.parse(pm.collectionVariables.get('getUserToSignInReq'))",
+													"",
+													"// check that the user is now labeled as 'active'",
+													"pm.sendRequest(getUserToSignInReq, (err, res) => {",
+													"    if (err) throw err",
+													"    pm.test('User is now active in the application', () => {",
+													"        const user = res.json().message",
+													"        pm.expect(user.active).to.be.true;",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"newer123\",\n    \"password\": \"newP@ssword23!\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signin",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signin"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "user-already-signed-in",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 400",
+													"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+													"",
+													"// get relevant collection variables",
+													"const getUserToSignInReq = JSON.parse(pm.collectionVariables.get('getUserToSignInReq'))",
+													"",
+													"// check that the user is still labeled as 'active'",
+													"pm.sendRequest(getUserToSignInReq, (err, res) => {",
+													"    if (err) throw err",
+													"    pm.test('User is still active in the application', () => {",
+													"        const user = res.json().message",
+													"        pm.expect(user.active).to.be.true;",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"newer123\",\n    \"password\": \"newP@ssword23!\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signin",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signin"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "sign-user-out",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 200",
+													"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+													"",
+													"// get relevant collection variables",
+													"const getUserToSignInReq = JSON.parse(pm.collectionVariables.get('getUserToSignInReq'))",
+													"",
+													"// check that the user is now labeled as not 'active'",
+													"pm.sendRequest(getUserToSignInReq, (err, res) => {",
+													"    if (err) throw err",
+													"    pm.test('User is now inactive in the application', () => {",
+													"        const user = res.json().message",
+													"        pm.expect(user.active).to.be.false;",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"newer123\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signout",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signout"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "user-already-signed-out",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 400",
+													"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
+													"",
+													"// get relevant collection variables",
+													"const getUserToSignInReq = JSON.parse(pm.collectionVariables.get('getUserToSignInReq'))",
+													"",
+													"// check that the user is still labeled as not 'active'",
+													"pm.sendRequest(getUserToSignInReq, (err, res) => {",
+													"    if (err) throw err",
+													"    pm.test('User is still inactive in the application', () => {",
+													"        const user = res.json().message",
+													"        pm.expect(user.active).to.be.false;",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"newer123\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signout",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signout"
+											]
+										}
+									},
+									"response": []
+								}
+							],
 							"event": [
 								{
 									"listen": "prerequest",
 									"script": {
+										"type": "text/javascript",
 										"exec": [
-											"// set variables to form a request",
-											"const apiRoot = pm.collectionVariables.get('apiRoot')",
-											"const protocol = pm.collectionVariables.get('protocol')",
-											"const req = {",
-											"    url: `${protocol}://${apiRoot}/users/register`,",
-											"    method: 'POST',",
-											"    header: { 'Content-Type': 'application/json' },",
-											"    body: {",
-											"        mode: 'raw',",
-											"        raw: JSON.stringify({",
-											"            name: { first: 'Susan', last: 'Benz' },",
-											"            username: 'new123',",
-											"            password: 'P@ssword23!',",
-											"            email: 'susan@example.com'",
-											"        })",
-											"    }",
-											"}",
-											"",
-											"// // create a user to be signed into the application",
-											"// pm.sendRequest(req,  (err, res) => {",
-											"//     if (err) throw err",
-											"// })"
-										],
-										"type": "text/javascript"
+											""
+										]
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
+										"type": "text/javascript",
 										"exec": [
 											""
-										],
-										"type": "text/javascript"
+										]
 									}
 								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{protocol}}://{{apiRoot}}/users/signin",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{apiRoot}}"
-									],
-									"path": [
-										"users",
-										"signin"
-									]
-								}
-							},
-							"response": []
+							]
 						},
 						{
-							"name": "sign-user-out",
+							"name": "sanitation",
+							"item": [
+								{
+									"name": "username-not-included",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 400",
+													"pm.test('Status code is 400', () => pm.response.to.have.status(400))"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"password\": \"newP@ssword23!\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signin",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signin"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "username-invalid",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"wrong\",\n    \"password\": \"newP@ssword23!\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signin",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signin"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "password-not-included",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 400",
+													"pm.test('Status code is 400', () => pm.response.to.have.status(400))"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"newer123\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signin",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signin"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "password-invalid",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// set variables to form a request",
+													"const apiRoot = pm.collectionVariables.get('apiRoot')",
+													"const protocol = pm.collectionVariables.get('protocol')",
+													"const deleteUserReq = {",
+													"    url: JSON.parse(pm.collectionVariables.get('getUserToSignInReq')).url,",
+													"    method: 'DELETE'",
+													"}",
+													"",
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// clean up",
+													"pm.sendRequest(deleteUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"newer123\",\n    \"password\": \"wrong\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{apiRoot}}/users/signin",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{apiRoot}}"
+											],
+											"path": [
+												"users",
+												"signin"
+											]
+										}
+									},
+									"response": []
+								}
+							],
 							"event": [
 								{
 									"listen": "prerequest",
 									"script": {
+										"type": "text/javascript",
 										"exec": [
 											""
-										],
-										"type": "text/javascript"
+										]
 									}
 								},
 								{
 									"listen": "test",
 									"script": {
+										"type": "text/javascript",
 										"exec": [
 											""
-										],
-										"type": "text/javascript"
+										]
 									}
 								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"username\": \"new123\",\n    \"password\": \"P@ssword23!\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{protocol}}://{{apiRoot}}/users/signout",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{apiRoot}}"
-									],
-									"path": [
-										"users",
-										"signout"
-									]
-								}
-							},
-							"response": []
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						}
 					]
 				}
@@ -6705,15 +7140,15 @@
 		},
 		{
 			"key": "apiRoot",
-			"value": "localhost:3000/api"
+			"value": ""
 		},
 		{
 			"key": "recipeOfInterest",
-			"value": "614009af5b338a1dd33615e3"
+			"value": ""
 		},
 		{
 			"key": "userOfInterest",
-			"value": "61525d0aa5d095230e1fc762"
+			"value": ""
 		},
 		{
 			"key": "getRecipesReq",
@@ -6781,6 +7216,10 @@
 		},
 		{
 			"key": "getUserToDeleteReq",
+			"value": ""
+		},
+		{
+			"key": "getUserToSignInReq",
 			"value": ""
 		},
 		{

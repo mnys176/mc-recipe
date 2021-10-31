@@ -105,7 +105,7 @@ const signIn = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const signOut = async (req, res) => {
-    const { username, password } = req.body
+    const { username } = req.body
     const { status, data } = await userService.signOut(username)
     if (status === 200) req.session.destroy()
     return res.status(status).json(data)

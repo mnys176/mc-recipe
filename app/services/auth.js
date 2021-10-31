@@ -40,11 +40,14 @@ const hash = async plain => {
  */
 const authenticate = async (username, password) => {
     try {
+        if (!username) return quickResponse(400, 'Username is required.')
+        if (!password) return quickResponse(400, 'Password is required.')
+
         const user = await User.findOne({ username })
         if (!user) return quickResponse(401, 'Username is incorrect.')
 
         const hashed = user.password
-        if (await bcrypt.compare(password, hashed)) {
+        if (password && await bcrypt.compare(password, hashed)) {
             return quickResponse(200, 'Sign-in was successful.')
         }
         return quickResponse(401, 'Password is incorrect.')

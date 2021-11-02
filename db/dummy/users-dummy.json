@@ -1,0 +1,135 @@
+[
+    {
+        "_id": {
+            "$oid": "61525d0aa5d095230e1fc762"
+        },
+        "name": {
+            "first": "Mcfadden",
+            "middle": "",
+            "last": "Bruce"
+        },
+        "active": false,
+        "username": "Bale7Passive",
+        "password": "$2a$12$vSQooZgREaQwqEfKKLW4TuE6BkQ4acSrQFyOWJ3PlOYMVAo7FNAUS",
+        "email": "mcfaddenbruce@techade.com",
+        "media": "",
+        "registered": {
+            "$date": 1624292791000,
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "61525d0a655c26af9f315c09"
+        },
+        "name": {
+            "first": "Walters",
+            "middle": "H.",
+            "last": "Holmes"
+        },
+        "active": false,
+        "username": "Maternal6Mere",
+        "password": "$2a$12$ED6j8fjqPegx/uxqBLq5wOnbqr8z39FllTNrZ04PZLwy14Oh5U2sO",
+        "email": "waltersholmes@techade.com",
+        "media": "",
+        "registered": {
+            "$date": 1615668755000,
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "61525d0a535ff4b5c4b5e814"
+        },
+        "name": {
+            "first": "Delores",
+            "middle": "Olivia",
+            "last": "Richards",
+        },
+        "active": false,
+        "username": "1PortalSparkler",
+        "password": "$2a$12$.gkOISXHG1ECJHh99H/wzu9UR3qBP2Fclif0iqDJDrlmcQ9Eq4Zdq",
+        "email": "deloresrichards@techade.com",
+        "media": "",
+        "registered": {
+            "$date": 1630439905000,
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "61525d0a48aeab2a9555836d"
+        },
+        "name": {
+            "first": "Hester",
+            "middle": "",
+            "last": "Mayo"
+        },
+        "active": false,
+        "username": "3WaistcoatStork",
+        "password": "$2a$12$DCuruh3nVDX6V7w7d/SFXuXa7Cw8trUkDVMi6JOsLOTmctaIMz5eG",
+        "email": "hestermayo@techade.com",
+        "media": "",
+        "registered": {
+            "$date": 1612622875000,
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "61525d0ab13110edbc0a99bd"
+        },
+        "name": {
+            "first": "Katy",
+            "middle": "G.",
+            "last": "Glover"
+        },
+        "active": false,
+        "username": "Headline8Fetch",
+        "password": "$2a$12$wOzVqZ9fm1UBLUmsoX./vOgt1ZmAYHJFZNkVPSM/Wq3L1OQj8uXju",
+        "email": "katyglover@techade.com",
+        "media": "",
+        "registered": {
+            "$date": 1620525863000,
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "61525d0a71865a7e34b1a73f"
+        },
+        "name": {
+            "first": "Stevenson",
+            "middle": "",
+            "last": "Duke"
+        },
+        "active": false,
+        "username": "1PhysicallyOyster",
+        "password": "$2a$12$FLo6jS39vaqZRU3m1wiM3OMumfXq7OnFhb4x7swjkFQJyI.ntDxmC",
+        "email": "stevensonduke@techade.com",
+        "media": "",
+        "registered": {
+            "$date": 1630598769000,
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "61525d0a9506b1a74b86123c"
+        },
+        "name": {
+            "first": "John",
+            "middle": "Y.",
+            "last": "Whitaker"
+        },
+        "active": false,
+        "username": "7RobandFluke",
+        "password": "$2a$12$U17KAi/YO6LoPQDKcI0jqOoGFf.L9B90yje3isxKTXQ5TQn9c1j66",
+        "email": "johnwhitaker@techade.com",
+        "media": "",
+        "registered": {
+            "$date": 1631208125000,
+        },
+        "__v": 0
+    }
+]

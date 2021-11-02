@@ -91,7 +91,10 @@ const signIn = async (req, res) => {
     
     // sign them in
     const { status, data } = await userService.signIn(username)
-    if (status === 200) req.session.isAuthenticated = true
+    if (status === 200) {
+        req.session.isAuth = true
+        req.session.username = username
+    }
 
     return res.status(status).json(data)
 }

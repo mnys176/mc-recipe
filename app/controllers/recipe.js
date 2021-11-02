@@ -5,7 +5,7 @@
  * Description: Controls the dataflow of recipe API routes. *
  ************************************************************/
 
-const { recipeService, mediaService } = require('../services')
+const { recipeService, mediaService, authService } = require('../services')
 
 /**
  * Gets all recipes in the database.
@@ -51,6 +51,11 @@ const getRecipeById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postRecipe = async (req, res) => {
+    // if (!req.session.isAuth) {
+    //     const { status, data } = authService.notAuthenticated()
+    //     return res.status(status).json(data)
+    // }
+
     // cherry-pick fields from body (more secure)
     const { status, data } = await recipeService.create(
         req.body.title,

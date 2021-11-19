@@ -3182,7 +3182,6 @@
 													"    if (err) throw err",
 													"    pm.test('User is still active in the application', () => {",
 													"        const user = res.json().message",
-													"        console.log(user)",
 													"        pm.expect(user.active).to.be.true;",
 													"    })",
 													"",
@@ -3903,21 +3902,7 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
-													"",
-													"// get user object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingUser = pm.environment.get('EXISTING_USER')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
-													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const { media } = res.json().message",
-													"",
-													"    // user was updated properly in the database",
-													"    pm.test('Filename not linked to the user', () => {",
-													"        pm.expect(media.length).to.equal(0)",
-													"    })",
-													"})"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
 												],
 												"type": "text/javascript"
 											}
@@ -4192,7 +4177,17 @@
 									"script": {
 										"type": "text/javascript",
 										"exec": [
-											""
+											"// get user object for direct validation",
+											"const apiRoot = pm.environment.get('API_ROOT')",
+											"const existingUser = pm.environment.get('EXISTING_USER')",
+											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+											"    if (err) throw err",
+											"    const { media } = res.json().message",
+											"",
+											"    // check media before the POST request",
+											"    pm.variables.set('oldMedia', JSON.stringify(media))",
+											"})"
 										]
 									}
 								},
@@ -4213,11 +4208,12 @@
 											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
 											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 											"    if (err) throw err",
+											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
 											"    const { media } = res.json().message",
 											"",
 											"    // user was updated properly in the database",
-											"    pm.test('Filename not linked to the user', () => {",
-											"        pm.expect(media.length).to.equal(0)",
+											"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+											"        pm.expect(media).to.deep.equal(oldMedia)",
 											"    })",
 											"})"
 										]
@@ -8681,17 +8677,7 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"// get recipe object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
-													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const { media } = res.json().message",
-													"",
-													"    // check media length before the POST request",
-													"    pm.variables.set('oldMedia', JSON.stringify(media))",
-													"})"
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -8701,22 +8687,7 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
-													"",
-													"// get recipe object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
-													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
-													"    const { media } = res.json().message",
-													"",
-													"    // recipe was updated properly in the database",
-													"    pm.test('Filename not linked to the recipe', () => {",
-													"        pm.expect(media.length).to.equal(oldMedia.length)",
-													"    })",
-													"})"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
 												],
 												"type": "text/javascript"
 											}
@@ -8780,7 +8751,7 @@
 													"    const { media } = res.json().message",
 													"",
 													"    // check media length before the POST request",
-													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"    pm.variables.set('oldMediaLength', JSON.stringify(media.length))",
 													"})"
 												],
 												"type": "text/javascript"
@@ -8821,12 +8792,12 @@
 													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const oldMediaLength = JSON.parse(pm.variables.get('oldMediaLength'))",
 													"    const { media } = res.json().message",
 													"",
 													"    // recipe was updated properly in the database",
-													"    pm.test('Filenames now linked to the recipe', () => {",
-													"        pm.expect(media.length).to.not.equal(oldMedia.length)",
+													"    pm.test('One more filename linked to recipe', () => {",
+													"        pm.expect(media.length).to.greaterThan(oldMediaLength)",
 													"    })",
 													"})"
 												],
@@ -9022,7 +8993,7 @@
 											"    if (err) throw err",
 											"    const { media } = res.json().message",
 											"",
-											"    // check media length before the POST request",
+											"    // check media before the POST request",
 											"    pm.variables.set('oldMedia', JSON.stringify(media))",
 											"})"
 										]
@@ -9049,8 +9020,8 @@
 											"    const { media } = res.json().message",
 											"",
 											"    // recipe was updated properly in the database",
-											"    pm.test('Filename not linked to the recipe', () => {",
-											"        pm.expect(media.length).to.equal(oldMedia.length)",
+											"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+											"        pm.expect(media).to.deep.equal(oldMedia)",
 											"    })",
 											"})"
 										]

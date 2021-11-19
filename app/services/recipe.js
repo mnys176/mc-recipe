@@ -107,6 +107,7 @@ const fetchById = async id => {
     const notFoundMessage = `The recipe with ID of "${id}"` +
                             ' could not be retrieved.'
     try {
+        // const data = await Recipe.findById(id)
         const data = await Recipe.findById(id)
         if (data) return quickResponse(200, data)
         return quickResponse(404, notFoundMessage)

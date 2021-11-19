@@ -9,9 +9,9 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const nameSchema = new Schema({
-    first: { type: String, required: true, match: /^[A-Z'](\.|[A-z\-']*)$/ },
-    middle: { type: String, default: '', match: /^[A-Z']?(\.|[A-z\-']*)$/ },
-    last: { type: String, required: true, match: /^[A-Z'](\.|[A-z\-']*)$/ }
+    first: { type: String, required: true, match: /^[a-zA-Z .'`]+$/ },
+    middle: { type: String, default: '', match: /^[a-zA-Z .'`]+$/ },
+    last: { type: String, required: true, match: /^[a-zA-Z .'`]+$/ }
 }, { _id: false })
 
 const userSchema = new Schema({
@@ -21,9 +21,9 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        minLength: 6,
+        minLength: 4,
         maxLength: 128,
-        match: /^\w{6,128}$/
+        match: /^[\w.]{4,128}$/
     },
     password: {
         type: String,

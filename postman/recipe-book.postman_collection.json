@@ -1118,6 +1118,7 @@
 											"// count the number of users before the POST request",
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const getUsersReq = { url: `${apiRoot}/users` }",
+											"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
 											"pm.sendRequest(getUsersReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const oldUserCount = res.json().message.length",
@@ -1135,8 +1136,7 @@
 											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
 											"",
 											"// count the number of users after the POST request",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const getUsersReq = { url: `${apiRoot}/users` }",
+											"const getUsersReq = JSON.parse(pm.variables.get('getUsersReq'))",
 											"pm.sendRequest(getUsersReq, (err, res) => {",
 											"    if (err) throw err",
 											"    const oldUserCount = pm.variables.get('oldUserCount')",
@@ -1189,6 +1189,7 @@
 													"// count the number of users before the POST request",
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
 													"pm.sendRequest(getUsersReq,  (err, res) => {",
 													"    if (err) throw err",
 													"    const oldUserCount = res.json().message.length",
@@ -1206,8 +1207,7 @@
 													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
 													"",
 													"// count the number of users after the POST request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"const getUsersReq = JSON.parse(pm.variables.get('getUsersReq'))",
 													"pm.sendRequest(getUsersReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldUserCount = pm.variables.get('oldUserCount')",
@@ -1482,6 +1482,47 @@
 				{
 					"name": "update",
 					"item": [
+						{
+							"name": "404",
+							"item": [
+								{
+									"name": "user-not-found",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 404",
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "asdfasdfasdfasdfasdfasdf"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
 						{
 							"name": "400",
 							"item": [
@@ -2546,6 +2587,7 @@
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const existingUserId = pm.environment.get('EXISTING_USER')",
 											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUserId}` }",
+											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
 											"pm.sendRequest(getExistingUserReq, (err, res) => {",
 											"    if (err) throw err",
 											"    const { name, username, email } = res.json().message",
@@ -2571,9 +2613,7 @@
 											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
 											"",
 											"// get values from user after the PUT request",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const existingUserId = pm.environment.get('EXISTING_USER')",
-											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUserId}` }",
+											"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
 											"pm.sendRequest(getExistingUserReq, (err, res) => {",
 											"    if (err) throw err",
 											"    const oldUser = JSON.parse(pm.variables.get('oldUser'))",
@@ -2595,47 +2635,6 @@
 							]
 						},
 						{
-							"name": "404",
-							"item": [
-								{
-									"name": "user-not-found",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"url": {
-											"raw": "{{API_ROOT}}/users/:id",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"users",
-												":id"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "asdfasdfasdfasdfasdfasdf"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
 							"name": "200",
 							"item": [
 								{
@@ -2646,9 +2645,7 @@
 											"script": {
 												"exec": [
 													"// get values from user after the PUT request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingUserId = pm.environment.get('EXISTING_USER')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUserId}` }",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
 													"pm.sendRequest(getExistingUserReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldUser = JSON.parse(pm.variables.get('oldUser'))",
@@ -2666,6 +2663,8 @@
 													"    pm.variables.set('oldUser', JSON.stringify(oldUser))",
 													"",
 													"    // replace original values",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const existingUserId = pm.environment.get('EXISTING_USER')",
 													"    const restoreUserInfoReq = {",
 													"        url: `${apiRoot}/users/${existingUserId}`,",
 													"        method: 'PUT',",
@@ -2759,9 +2758,7 @@
 											"script": {
 												"exec": [
 													"// get values from user after the PUT request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingUserId = pm.environment.get('EXISTING_USER')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUserId}` }",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
 													"pm.sendRequest(getExistingUserReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldUser = JSON.parse(pm.variables.get('oldUser'))",
@@ -2778,6 +2775,8 @@
 													"    })",
 													"",
 													"    // replace original values",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const existingUserId = pm.environment.get('EXISTING_USER')",
 													"    const restoreUserInfoReq = {",
 													"        url: `${apiRoot}/users/${existingUserId}`,",
 													"        method: 'PUT',",
@@ -2855,6 +2854,7 @@
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const existingUserId = pm.environment.get('EXISTING_USER')",
 											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUserId}` }",
+											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
 											"pm.sendRequest(getExistingUserReq, (err, res) => {",
 											"    if (err) throw err",
 											"    const { name, username, email } = res.json().message",
@@ -2940,8 +2940,7 @@
 											"script": {
 												"exec": [
 													"// count the number of users after the DELETE request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"const getUsersReq = JSON.parse(pm.variables.get('getUsersReq'))",
 													"pm.sendRequest(getUsersReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldUserCount = pm.variables.get('oldUserCount')",
@@ -2961,6 +2960,7 @@
 													"// count the number of users before the DELETE request",
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
 													"pm.sendRequest(getUsersReq,  (err, res) => {",
 													"    if (err) throw err",
 													"    const oldUserCount = res.json().message.length",
@@ -3733,6 +3733,67 @@
 					"name": "create",
 					"item": [
 						{
+							"name": "404",
+							"item": [
+								{
+									"name": "user-not-found",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 404",
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": "media/dice.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "asdfasdfasdfasdfasdfasdf"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "400",
 							"item": [
 								{
@@ -3883,181 +3944,6 @@
 							]
 						},
 						{
-							"name": "404",
-							"item": [
-								{
-									"name": "user-not-found",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "userImage",
-													"type": "file",
-													"src": "media/dice.png"
-												}
-											]
-										},
-										"url": {
-											"raw": "{{API_ROOT}}/users/:id/media",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"users",
-												":id",
-												"media"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "asdfasdfasdfasdfasdfasdf"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "201",
-							"item": [
-								{
-									"name": "create-user-media",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"const { context } = pm.response.json()",
-													"",
-													"// assert that status code is 201",
-													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
-													"",
-													"// both cleared and rejected arrays must be present",
-													"pm.test('Cleared and rejected arrays returned in an object', () => {",
-													"    pm.expect(context).to.be.an('object')",
-													"        .that.has.all.keys('cleared', 'rejected')",
-													"})",
-													"",
-													"// make sure some rejects were returned to the client",
-													"pm.test('Bad files were rejected', () => {",
-													"    const { rejected } = context",
-													"    pm.expect(rejected).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// make sure some cleared files were returned to the client",
-													"pm.test('Good files were not rejected', () => {",
-													"    const { cleared } = context",
-													"    pm.expect(cleared).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// get user object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingUser = pm.environment.get('EXISTING_USER')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
-													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const { media } = res.json().message",
-													"",
-													"    // user was updated properly in the database",
-													"    pm.test('Filename now linked to the user', () => {",
-													"        pm.expect(media.length).to.greaterThan(0)",
-													"    })",
-													"",
-													"    // delete created media",
-													"    const deleteMediaReq = {",
-													"        url: `${apiRoot}/users/${existingUser}/media`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteMediaReq, err => {",
-													"        if (err) throw err",
-													"    })",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disabledSystemHeaders": {}
-									},
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "userImage",
-													"type": "file",
-													"src": [
-														"media/a.out",
-														"media/bad.zip",
-														"media/dice.png",
-														"media/evil"
-													]
-												}
-											]
-										},
-										"url": {
-											"raw": "{{API_ROOT}}/users/:id/media",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"users",
-												":id",
-												"media"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "{{EXISTING_USER}}"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
 							"name": "204",
 							"item": [
 								{
@@ -4181,6 +4067,7 @@
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const existingUser = pm.environment.get('EXISTING_USER')",
 											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
 											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const { media } = res.json().message",
@@ -4203,9 +4090,7 @@
 											"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
 											"",
 											"// get user object for direct validation",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const existingUser = pm.environment.get('EXISTING_USER')",
-											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+											"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
 											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
@@ -4218,6 +4103,120 @@
 											"})"
 										]
 									}
+								}
+							]
+						},
+						{
+							"name": "201",
+							"item": [
+								{
+									"name": "create-user-media",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const { context } = pm.response.json()",
+													"",
+													"// assert that status code is 201",
+													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+													"",
+													"// both cleared and rejected arrays must be present",
+													"pm.test('Cleared and rejected arrays returned in an object', () => {",
+													"    pm.expect(context).to.be.an('object')",
+													"        .that.has.all.keys('cleared', 'rejected')",
+													"})",
+													"",
+													"// make sure some rejects were returned to the client",
+													"pm.test('Bad files were rejected', () => {",
+													"    const { rejected } = context",
+													"    pm.expect(rejected).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// make sure some cleared files were returned to the client",
+													"pm.test('Good files were not rejected', () => {",
+													"    const { cleared } = context",
+													"    pm.expect(cleared).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const { media } = res.json().message",
+													"",
+													"    // user was updated properly in the database",
+													"    pm.test('Filename now linked to the user', () => {",
+													"        pm.expect(media.length).to.greaterThan(0)",
+													"    })",
+													"",
+													"    // delete created media",
+													"    const deleteMediaReq = {",
+													"        url: `${apiRoot}/users/${existingUser}/media`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteMediaReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": [
+														"media/a.out",
+														"media/bad.zip",
+														"media/dice.png",
+														"media/evil"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						}
@@ -4565,115 +4564,6 @@
 							]
 						},
 						{
-							"name": "201",
-							"item": [
-								{
-									"name": "update-user-media",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"const { context } = pm.response.json()",
-													"",
-													"// assert that status code is 201",
-													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
-													"",
-													"// both cleared and rejected arrays must be present",
-													"pm.test('Cleared and rejected arrays returned in an object', () => {",
-													"    pm.expect(context).to.be.an('object')",
-													"        .that.has.all.keys('cleared', 'rejected')",
-													"})",
-													"",
-													"// make sure some rejects were returned to the client",
-													"pm.test('Bad files were rejected', () => {",
-													"    const { rejected } = context",
-													"    pm.expect(rejected).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// make sure some cleared files were returned to the client",
-													"pm.test('Good files were not rejected', () => {",
-													"    const { cleared } = context",
-													"    pm.expect(cleared).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// get user object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingUser = pm.environment.get('EXISTING_USER')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
-													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const { media } = res.json().message",
-													"",
-													"    // user was updated properly in the database",
-													"    pm.test('Filename now linked to the user', () => {",
-													"        pm.expect(media.length).to.greaterThan(0)",
-													"    })",
-													"",
-													"    // delete created media",
-													"    const deleteMediaReq = {",
-													"        url: `${apiRoot}/users/${existingUser}/media`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteMediaReq, err => {",
-													"        if (err) throw err",
-													"    })",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "userImage",
-													"type": "file",
-													"src": [
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png"
-													]
-												}
-											]
-										},
-										"url": {
-											"raw": "{{API_ROOT}}/users/:id/media",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"users",
-												":id",
-												"media"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "{{EXISTING_USER}}"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
 							"name": "204",
 							"item": [
 								{
@@ -4832,6 +4722,115 @@
 											"})"
 										]
 									}
+								}
+							]
+						},
+						{
+							"name": "201",
+							"item": [
+								{
+									"name": "update-user-media",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const { context } = pm.response.json()",
+													"",
+													"// assert that status code is 201",
+													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+													"",
+													"// both cleared and rejected arrays must be present",
+													"pm.test('Cleared and rejected arrays returned in an object', () => {",
+													"    pm.expect(context).to.be.an('object')",
+													"        .that.has.all.keys('cleared', 'rejected')",
+													"})",
+													"",
+													"// make sure some rejects were returned to the client",
+													"pm.test('Bad files were rejected', () => {",
+													"    const { rejected } = context",
+													"    pm.expect(rejected).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// make sure some cleared files were returned to the client",
+													"pm.test('Good files were not rejected', () => {",
+													"    const { cleared } = context",
+													"    pm.expect(cleared).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const { media } = res.json().message",
+													"",
+													"    // user was updated properly in the database",
+													"    pm.test('Filename now linked to the user', () => {",
+													"        pm.expect(media.length).to.greaterThan(0)",
+													"    })",
+													"",
+													"    // delete created media",
+													"    const deleteMediaReq = {",
+													"        url: `${apiRoot}/users/${existingUser}/media`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteMediaReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						}
@@ -6286,6 +6285,7 @@
 											"// count the number of recipes before the POST request",
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+											"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
 											"pm.sendRequest(getRecipesReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const oldRecipeCount = res.json().message.length",
@@ -6303,8 +6303,7 @@
 											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
 											"",
 											"// count the number of recipes after the POST request",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+											"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
 											"pm.sendRequest(getRecipesReq, (err, res) => {",
 											"    if (err) throw err",
 											"    const oldRecipeCount = pm.variables.get('oldRecipeCount')",
@@ -6379,6 +6378,7 @@
 													"// count the number of recipes before the POST request",
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
 													"pm.sendRequest(getRecipesReq,  (err, res) => {",
 													"    if (err) throw err",
 													"    const oldRecipeCount = res.json().message.length",
@@ -6396,8 +6396,7 @@
 													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
 													"",
 													"// count the number of recipes after the POST request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
 													"pm.sendRequest(getRecipesReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldRecipeCount = pm.variables.get('oldRecipeCount')",
@@ -6660,6 +6659,47 @@
 				{
 					"name": "update",
 					"item": [
+						{
+							"name": "404",
+							"item": [
+								{
+									"name": "recipe-not-found",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 404",
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "asdfasdfasdfasdfasdfasdf"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
 						{
 							"name": "400",
 							"item": [
@@ -8193,6 +8233,7 @@
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const existingRecipeId = pm.environment.get('EXISTING_RECIPE')",
 											"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipeId}` }",
+											"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 											"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
 											"    if (err) throw err",
 											"    const {",
@@ -8230,9 +8271,7 @@
 											"pm.test('Status code is 400', () => pm.response.to.have.status(400))",
 											"",
 											"// get values from recipe after the PUT request",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const existingRecipeId = pm.environment.get('EXISTING_RECIPE')",
-											"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipeId}` }",
+											"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 											"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
 											"    if (err) throw err",
 											"    const oldRecipe = JSON.parse(pm.variables.get('oldRecipe'))",
@@ -8273,47 +8312,6 @@
 							]
 						},
 						{
-							"name": "404",
-							"item": [
-								{
-									"name": "recipe-not-found",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"url": {
-											"raw": "{{API_ROOT}}/recipes/:id",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"recipes",
-												":id"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "asdfasdfasdfasdfasdfasdf"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
 							"name": "200",
 							"item": [
 								{
@@ -8324,9 +8322,7 @@
 											"script": {
 												"exec": [
 													"// get values from recipe after the PUT request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipeId = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipeId}` }",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldRecipe = JSON.parse(pm.variables.get('oldRecipe'))",
@@ -8373,6 +8369,7 @@
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const existingRecipeId = pm.environment.get('EXISTING_RECIPE')",
 													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipeId}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
 													"    if (err) throw err",
 													"    ",
@@ -8550,8 +8547,7 @@
 											"script": {
 												"exec": [
 													"// count the number of recipes after the DELETE request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
 													"pm.sendRequest(getRecipesReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldRecipeCount = pm.variables.get('oldRecipeCount')",
@@ -8571,6 +8567,7 @@
 													"// count the number of recipes before the DELETE request",
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
 													"pm.sendRequest(getRecipesReq,  (err, res) => {",
 													"    if (err) throw err",
 													"    const oldRecipeCount = res.json().message.length",
@@ -8733,130 +8730,6 @@
 							]
 						},
 						{
-							"name": "201",
-							"item": [
-								{
-									"name": "create-recipe-media",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// get recipe object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
-													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const { media } = res.json().message",
-													"",
-													"    // check media length before the POST request",
-													"    pm.variables.set('oldMediaLength', JSON.stringify(media.length))",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"const { context } = pm.response.json()",
-													"",
-													"// assert that status code is 201",
-													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
-													"",
-													"// both cleared and rejected arrays must be present",
-													"pm.test('Cleared and rejected arrays returned in an object', () => {",
-													"    pm.expect(context).to.be.an('object')",
-													"        .that.has.all.keys('cleared', 'rejected')",
-													"})",
-													"",
-													"// make sure some rejects were returned to the client",
-													"pm.test('Bad files were rejected', () => {",
-													"    const { rejected } = context",
-													"    pm.expect(rejected).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// make sure some cleared files were returned to the client",
-													"pm.test('Good files were not rejected', () => {",
-													"    const { cleared } = context",
-													"    pm.expect(cleared).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// get user object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
-													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const oldMediaLength = JSON.parse(pm.variables.get('oldMediaLength'))",
-													"    const { media } = res.json().message",
-													"",
-													"    // recipe was updated properly in the database",
-													"    pm.test('One more filename linked to recipe', () => {",
-													"        pm.expect(media.length).to.greaterThan(oldMediaLength)",
-													"    })",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disabledSystemHeaders": {}
-									},
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "foodImages",
-													"type": "file",
-													"src": [
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
-													]
-												}
-											]
-										},
-										"url": {
-											"raw": "{{API_ROOT}}/recipes/:id/media",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"recipes",
-												":id",
-												"media"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "{{EXISTING_RECIPE}}"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
 							"name": "204",
 							"item": [
 								{
@@ -8989,6 +8862,7 @@
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
 											"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+											"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const { media } = res.json().message",
@@ -9011,9 +8885,7 @@
 											"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
 											"",
 											"// get recipe object for direct validation",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-											"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+											"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
@@ -9026,6 +8898,129 @@
 											"})"
 										]
 									}
+								}
+							]
+						},
+						{
+							"name": "201",
+							"item": [
+								{
+									"name": "create-recipe-media",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get recipe object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const { media } = res.json().message",
+													"",
+													"    // check media length before the POST request",
+													"    pm.variables.set('oldMediaLength', JSON.stringify(media.length))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const { context } = pm.response.json()",
+													"",
+													"// assert that status code is 201",
+													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+													"",
+													"// both cleared and rejected arrays must be present",
+													"pm.test('Cleared and rejected arrays returned in an object', () => {",
+													"    pm.expect(context).to.be.an('object')",
+													"        .that.has.all.keys('cleared', 'rejected')",
+													"})",
+													"",
+													"// make sure some rejects were returned to the client",
+													"pm.test('Bad files were rejected', () => {",
+													"    const { rejected } = context",
+													"    pm.expect(rejected).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// make sure some cleared files were returned to the client",
+													"pm.test('Good files were not rejected', () => {",
+													"    const { cleared } = context",
+													"    pm.expect(cleared).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldMediaLength = JSON.parse(pm.variables.get('oldMediaLength'))",
+													"    const { media } = res.json().message",
+													"",
+													"    // recipe was updated properly in the database",
+													"    pm.test('One more filename linked to recipe', () => {",
+													"        pm.expect(media.length).to.greaterThan(oldMediaLength)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "foodImages",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						}
@@ -9282,6 +9277,7 @@
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
 													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
 													"    const { media } = res.json().message",
@@ -9301,9 +9297,7 @@
 													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
 													"",
 													"// get recipe object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
 													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
@@ -9350,136 +9344,6 @@
 												{
 													"key": "id",
 													"value": "asdfasdfasdfasdfasdfasdf"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "201",
-							"item": [
-								{
-									"name": "update-recipe-media",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// get recipe object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
-													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const { media } = res.json().message",
-													"",
-													"    // check media length before the POST request",
-													"    pm.variables.set('oldMedia', JSON.stringify(media))",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"const { context } = pm.response.json()",
-													"",
-													"// assert that status code is 201",
-													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
-													"",
-													"// both cleared and rejected arrays must be present",
-													"pm.test('Cleared and rejected arrays returned in an object', () => {",
-													"    pm.expect(context).to.be.an('object')",
-													"        .that.has.all.keys('cleared', 'rejected')",
-													"})",
-													"",
-													"// make sure some rejects were returned to the client",
-													"pm.test('Bad files were rejected', () => {",
-													"    const { rejected } = context",
-													"    pm.expect(rejected).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// make sure some cleared files were returned to the client",
-													"pm.test('Good files were not rejected', () => {",
-													"    const { cleared } = context",
-													"    pm.expect(cleared).to.be.an('array')",
-													"        .that.has.lengthOf.greaterThan(0)",
-													"})",
-													"",
-													"// get recipe object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
-													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
-													"    const { media } = res.json().message",
-													"",
-													"    // recipe was updated properly in the database",
-													"    pm.test('Filename now linked to the recipe', () => {",
-													"        pm.expect(media.length).to.greaterThan(oldMedia.length)",
-													"    })",
-													"",
-													"    // delete created media",
-													"    const deleteMediaReq = {",
-													"        url: `${apiRoot}/recipes/${existingRecipe}/media`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteMediaReq, err => {",
-													"        if (err) throw err",
-													"    })",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "foodImages",
-													"type": "file",
-													"src": [
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
-													]
-												}
-											]
-										},
-										"url": {
-											"raw": "{{API_ROOT}}/recipes/:id/media",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"recipes",
-												":id",
-												"media"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "{{EXISTING_RECIPE}}"
 												}
 											]
 										}
@@ -9621,6 +9485,7 @@
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
 											"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+											"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const { media } = res.json().message",
@@ -9643,9 +9508,7 @@
 											"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
 											"",
 											"// get recipe object for direct validation",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-											"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+											"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
 											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
@@ -9658,6 +9521,137 @@
 											"})"
 										]
 									}
+								}
+							]
+						},
+						{
+							"name": "201",
+							"item": [
+								{
+									"name": "update-recipe-media",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get recipe object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const { media } = res.json().message",
+													"",
+													"    // check media length before the POST request",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"const { context } = pm.response.json()",
+													"",
+													"// assert that status code is 201",
+													"pm.test('Status code is 201', () => pm.response.to.have.status(201))",
+													"",
+													"// both cleared and rejected arrays must be present",
+													"pm.test('Cleared and rejected arrays returned in an object', () => {",
+													"    pm.expect(context).to.be.an('object')",
+													"        .that.has.all.keys('cleared', 'rejected')",
+													"})",
+													"",
+													"// make sure some rejects were returned to the client",
+													"pm.test('Bad files were rejected', () => {",
+													"    const { rejected } = context",
+													"    pm.expect(rejected).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// make sure some cleared files were returned to the client",
+													"pm.test('Good files were not rejected', () => {",
+													"    const { cleared } = context",
+													"    pm.expect(cleared).to.be.an('array')",
+													"        .that.has.lengthOf.greaterThan(0)",
+													"})",
+													"",
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"",
+													"    // recipe was updated properly in the database",
+													"    pm.test('Filename now linked to the recipe', () => {",
+													"        pm.expect(media.length).to.greaterThan(oldMedia.length)",
+													"    })",
+													"",
+													"    // delete created media",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"    const deleteMediaReq = {",
+													"        url: `${apiRoot}/recipes/${existingRecipe}/media`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteMediaReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "foodImages",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						}

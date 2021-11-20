@@ -78,9 +78,31 @@ const hashPassword = async plaintext => {
     }
 }
 
+/**
+ * Returns a response that catches an unauthenticated
+ * user.
+ * 
+ * @returns {object} The response.
+ */
 const notAuthenticated = () => {
     const message = 'Please sign in to perform this action.'
     return quickResponse(401, message)
 }
 
-module.exports = { authenticate, hashPassword, notAuthenticated }
+/**
+ * Returns a response that catches an action on a resource
+ * not owned by a user.
+ * 
+ * @returns {object} The response.
+ */
+const forbiddenAction = () => {
+    const message = 'You are not permitted to perform this action.'
+    return quickResponse(403, message)
+}
+
+module.exports = {
+    authenticate,
+    hashPassword,
+    notAuthenticated,
+    forbiddenAction
+}

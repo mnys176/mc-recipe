@@ -388,6 +388,26 @@ const unsetMedia = async id => {
     return quickResponse(200, okMessage)
 }
 
+/**
+ * Checks that the provided user is the uploader of
+ * the provided recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id       - The recipe ID to check.
+ * @param {string} username - The username.
+ * 
+ * @returns {boolean} The results of the operation.
+ */
+const matchCreator = async (id, username) => {
+    try {
+        const recipe = await Recipe.findById(id)
+        return recipe.uploader === username
+    } catch (err) {
+        return false
+    }
+}
+
 module.exports = {
     fetch,
     fetchById,
@@ -396,5 +416,6 @@ module.exports = {
     discard,
     setMedia,
     unsetMedia,
-    resetMedia
+    resetMedia,
+    matchCreator
 }

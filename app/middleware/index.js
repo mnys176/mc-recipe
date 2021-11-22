@@ -5,4 +5,7 @@
  * Description: Indexes middlewares.                  *
  ******************************************************/
 
-module.exports = { bounce: require('./bouncer') }
+module.exports = {
+    bounce: require('./bouncer'),
+    authFw: require('./auth-firewall')
+}

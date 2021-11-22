@@ -51,12 +51,6 @@ const getRecipeById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postRecipe = async (req, res) => {
-    // user must be signed in to create a recipe
-    if (!req.session.isAuth) {
-        const { status, data } = authService.notAuthenticated()
-        return res.status(status).json(data)
-    }
-
     // cherry-pick fields from body (more secure)
     const { status, data } = await recipeService.create(
         req.body.title,
@@ -79,20 +73,6 @@ const postRecipe = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const putRecipe = async (req, res) => {
-    // user must be signed as the recipe creator to change it
-    if (!req.session.isAuth) {
-        const { status, data } = authService.notAuthenticated()
-        return res.status(status).json(data)
-    }
-    const isCreator = await recipeService.matchCreator(
-        req.params.id,
-        req.session.username
-    )
-    if (!isCreator) {
-        const { status, data } = authService.forbiddenAction()
-        return res.status(status).json(data)
-    }
-
     // cherry-pick fields from body (more secure)
     const { status, data } = await recipeService.change(
         req.params.id,
@@ -116,20 +96,6 @@ const putRecipe = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const deleteRecipe = async (req, res) => {
-    // user must be signed as the recipe creator to delete it
-    if (!req.session.isAuth) {
-        const { status, data } = authService.notAuthenticated()
-        return res.status(status).json(data)
-    }
-    const isCreator = await recipeService.matchCreator(
-        req.params.id,
-        req.session.username
-    )
-    if (!isCreator) {
-        const { status, data } = authService.forbiddenAction()
-        return res.status(status).json(data)
-    }
-
     const { status, data } = await recipeService.discard(req.params.id)
     return res.status(status).json(data)
 }
@@ -164,20 +130,6 @@ const getRecipeMedia = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postRecipeMedia = async (req, res) => {
-    // user must be signed as the recipe creator to create media
-    if (!req.session.isAuth) {
-        const { status, data } = authService.notAuthenticated()
-        return res.status(status).json(data)
-    }
-    const isCreator = await recipeService.matchCreator(
-        req.params.id,
-        req.session.username
-    )
-    if (!isCreator) {
-        const { status, data } = authService.forbiddenAction()
-        return res.status(status).json(data)
-    }
-
     const { id } = req.params
 
     // update recipe model with filenames
@@ -204,20 +156,6 @@ const postRecipeMedia = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const putRecipeMedia = async (req, res) => {
-    // user must be signed as the recipe creator to change media
-    if (!req.session.isAuth) {
-        const { status, data } = authService.notAuthenticated()
-        return res.status(status).json(data)
-    }
-    const isCreator = await recipeService.matchCreator(
-        req.params.id,
-        req.session.username
-    )
-    if (!isCreator) {
-        const { status, data } = authService.forbiddenAction()
-        return res.status(status).json(data)
-    }
-
     const { id } = req.params
 
     // update recipe model with filenames
@@ -244,20 +182,6 @@ const putRecipeMedia = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const deleteRecipeMedia = async (req, res) => {
-    // user must be signed as the recipe creator to delete media
-    if (!req.session.isAuth) {
-        const { status, data } = authService.notAuthenticated()
-        return res.status(status).json(data)
-    }
-    const isCreator = await recipeService.matchCreator(
-        req.params.id,
-        req.session.username
-    )
-    if (!isCreator) {
-        const { status, data } = authService.forbiddenAction()
-        return res.status(status).json(data)
-    }
-
     const { id } = req.params
 
     // update recipe model with filenames
@@ -275,6 +199,21 @@ const deleteRecipeMedia = async (req, res) => {
     return res.status(status).json(data)
 }
 
+/**
+ * Checks that the provided user is the uploader of
+ * the provided recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id       - The recipe ID to check.
+ * @param {string} username - The username.
+ * 
+ * @returns {boolean} The results of the operation.
+ */
+const matchCreator = async (id, username) => {
+    return await recipeService.matchCreator(id, username)
+}
+
 module.exports = {
     getAllRecipes,
     getRecipeById,
@@ -284,5 +223,6 @@ module.exports = {
     getRecipeMedia,
     postRecipeMedia,
     putRecipeMedia,
-    deleteRecipeMedia
+    deleteRecipeMedia,
+    matchCreator
 }

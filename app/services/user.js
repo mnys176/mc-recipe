@@ -11,6 +11,9 @@ const path = require('path')
 const { User } = require('../models')
 const quickResponse = require('../util/quick-response')
 
+// TODO: Upgrade JSDoc comments to enhance parameter
+//       descriptions as in `auth-firewall.js`.
+
 /**
  * Confirms that the provided ID is a MongoDB
  * ObjectID.
@@ -319,6 +322,14 @@ const signIn = async username => {
     try {
         const user = await User.findOne({ username })
         if (!user) return quickResponse(404, notFoundMessage)
+
+        // TODO: The end goal would be to allow users to sign in
+        //       on multiple clients simultaneously. Currently,
+        //       this is not allowed. Implement a check into the
+        //       sessions collection and allow the sign-in if the
+        //       SID does not currently exist. Create and return
+        //       a '409 Conflict' `quickResponse` method if the
+        //       SID already exists.
 
         // check if user is already signed in
         if (user.active) return quickResponse(400, badRequestMessage)

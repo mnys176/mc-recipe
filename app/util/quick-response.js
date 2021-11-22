@@ -157,6 +157,27 @@ const notFound = (message = 'Not found.', context) => {
 }
 
 /**
+ * Handles a '409 Conflict' response that occurs when
+ * a client request is incompatible with a previous
+ * request.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ *
+ * @param {string|object} message - Response payload.
+ * @param {string|object} context - Additional details if
+ *                                  desired.
+ * 
+ * @return {object} A JSON object containing a quick
+ *                  response.
+ */
+const conflict = (message = 'Conflict.', context) => {
+    const status = 409
+    const package = { status, data: { status, message } }
+    if (context) package.data.context = context
+    return package
+}
+
+/**
  * Handles a '500 Internal Server Error' response that
  * occurs when an unexpected error occurs on the
  * server side.
@@ -201,6 +222,7 @@ const quickResponse = (code, message, context) => {
         case 401: return unauthorized(message, context)
         case 403: return forbidden(message, context)
         case 404: return notFound(message, context)
+        case 409: return conflict(message, context)
         case 500: return internalServerError(message, context)
         default: return ok(message, context)
     }

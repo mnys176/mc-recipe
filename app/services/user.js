@@ -327,9 +327,9 @@ const signIn = async username => {
         //       on multiple clients simultaneously. Currently,
         //       this is not allowed. Implement a check into the
         //       sessions collection and allow the sign-in if the
-        //       SID does not currently exist. Create and return
-        //       a '409 Conflict' `quickResponse` method if the
-        //       SID already exists.
+        //       SID does not currently exist. Return a '409
+        //       Conflict' `quickResponse` method if the SID
+        //       already exists.
 
         // check if user is already signed in
         if (user.active) return quickResponse(400, badRequestMessage)

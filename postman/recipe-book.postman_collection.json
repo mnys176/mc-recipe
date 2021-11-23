@@ -9067,21 +9067,22 @@
 													"    pm.test('Recipe instructions set has changed', () => {",
 													"        pm.expect(instructions).to.not.deep.equal(oldRecipe.instructions)",
 													"    })",
-													"})",
 													"",
-													"// sign user out",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: '3WaistcoatStork' })",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { uploader } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username: uploader })",
+													"        }",
 													"    }",
-													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
-													"    if (err) throw err",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -9762,6 +9763,271 @@
 					"name": "create",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get recipe object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the POST request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // recipe was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "foodImages",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get recipe object for direct validation",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the POST request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // recipe was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "foodImages",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "404",
 							"item": [
 								{
@@ -9771,7 +10037,44 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -9781,7 +10084,32 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -9962,9 +10290,27 @@
 											"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
-											"    const { media } = res.json().message",
 											"",
-											"    // check media before the POST request",
+											"    // sign user in",
+											"    const { uploader } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: uploader,",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
+											"",
+											"    // check media length before the POST request",
+											"    const { media } = res.json().message",
 											"    pm.variables.set('oldMedia', JSON.stringify(media))",
 											"})"
 										]
@@ -9985,12 +10331,28 @@
 											"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
-											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
-											"    const { media } = res.json().message",
 											"",
 											"    // recipe was updated properly in the database",
+											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+											"    const { media } = res.json().message",
 											"    pm.test('Filename has not changed and the state of the media is the same', () => {",
 											"        pm.expect(media).to.deep.equal(oldMedia)",
+											"    })",
+											"",
+											"    // sign user out",
+											"    const apiRoot = pm.environment.get('API_ROOT')",
+											"    const { uploader } = res.json().message",
+											"    const signOutUserReq = {",
+											"        url: `${apiRoot}/users/signout`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username: uploader })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signOutUserReq, err => {",
+											"        if (err) throw err",
 											"    })",
 											"})"
 										]
@@ -10015,10 +10377,28 @@
 													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const { media } = res.json().message",
 													"",
-													"    // check media length before the POST request",
-													"    pm.variables.set('oldMediaLength', JSON.stringify(media.length))",
+													"    // sign user in",
+													"    const { uploader } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: uploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"",
+													"    // check media before the POST request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
 													"})"
 												],
 												"type": "text/javascript"
@@ -10053,16 +10433,32 @@
 													"        .that.has.lengthOf.greaterThan(0)",
 													"})",
 													"",
-													"// get user object for direct validation",
+													"// get recipe object for direct validation",
 													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const oldMediaLength = JSON.parse(pm.variables.get('oldMediaLength'))",
-													"    const { media } = res.json().message",
 													"",
 													"    // recipe was updated properly in the database",
-													"    pm.test('One more filename linked to recipe', () => {",
-													"        pm.expect(media.length).to.greaterThan(oldMediaLength)",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filenames have changed and the state of the media is different', () => {",
+													"        pm.expect(media).to.not.deep.equal(oldMedia)",
+													"    })",
+													"    ",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { uploader } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username: uploader })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
 													"    })",
 													"})"
 												],
@@ -10246,7 +10642,32 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get recipe object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user in",
+													"    const { uploader } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: uploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10255,8 +10676,28 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"const { context } = pm.response.json()",
-													"pm.collectionVariables.set('recipeMediaCreated', context.cleared[0].unique)"
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    pm.collectionVariables.set('recipeMediaCreated', res.json().message.media[0])",
+													"    ",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { uploader } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username: uploader })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10274,7 +10715,20 @@
 												{
 													"key": "foodImages",
 													"type": "file",
-													"src": "/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg"
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
+													]
 												}
 											]
 										},
@@ -10317,9 +10771,8 @@
 													"}",
 													"pm.sendRequest(deleteMediaReq, err => {",
 													"    if (err) throw err",
-													"})",
-													"",
-													"pm.collectionVariables.unset('recipeMediaCreated')"
+													"    pm.collectionVariables.unset('recipeMediaCreated')",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10361,10 +10814,10 @@
 					"name": "update",
 					"item": [
 						{
-							"name": "404",
+							"name": "401",
 							"item": [
 								{
-									"name": "recipe-not-found",
+									"name": "user-not-authorized",
 									"event": [
 										{
 											"listen": "prerequest",
@@ -10377,10 +10830,295 @@
 													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const { media } = res.json().message",
 													"",
-													"    // check media length before the POST request",
+													"    // check media before the PUT request",
+													"    const { media } = res.json().message",
 													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // recipe was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "foodImages",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get recipe object for direct validation",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the PUT request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // recipe was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "foodImages",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "404",
+							"item": [
+								{
+									"name": "recipe-not-found",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -10393,16 +11131,28 @@
 													"// assert that status code is 404",
 													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
 													"",
-													"// get recipe object for direct validation",
-													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
-													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
 													"    if (err) throw err",
-													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
-													"    const { media } = res.json().message",
-													"",
-													"    // recipe was updated properly in the database",
-													"    pm.test('Filename not linked to the recipe', () => {",
-													"        pm.expect(media.length).to.equal(oldMedia.length)",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
 													"    })",
 													"})"
 												],
@@ -10585,9 +11335,27 @@
 											"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
-											"    const { media } = res.json().message",
 											"",
-											"    // check media length before the POST request",
+											"    // sign user in",
+											"    const { uploader } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: uploader,",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
+											"",
+											"    // check media before the PUT request",
+											"    const { media } = res.json().message",
 											"    pm.variables.set('oldMedia', JSON.stringify(media))",
 											"})"
 										]
@@ -10608,12 +11376,28 @@
 											"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 											"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 											"    if (err) throw err",
-											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
-											"    const { media } = res.json().message",
 											"",
 											"    // recipe was updated properly in the database",
-											"    pm.test('Still zero images linked to the recipe', () => {",
-											"        pm.expect(media.length).to.equal(oldMedia.length)",
+											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+											"    const { media } = res.json().message",
+											"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+											"        pm.expect(media).to.deep.equal(oldMedia)",
+											"    })",
+											"",
+											"    // sign user out",
+											"    const apiRoot = pm.environment.get('API_ROOT')",
+											"    const { uploader } = res.json().message",
+											"    const signOutUserReq = {",
+											"        url: `${apiRoot}/users/signout`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username: uploader })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signOutUserReq, err => {",
+											"        if (err) throw err",
 											"    })",
 											"})"
 										]
@@ -10638,9 +11422,27 @@
 													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const { media } = res.json().message",
 													"",
-													"    // check media length before the POST request",
+													"    // sign user in",
+													"    const { uploader } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: uploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"",
+													"    // check media before the PUT request",
+													"    const { media } = res.json().message",
 													"    pm.variables.set('oldMedia', JSON.stringify(media))",
 													"})"
 												],
@@ -10680,22 +11482,27 @@
 													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
-													"    const { media } = res.json().message",
 													"",
 													"    // recipe was updated properly in the database",
-													"    pm.test('Filename now linked to the recipe', () => {",
-													"        pm.expect(media.length).to.greaterThan(oldMedia.length)",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filenames have changed and the state of the media is different', () => {",
+													"        pm.expect(media).to.not.deep.equal(oldMedia)",
 													"    })",
-													"",
-													"    // delete created media",
+													"    ",
+													"    // sign user out",
 													"    const apiRoot = pm.environment.get('API_ROOT')",
-													"    const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
-													"    const deleteMediaReq = {",
-													"        url: `${apiRoot}/recipes/${existingRecipe}/media`,",
-													"        method: 'DELETE'",
+													"    const { uploader } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username: uploader })",
+													"        }",
 													"    }",
-													"    pm.sendRequest(deleteMediaReq, err => {",
+													"    pm.sendRequest(signOutUserReq, err => {",
 													"        if (err) throw err",
 													"    })",
 													"})"
@@ -10758,6 +11565,261 @@
 					"name": "delete",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get recipe object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"//     // sign user in",
+													"//     const { uploader } = res.json().message",
+													"//     const signInUserReq = {",
+													"//         url: `${apiRoot}/users/signin`,",
+													"//         method: 'POST',",
+													"//         header: { 'Content-Type': 'application/json' },",
+													"//         body: {",
+													"//             mode: 'raw',",
+													"//             raw: JSON.stringify({",
+													"//                 username: uploader,",
+													"//                 password: 'P@ssword23!'",
+													"//             })",
+													"//         }",
+													"//     }",
+													"//     pm.sendRequest(signInUserReq, err => {",
+													"//         if (err) throw err",
+													"//     })",
+													"",
+													"    // check media before the DELETE request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // recipe was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"",
+													"    // // sign user out",
+													"    // const apiRoot = pm.environment.get('API_ROOT')",
+													"    // const { uploader } = res.json().message",
+													"    // const signOutUserReq = {",
+													"    //     url: `${apiRoot}/users/signout`,",
+													"    //     method: 'POST',",
+													"    //     header: { 'Content-Type': 'application/json' },",
+													"    //     body: {",
+													"    //         mode: 'raw',",
+													"    //         raw: JSON.stringify({ username: uploader })",
+													"    //     }",
+													"    // }",
+													"    // pm.sendRequest(signOutUserReq, err => {",
+													"    //     if (err) throw err",
+													"    // })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get recipe object for direct validation",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the DELETE request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // recipe was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "404",
 							"item": [
 								{
@@ -10767,7 +11829,44 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10777,7 +11876,32 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10832,7 +11956,32 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get recipe object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user in",
+													"    const { uploader } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: uploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10841,8 +11990,27 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"const { context } = pm.response.json()",
-													"pm.collectionVariables.set('recipeMediaCreated', context.cleared[0].unique)"
+													"// get recipe object for direct validation",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    ",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { uploader } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username: uploader })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10861,8 +12029,18 @@
 													"key": "foodImages",
 													"type": "file",
 													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/bad.zip",
 														"/Users/mnystoriak/Workspace/recipe-book/postman/media/cake.jpg",
-														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg"
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/doughnuts.jpg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/evil",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/hello.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/illegal.svg",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/main.cpp",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneakier.png",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/sneaky.sh",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/temp"
 													]
 												}
 											]
@@ -10894,7 +12072,32 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get recipe object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipe = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user in",
+													"    const { uploader } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: uploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -10912,15 +12115,29 @@
 													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipe}` }",
 													"pm.sendRequest(getExistingRecipeReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const { media } = res.json().message",
 													"",
 													"    // recipe was updated properly in the database",
-													"    pm.test('Filename no longer linked to the recipe', () => {",
+													"    const { media } = res.json().message",
+													"    pm.test('Filenames no longer linked to the recipe', () => {",
 													"        pm.expect(media.length).to.equal(0)",
 													"    })",
-													"})",
 													"",
-													"pm.collectionVariables.unset('recipeMediaCreated')"
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { uploader } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username: uploader })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}

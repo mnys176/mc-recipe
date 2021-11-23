@@ -208,7 +208,7 @@ const change = async (
     const okMessage = `The recipe with ID of "${id}"` +
                       ' was successfully updated.'
     try {
-        if (!objectIdIsValid(id)) {
+        if (!(await exists(id))) {
             return quickResponse(404, notFoundMessage)
         }
 
@@ -258,7 +258,7 @@ const discard = async id => {
     const okMessage = `The recipe with ID of "${id}"` +
                       ' was successfully deleted.'
     try {
-        if (!objectIdIsValid(id)) {
+        if (!(await exists(id))) {
             return quickResponse(404, notFoundMessage)
         }
         const data = await Recipe.findByIdAndDelete(id)
@@ -282,7 +282,7 @@ const discard = async id => {
  */
 const exists = async id => {
     try {
-        return await Recipe.exists({ _id: id })
+        return objectIdIsValid(id) && await Recipe.exists({ _id: id })
     } catch (err) {
         return false
     }
@@ -397,14 +397,15 @@ const unsetMedia = async id => {
  * @param {string} id       - The recipe ID to check.
  * @param {string} username - The username.
  * 
- * @returns {boolean} The results of the operation.
+ * @returns {number} The results of the operation.
  */
 const matchCreator = async (id, username) => {
     try {
+        if (!(await exists(id))) return -1
         const recipe = await Recipe.findById(id)
-        return recipe.uploader === username
+        return recipe.uploader === username ? 0 : 1
     } catch (err) {
-        return false
+        return -1
     }
 }
 

@@ -28,8 +28,8 @@ const authConfig = {
         check: async (req, res) => {
             const { id } = req.params
             const { username } = req.session
-            const isCreator = await recipeController.matchCreator(id, username)
-            return !isCreator
+            const isCreatorStatus = await recipeController.matchCreator(id, username)
+            return isCreatorStatus === 1
         },
         handler: (req, res) => {
             const message = 'You are forbidden from performing this action.'

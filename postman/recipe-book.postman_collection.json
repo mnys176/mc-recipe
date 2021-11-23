@@ -5065,6 +5065,125 @@
 					"name": "create",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make dynamic request body",
+													"const prepTimeUnits = ['m', 'h', 'd']",
+													"const prepTimeDenominators = ['1', '2', '4']",
+													"const prepTimeNumerator = (Math.floor(Math.random() * 1000000) % 16 + 1).toString()",
+													"const prepTimeDenominator = prepTimeDenominators[Math.floor(Math.random() * 1000000) % 3]",
+													"const prepTimeUnit = prepTimeUnits[Math.floor(Math.random() * 1000000) % 3]",
+													"const prepTime = {",
+													"    quantity: `${prepTimeNumerator}/${prepTimeDenominator}`,",
+													"    unit: prepTimeUnit",
+													"}",
+													"",
+													"const categories = ['breakfast', 'lunch', 'dinner', 'appetizer', 'dessert']",
+													"const category = categories[Math.floor(Math.random() * 1000000) % 5]",
+													"",
+													"const ingredients = []",
+													"const ingredientUnits = ['qt', 'L', 'lb', 'oz']",
+													"const ingredientDenominators = ['1', '2', '4', '8', '16']",
+													"for (let i = 0; i < pm.variables.replaceIn('{{$randomInt}}') + 1; i++) {",
+													"    const temp = pm.variables.replaceIn('{{$randomNoun}}')",
+													"    const name = temp[0].toUpperCase() + temp.substr(1)",
+													"    const amountNumerator = (Math.floor(Math.random() * 1000000) % 16 + 1).toString()",
+													"    const amountDenominator = ingredientDenominators[Math.floor(Math.random() * 1000000) % 5]",
+													"    const amountUnit = ingredientUnits[Math.floor(Math.random() * 1000000) % 4]",
+													"    const ingredient = {",
+													"        name,",
+													"        amount: {",
+													"            quantity: `${amountNumerator}/${amountDenominator}`,",
+													"            unit: amountUnit",
+													"        }",
+													"    }",
+													"    ingredients.push(ingredient)",
+													"}",
+													"",
+													"const instructions = []",
+													"for (let i = 0; i < pm.variables.replaceIn('{{$randomInt}}') + 1; i++) {",
+													"    instructions.push(pm.variables.replaceIn('{{$randomLoremSentences}}'))",
+													"}",
+													"",
+													"const body = {",
+													"    title: pm.variables.replaceIn('{{$randomProductAdjective}}') +",
+													"           ` ${pm.variables.replaceIn('{{$randomProduct}}')}`,",
+													"    prepTime,",
+													"    category,",
+													"    ingredients,",
+													"    instructions",
+													"}",
+													"pm.variables.set('body', JSON.stringify(body))",
+													"",
+													"// count the number of recipes before the POST request",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
+													"pm.sendRequest(getRecipesReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = res.json().message.length",
+													"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// count the number of recipes after the POST request",
+													"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
+													"pm.sendRequest(getRecipesReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = pm.variables.get('oldRecipeCount')",
+													"    pm.test('Same number of recipes exists', () => {",
+													"        const newRecipeCount = res.json().message.length",
+													"        pm.expect(newRecipeCount).to.be.equal(oldRecipeCount)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{{body}}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "400",
 							"item": [
 								{
@@ -6290,6 +6409,25 @@
 											"    if (err) throw err",
 											"    const oldRecipeCount = res.json().message.length",
 											"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
+											"",
+											"    // sign user in",
+											"    const recipeToCreateUploader = res.json().message[oldRecipeCount - 1].uploader",
+											"    pm.variables.set('recipeToCreateUploader', recipeToCreateUploader)",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: recipeToCreateUploader,",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
 											"})"
 										]
 									}
@@ -6311,6 +6449,22 @@
 											"        const newRecipeCount = res.json().message.length",
 											"        pm.expect(newRecipeCount).to.be.equal(oldRecipeCount)",
 											"    })",
+											"})",
+											"",
+											"// sign user out",
+											"const apiRoot = pm.environment.get('API_ROOT')",
+											"const recipeToCreateUploader = pm.variables.get('recipeToCreateUploader')",
+											"const signOutUserReq = {",
+											"    url: `${apiRoot}/users/signout`,",
+											"    method: 'POST',",
+											"    header: { 'Content-Type': 'application/json' },",
+											"    body: {",
+											"        mode: 'raw',",
+											"        raw: JSON.stringify({ username: recipeToCreateUploader })",
+											"    }",
+											"}",
+											"pm.sendRequest(signOutUserReq, err => {",
+											"    if (err) throw err",
 											"})"
 										]
 									}
@@ -6327,6 +6481,35 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
+													"// count the number of recipes before the POST request",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
+													"pm.sendRequest(getRecipesReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = res.json().message.length",
+													"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
+													"",
+													"    // sign user in",
+													"    const recipeToCreateUploader = res.json().message[oldRecipeCount - 1].uploader",
+													"    pm.variables.set('recipeToCreateUploader', recipeToCreateUploader)",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: recipeToCreateUploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
 													"// make dynamic request body",
 													"const prepTimeUnits = ['m', 'h', 'd']",
 													"const prepTimeDenominators = ['1', '2', '4']",
@@ -6373,17 +6556,7 @@
 													"    ingredients,",
 													"    instructions",
 													"}",
-													"pm.variables.set('body', JSON.stringify(body))",
-													"",
-													"// count the number of recipes before the POST request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
-													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
-													"pm.sendRequest(getRecipesReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const oldRecipeCount = res.json().message.length",
-													"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
-													"})"
+													"pm.variables.set('body', JSON.stringify(body))"
 												],
 												"type": "text/javascript"
 											}
@@ -6404,6 +6577,22 @@
 													"        const newRecipeCount = res.json().message.length",
 													"        pm.expect(newRecipeCount).to.be.equal(oldRecipeCount + 1)",
 													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const recipeToCreateUploader = pm.variables.get('recipeToCreateUploader')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: recipeToCreateUploader })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
 													"})"
 												],
 												"type": "text/javascript"
@@ -6660,6 +6849,431 @@
 					"name": "update",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get values from recipe after the PUT request",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipe = JSON.parse(pm.variables.get('oldRecipe'))",
+													"    const {",
+													"        title,",
+													"        about,",
+													"        prepTime,",
+													"        ingredients,",
+													"        instructions,",
+													"        category,",
+													"        modifiedOn",
+													"    } = res.json().message",
+													"    pm.test('Recipe title has not changed', () => {",
+													"        pm.expect(title).to.equal(oldRecipe.title)",
+													"    })",
+													"    pm.test('Recipe about has not changed', () => {",
+													"        pm.expect(about).to.equal(oldRecipe.about)",
+													"    })",
+													"    pm.test('Recipe category has not changed', () => {",
+													"        pm.expect(category).to.equal(oldRecipe.category)",
+													"    })",
+													"    pm.test('Recipe modification date has not changed', () => {",
+													"        pm.expect(modifiedOn).to.equal(oldRecipe.modifiedOn)    ",
+													"    })",
+													"    pm.test('Recipe preparation time has not changed', () => {",
+													"        pm.expect(prepTime).to.deep.equal(oldRecipe.prepTime)",
+													"    })",
+													"    pm.test('Recipe ingredients list has not changed', () => {",
+													"        pm.expect(ingredients).to.deep.equal(oldRecipe.ingredients)",
+													"    })",
+													"    pm.test('Recipe instructions set has not changed', () => {",
+													"        pm.expect(instructions).to.deep.equal(oldRecipe.instructions)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get current values from recipe before the PUT requests",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingRecipeId = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipeId}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
+													"    if (err) throw err",
+													"    ",
+													"    // assemble old values",
+													"    const oldRecipe = {}",
+													"    oldRecipe.title = res.json().message.title",
+													"    oldRecipe.about = res.json().message.about",
+													"    oldRecipe.prepTime = res.json().message.prepTime",
+													"    oldRecipe.ingredients = res.json().message.ingredients",
+													"    oldRecipe.instructions = res.json().message.instructions",
+													"    oldRecipe.category = res.json().message.category",
+													"    oldRecipe.modifiedOn = res.json().message.modifiedOn",
+													"",
+													"    // make dynamic request body",
+													"    const prepTimeUnits = ['m', 'h', 'd']",
+													"    const prepTimeDenominators = ['1', '2', '4']",
+													"    const prepTimeNumerator = (Math.floor(Math.random() * 1000000) % 64 + 1).toString()",
+													"    const prepTimeDenominator = prepTimeDenominators[Math.floor(Math.random() * 1000000) % 3]",
+													"    const prepTimeUnit = prepTimeUnits[Math.floor(Math.random() * 1000000) % 3]",
+													"    const prepTime = {",
+													"        quantity: `${prepTimeNumerator}/${prepTimeDenominator}`,",
+													"        unit: prepTimeUnit",
+													"    }",
+													"",
+													"    let category = ''",
+													"    switch (oldRecipe.category) {",
+													"        case 'breakfast':",
+													"            category = 'lunch'",
+													"            break",
+													"        case 'lunch':",
+													"            category = 'dinner'",
+													"            break",
+													"        case 'dinner':",
+													"            category = 'appetizer'",
+													"            break",
+													"        case 'appetizer':",
+													"            category = 'dessert'",
+													"            break",
+													"        default:",
+													"            category = 'breakfast'",
+													"            break",
+													"    }",
+													"",
+													"    const ingredients = []",
+													"    const ingredientUnits = ['qt', 'L', 'lb', 'oz']",
+													"    const ingredientDenominators = ['1', '2', '4', '8', '16']",
+													"    for (let i = 0; i < pm.variables.replaceIn('{{$randomInt}}') + 1; i++) {",
+													"        const temp = pm.variables.replaceIn('{{$randomNoun}}')",
+													"        const name = temp[0].toUpperCase() + temp.substr(1)",
+													"        const amountNumerator = (Math.floor(Math.random() * 1000000) % 16 + 1).toString()",
+													"        const amountDenominator = ingredientDenominators[Math.floor(Math.random() * 1000000) % 5]",
+													"        const amountUnit = ingredientUnits[Math.floor(Math.random() * 1000000) % 4]",
+													"        const ingredient = {",
+													"            name,",
+													"            amount: {",
+													"                quantity: `${amountNumerator}/${amountDenominator}`,",
+													"                unit: amountUnit",
+													"            }",
+													"        }",
+													"        ingredients.push(ingredient)",
+													"    }",
+													"",
+													"    const instructions = []",
+													"    for (let i = 0; i < pm.variables.replaceIn('{{$randomInt}}') + 1; i++) {",
+													"        instructions.push(pm.variables.replaceIn('{{$randomLoremSentences}}'))",
+													"    }",
+													"",
+													"    const body = {",
+													"        title: pm.variables.replaceIn('{{$randomProductAdjective}}') +",
+													"           ` ${pm.variables.replaceIn('{{$randomProductAdjective}}')}` +",
+													"           ` ${pm.variables.replaceIn('{{$randomProduct}}')}`,",
+													"        about: pm.variables.replaceIn('{{$randomLoremSentences}}'),",
+													"        prepTime,",
+													"        category,",
+													"        ingredients,",
+													"        instructions",
+													"    }",
+													"    pm.variables.set('body', JSON.stringify(body))",
+													"",
+													"    // make the current user properties visible to collection",
+													"    pm.variables.set('oldRecipe', JSON.stringify(oldRecipe))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{{body}}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get values from recipe after the PUT request",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipe = JSON.parse(pm.variables.get('oldRecipe'))",
+													"    const {",
+													"        title,",
+													"        about,",
+													"        prepTime,",
+													"        ingredients,",
+													"        instructions,",
+													"        category,",
+													"        modifiedOn",
+													"    } = res.json().message",
+													"    pm.test('Recipe title has not changed', () => {",
+													"        pm.expect(title).to.equal(oldRecipe.title)",
+													"    })",
+													"    pm.test('Recipe about has not changed', () => {",
+													"        pm.expect(about).to.equal(oldRecipe.about)",
+													"    })",
+													"    pm.test('Recipe category has not changed', () => {",
+													"        pm.expect(category).to.equal(oldRecipe.category)",
+													"    })",
+													"    pm.test('Recipe modification date has not changed', () => {",
+													"        pm.expect(modifiedOn).to.equal(oldRecipe.modifiedOn)    ",
+													"    })",
+													"    pm.test('Recipe preparation time has not changed', () => {",
+													"        pm.expect(prepTime).to.deep.equal(oldRecipe.prepTime)",
+													"    })",
+													"    pm.test('Recipe ingredients list has not changed', () => {",
+													"        pm.expect(ingredients).to.deep.equal(oldRecipe.ingredients)",
+													"    })",
+													"    pm.test('Recipe instructions set has not changed', () => {",
+													"        pm.expect(instructions).to.deep.equal(oldRecipe.instructions)",
+													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get current values from recipe before the PUT requests",
+													"const existingRecipeId = pm.environment.get('EXISTING_RECIPE')",
+													"const getExistingRecipeReq = { url: `${apiRoot}/recipes/${existingRecipeId}` }",
+													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
+													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
+													"    if (err) throw err",
+													"    ",
+													"    // assemble old values",
+													"    const oldRecipe = {}",
+													"    oldRecipe.title = res.json().message.title",
+													"    oldRecipe.about = res.json().message.about",
+													"    oldRecipe.prepTime = res.json().message.prepTime",
+													"    oldRecipe.ingredients = res.json().message.ingredients",
+													"    oldRecipe.instructions = res.json().message.instructions",
+													"    oldRecipe.category = res.json().message.category",
+													"    oldRecipe.modifiedOn = res.json().message.modifiedOn",
+													"    pm.variables.set('oldRecipe', JSON.stringify(oldRecipe))",
+													"",
+													"    // make dynamic request body",
+													"    const prepTimeUnits = ['m', 'h', 'd']",
+													"    const prepTimeDenominators = ['1', '2', '4']",
+													"    const prepTimeNumerator = (Math.floor(Math.random() * 1000000) % 64 + 1).toString()",
+													"    const prepTimeDenominator = prepTimeDenominators[Math.floor(Math.random() * 1000000) % 3]",
+													"    const prepTimeUnit = prepTimeUnits[Math.floor(Math.random() * 1000000) % 3]",
+													"    const prepTime = {",
+													"        quantity: `${prepTimeNumerator}/${prepTimeDenominator}`,",
+													"        unit: prepTimeUnit",
+													"    }",
+													"",
+													"    let category = ''",
+													"    switch (oldRecipe.category) {",
+													"        case 'breakfast':",
+													"            category = 'lunch'",
+													"            break",
+													"        case 'lunch':",
+													"            category = 'dinner'",
+													"            break",
+													"        case 'dinner':",
+													"            category = 'appetizer'",
+													"            break",
+													"        case 'appetizer':",
+													"            category = 'dessert'",
+													"            break",
+													"        default:",
+													"            category = 'breakfast'",
+													"            break",
+													"    }",
+													"",
+													"    const ingredients = []",
+													"    const ingredientUnits = ['qt', 'L', 'lb', 'oz']",
+													"    const ingredientDenominators = ['1', '2', '4', '8', '16']",
+													"    for (let i = 0; i < pm.variables.replaceIn('{{$randomInt}}') + 1; i++) {",
+													"        const temp = pm.variables.replaceIn('{{$randomNoun}}')",
+													"        const name = temp[0].toUpperCase() + temp.substr(1)",
+													"        const amountNumerator = (Math.floor(Math.random() * 1000000) % 16 + 1).toString()",
+													"        const amountDenominator = ingredientDenominators[Math.floor(Math.random() * 1000000) % 5]",
+													"        const amountUnit = ingredientUnits[Math.floor(Math.random() * 1000000) % 4]",
+													"        const ingredient = {",
+													"            name,",
+													"            amount: {",
+													"                quantity: `${amountNumerator}/${amountDenominator}`,",
+													"                unit: amountUnit",
+													"            }",
+													"        }",
+													"        ingredients.push(ingredient)",
+													"    }",
+													"",
+													"    const instructions = []",
+													"    for (let i = 0; i < pm.variables.replaceIn('{{$randomInt}}') + 1; i++) {",
+													"        instructions.push(pm.variables.replaceIn('{{$randomLoremSentences}}'))",
+													"    }",
+													"",
+													"    const body = {",
+													"        title: pm.variables.replaceIn('{{$randomProductAdjective}}') +",
+													"           ` ${pm.variables.replaceIn('{{$randomProductAdjective}}')}` +",
+													"           ` ${pm.variables.replaceIn('{{$randomProduct}}')}`,",
+													"        about: pm.variables.replaceIn('{{$randomLoremSentences}}'),",
+													"        prepTime,",
+													"        category,",
+													"        ingredients,",
+													"        instructions",
+													"    }",
+													"    pm.variables.set('body', JSON.stringify(body))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{{body}}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_RECIPE}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "404",
 							"item": [
 								{
@@ -6670,7 +7284,78 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -8236,27 +8921,34 @@
 											"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 											"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
 											"    if (err) throw err",
-											"    const {",
-											"        title,",
-											"        about,",
-											"        prepTime,",
-											"        ingredients,",
-											"        instructions,",
-											"        category,",
-											"        modifiedOn",
-											"    } = res.json().message",
+											"",
+											"    // sign user in",
+											"    const { uploader } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: uploader,",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
 											"    ",
 											"    // assemble old values",
 											"    const oldRecipe = {}",
-											"    oldRecipe.title = title",
-											"    oldRecipe.about = about",
-											"    oldRecipe.prepTime = prepTime",
-											"    oldRecipe.ingredients = ingredients",
-											"    oldRecipe.instructions = instructions",
-											"    oldRecipe.category = category",
-											"    oldRecipe.modifiedOn = modifiedOn",
-											"",
-											"    // make the current user properties visible to collection",
+											"    oldRecipe.title = res.json().message.title",
+											"    oldRecipe.about = res.json().message.about",
+											"    oldRecipe.prepTime = res.json().message.prepTime",
+											"    oldRecipe.ingredients = res.json().message.ingredients",
+											"    oldRecipe.instructions = res.json().message.instructions",
+											"    oldRecipe.category = res.json().message.category",
+											"    oldRecipe.modifiedOn = res.json().message.modifiedOn",
 											"    pm.variables.set('oldRecipe', JSON.stringify(oldRecipe))",
 											"})"
 										]
@@ -8277,6 +8969,7 @@
 											"    const oldRecipe = JSON.parse(pm.variables.get('oldRecipe'))",
 											"    const {",
 											"        title,",
+											"        uploader,",
 											"        about,",
 											"        prepTime,",
 											"        ingredients,",
@@ -8305,6 +8998,21 @@
 											"    pm.test('Recipe instructions set has not changed', () => {",
 											"        pm.expect(instructions).to.deep.equal(oldRecipe.instructions)",
 											"    })",
+											"",
+											"    // sign user out",
+											"    const apiRoot = pm.environment.get('API_ROOT')",
+											"    const signOutUserReq = {",
+											"        url: `${apiRoot}/users/signout`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username: uploader })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signOutUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
 											"})"
 										]
 									}
@@ -8321,6 +9029,9 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"// assert that status code is 200",
+													"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+													"",
 													"// get values from recipe after the PUT request",
 													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
 													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
@@ -8356,6 +9067,21 @@
 													"    pm.test('Recipe instructions set has changed', () => {",
 													"        pm.expect(instructions).to.not.deep.equal(oldRecipe.instructions)",
 													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: '3WaistcoatStork' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
 													"})"
 												],
 												"type": "text/javascript"
@@ -8372,7 +9098,25 @@
 													"pm.variables.set('getExistingRecipeReq', JSON.stringify(getExistingRecipeReq))",
 													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
 													"    if (err) throw err",
-													"    ",
+													"",
+													"    // sign user in",
+													"    const { uploader } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: uploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"",
 													"    // assemble old values",
 													"    const oldRecipe = {}",
 													"    oldRecipe.title = res.json().message.title",
@@ -8382,6 +9126,7 @@
 													"    oldRecipe.instructions = res.json().message.instructions",
 													"    oldRecipe.category = res.json().message.category",
 													"    oldRecipe.modifiedOn = res.json().message.modifiedOn",
+													"    pm.variables.set('oldRecipe', JSON.stringify(oldRecipe))",
 													"",
 													"    // make dynamic request body",
 													"    const prepTimeUnits = ['m', 'h', 'd']",
@@ -8448,9 +9193,6 @@
 													"        instructions",
 													"    }",
 													"    pm.variables.set('body', JSON.stringify(body))",
-													"",
-													"    // make the current user properties visible to collection",
-													"    pm.variables.set('oldRecipe', JSON.stringify(oldRecipe))",
 													"})"
 												],
 												"type": "text/javascript"
@@ -8496,6 +9238,231 @@
 					"name": "delete",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// count the number of recipes after the DELETE request",
+													"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
+													"pm.sendRequest(getRecipesReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = pm.variables.get('oldRecipeCount')",
+													"    pm.test('Same number of recipes exists', () => {",
+													"        const newRecipeCount = res.json().message.length",
+													"        pm.expect(newRecipeCount).to.be.equal(oldRecipeCount)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// count the number of recipes before the DELETE request",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
+													"pm.sendRequest(getRecipesReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = res.json().message.length",
+													"    const recipeToDelete = res.json().message[oldRecipeCount - 1]._id",
+													"",
+													"    pm.variables.set('recipeToDelete', recipeToDelete)",
+													"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{recipeToDelete}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// count the number of recipes after the DELETE request",
+													"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
+													"pm.sendRequest(getRecipesReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = pm.variables.get('oldRecipeCount')",
+													"    pm.test('Same number of recipes exists', () => {",
+													"        const newRecipeCount = res.json().message.length",
+													"        pm.expect(newRecipeCount).to.be.equal(oldRecipeCount)",
+													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// count the number of recipes before the DELETE request",
+													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
+													"pm.sendRequest(getRecipesReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = res.json().message.length",
+													"    const recipeToDelete = res.json().message[oldRecipeCount - 1]._id",
+													"",
+													"    pm.variables.set('recipeToDelete', recipeToDelete)",
+													"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/recipes/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"recipes",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{recipeToDelete}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "404",
 							"item": [
 								{
@@ -8506,7 +9473,100 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// count the number of recipes after the DELETE request",
+													"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
+													"pm.sendRequest(getRecipesReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = pm.variables.get('oldRecipeCount')",
+													"    pm.test('Same number of recipes exists', () => {",
+													"        const newRecipeCount = res.json().message.length",
+													"        pm.expect(newRecipeCount).to.be.equal(oldRecipeCount)",
+													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"    ",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// count the number of recipes before the DELETE request",
+													"const getRecipesReq = { url: `${apiRoot}/recipes` }",
+													"pm.variables.set('getRecipesReq', JSON.stringify(getRecipesReq))",
+													"pm.sendRequest(getRecipesReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipeCount = res.json().message.length",
+													"    const recipeToDelete = res.json().message[oldRecipeCount - 1]._id",
+													"    pm.variables.set('recipeToDelete', recipeToDelete)",
+													"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -8546,6 +9606,9 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"// assert that status code is 200",
+													"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+													"",
 													"// count the number of recipes after the DELETE request",
 													"const getRecipesReq = JSON.parse(pm.variables.get('getRecipesReq'))",
 													"pm.sendRequest(getRecipesReq, (err, res) => {",
@@ -8555,6 +9618,22 @@
 													"        const newRecipeCount = res.json().message.length",
 													"        pm.expect(newRecipeCount).to.be.equal(oldRecipeCount - 1)",
 													"    })",
+													"})",
+													"",
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const recipeToDeleteUploader = pm.variables.get('recipeToDeleteUploader')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: recipeToDeleteUploader })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
 													"})"
 												],
 												"type": "text/javascript"
@@ -8572,9 +9651,27 @@
 													"    if (err) throw err",
 													"    const oldRecipeCount = res.json().message.length",
 													"    const recipeToDelete = res.json().message[oldRecipeCount - 1]._id",
-													"",
 													"    pm.variables.set('recipeToDelete', recipeToDelete)",
 													"    pm.variables.set('oldRecipeCount', oldRecipeCount)",
+													"",
+													"    // sign user in",
+													"    const recipeToDeleteUploader = res.json().message[oldRecipeCount - 1].uploader",
+													"    pm.variables.set('recipeToDeleteUploader', recipeToDeleteUploader)",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: recipeToDeleteUploader,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
 													"})"
 												],
 												"type": "text/javascript"

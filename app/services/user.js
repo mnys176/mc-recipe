@@ -130,7 +130,7 @@ const change = async (id, name, username, password, email) => {
     const okMessage = `The user with ID of "${id}"` +
                       ' was successfully updated.'
     try {
-        if (!objectIdIsValid(id)) {
+        if (!(await exists(id))) {
             return quickResponse(404, notFoundMessage)
         }
 
@@ -169,7 +169,7 @@ const discard = async id => {
     const okMessage = `The user with ID of "${id}"` +
                       ' was successfully deleted.'
     try {
-        if (!objectIdIsValid(id)) {
+        if (!(await exists(id))) {
             return quickResponse(404, notFoundMessage)
         }
         const data = await User.findByIdAndDelete(id)
@@ -193,7 +193,7 @@ const discard = async id => {
  */
 const exists = async id => {
     try {
-        return await User.exists({ _id: id })
+        return objectIdIsValid(id) && await User.exists({ _id: id })
     } catch (err) {
         return false
     }

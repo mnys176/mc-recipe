@@ -23,7 +23,7 @@ const defaults = {
     forbidden: {
         check: (req, res) => true,
         handler: (req, res) => {
-            const message = 'You are forbidden from perform this action.'
+            const message = 'You are forbidden from performing this action.'
             const { status, data } = quickResponse(403, message)
             return res.status(status).json(data)
         }

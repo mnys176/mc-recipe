@@ -55,7 +55,7 @@ const postRecipe = async (req, res) => {
     const { status, data } = await recipeService.create(
         req.body.title,
         req.body.about,
-        req.body.uploader,
+        req.session.username,
         req.body.prepTime,
         req.body.category,
         req.body.ingredients,

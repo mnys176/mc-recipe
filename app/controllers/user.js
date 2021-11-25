@@ -60,6 +60,13 @@ const postUser = async (req, res) => {
     }
     const hashedPassword = authServiceData.context
 
+    // sign the user in automatically
+    // const { status, data } = await userService.signIn(username)
+    // if (status === 200) {
+    //     req.session.isAuth = true
+    //     req.session.username = username
+    // }
+
     // cherry-pick fields from body (more secure)
     const { status, data } = await userService.create(
         req.body.name,
@@ -143,11 +150,13 @@ const putUser = async (req, res) => {
         hashedPassword,
         req.body.email
     )
+    if (status === 200) req.session.username = req.body.username
+
     return res.status(status).json(data)
 }
 
 /**
- * Deletes a user in the database.
+ * Deletes a user in the database, signing them out beforehand.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 
@@ -155,6 +164,22 @@ const putUser = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const deleteUser = async (req, res) => {
+    // sign the user out
+    const { username } = req.session
+    const temp = await userService.signOut(username)
+
+    // TODO: Change naming to something a bit more descriptive.
+    //       This should apply to all controllers.
+
+    const userServiceStatus = temp.status
+    const userServiceData = temp.data
+    if (userServiceStatus !== 200) {
+        return res.status(userServiceStatus).json(userServiceData)
+    }
+    req.session.destroy()
+
+    // TODO: Delete any media associated with the user.
+    
     const { id } = req.params
     const { status, data } = await userService.discard(id)
     return res.status(status).json(data)
@@ -262,6 +287,21 @@ const deleteUserMedia = async (req, res) => {
     return res.status(status).json(data)
 }
 
+/**
+ * Checks that the provided username is the username of
+ * the provided user.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id       - The user ID to check.
+ * @param {string} username - The username.
+ * 
+ * @returns {number} The results of the operation.
+ */
+const checkUsername = async (id, username) => {
+    return await userService.checkUsername(id, username)
+}
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -273,5 +313,6 @@ module.exports = {
     getUserMedia,
     postUserMedia,
     putUserMedia,
-    deleteUserMedia
+    deleteUserMedia,
+    checkUsername
 }

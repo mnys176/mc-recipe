@@ -376,6 +376,27 @@ const signOut = async username => {
     }
 }
 
+/**
+ * Checks that the provided username is the username of
+ * the provided user.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id       - The user ID to check.
+ * @param {string} username - The username.
+ * 
+ * @returns {number} The results of the operation.
+ */
+const checkUsername = async (id, username) => {
+    try {
+        if (!(await exists(id))) return -1
+        const user = await User.findById(id)
+        return user.username === username ? 0 : 1
+    } catch (err) {
+        return -1
+    }
+}
+
 module.exports = {
     fetch,
     fetchById,
@@ -386,5 +407,6 @@ module.exports = {
     resetMedia,
     unsetMedia,
     signIn,
-    signOut
+    signOut,
+    checkUsername
 }

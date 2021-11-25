@@ -8,7 +8,6 @@
 const express = require('express')
 const { recipeController } = require('../controllers')
 const { bounce, authFw } = require('../middleware')
-const quickResponse = require('../util/quick-response')
 
 // recipe routes have nested media routes
 const recipeRouter = express.Router()
@@ -16,25 +15,13 @@ const mediaRouter = express.Router({ mergeParams: true })
 
 // configure authentication firewall
 const authConfig = {
-    unauthorized: {
-        check: (req, res) => req.session.isAuth === undefined,
-        handler: (req, res) => {
-            const message = 'Please sign in to perform this action.'
-            const { status, data } = quickResponse(401, message)
-            return res.status(status).json(data)
-        }
-    },
+    unauthorized: { check: (req, res) => req.session.isAuth === undefined },
     forbidden: {
         check: async (req, res) => {
             const { id } = req.params
             const { username } = req.session
-            const isCreatorStatus = await recipeController.matchCreator(id, username)
-            return isCreatorStatus === 1
-        },
-        handler: (req, res) => {
-            const message = 'You are forbidden from performing this action.'
-            const { status, data } = quickResponse(403, message)
-            return res.status(status).json(data)
+            const isUploaderStatus = await recipeController.checkUploader(id, username)
+            return isUploaderStatus === 1
         }
     }
 }

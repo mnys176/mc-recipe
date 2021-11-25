@@ -399,7 +399,7 @@ const unsetMedia = async id => {
  * 
  * @returns {number} The results of the operation.
  */
-const matchCreator = async (id, username) => {
+const checkUploader = async (id, username) => {
     try {
         if (!(await exists(id))) return -1
         const recipe = await Recipe.findById(id)
@@ -418,5 +418,5 @@ module.exports = {
     setMedia,
     unsetMedia,
     resetMedia,
-    matchCreator
+    checkUploader
 }

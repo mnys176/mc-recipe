@@ -210,8 +210,8 @@ const deleteRecipeMedia = async (req, res) => {
  * 
  * @returns {boolean} The results of the operation.
  */
-const matchCreator = async (id, username) => {
-    return await recipeService.matchCreator(id, username)
+const checkUploader = async (id, username) => {
+    return await recipeService.checkUploader(id, username)
 }
 
 module.exports = {
@@ -224,5 +224,5 @@ module.exports = {
     postRecipeMedia,
     putRecipeMedia,
     deleteRecipeMedia,
-    matchCreator
+    checkUploader
 }

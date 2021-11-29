@@ -164,24 +164,12 @@ const putUser = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const deleteUser = async (req, res) => {
-    // sign the user out
-    const { username } = req.session
-    const temp = await userService.signOut(username)
-
-    // TODO: Change naming to something a bit more descriptive.
-    //       This should apply to all controllers.
-
-    const userServiceStatus = temp.status
-    const userServiceData = temp.data
-    if (userServiceStatus !== 200) {
-        return res.status(userServiceStatus).json(userServiceData)
-    }
-    req.session.destroy()
-
-    // TODO: Delete any media associated with the user.
-    
     const { id } = req.params
     const { status, data } = await userService.discard(id)
+
+    // drop current session
+    if (status === 200) req.session.destroy()
+
     return res.status(status).json(data)
 }
 

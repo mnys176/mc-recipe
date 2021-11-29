@@ -1160,6 +1160,16 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
+													"// count the number of users before the POST request",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
+													"pm.sendRequest(getUsersReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldUserCount = res.json().message.length",
+													"    pm.variables.set('oldUserCount', oldUserCount)",
+													"})",
+													"",
 													"// make dynamic request body",
 													"const middleNameType = { NONE: 0, INITIAL: 1, FULL: 2 }",
 													"let middle = undefined",
@@ -1184,17 +1194,7 @@
 													"    password: 'P@ssword23!',",
 													"    email: pm.variables.replaceIn('{{$randomEmail}}')",
 													"}",
-													"pm.variables.set('body', JSON.stringify(body))",
-													"",
-													"// count the number of users before the POST request",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const getUsersReq = { url: `${apiRoot}/users` }",
-													"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
-													"pm.sendRequest(getUsersReq,  (err, res) => {",
-													"    if (err) throw err",
-													"    const oldUserCount = res.json().message.length",
-													"    pm.variables.set('oldUserCount', oldUserCount)",
-													"})"
+													"pm.variables.set('body', JSON.stringify(body))"
 												],
 												"type": "text/javascript"
 											}
@@ -1483,6 +1483,309 @@
 					"name": "update",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get values from user after the PUT request",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldUser = JSON.parse(pm.variables.get('oldUser'))",
+													"    const { name, username, email } = res.json().message",
+													"    pm.test('User name has not changed', () => {",
+													"        pm.expect(name.first).to.equal(oldUser.name.first)",
+													"        pm.expect(name.last).to.equal(oldUser.name.last)",
+													"    })",
+													"    pm.test('User username has not changed', () => {",
+													"        pm.expect(username).to.equal(oldUser.username)",
+													"    })",
+													"    pm.test('User email has not changed', () => {",
+													"        pm.expect(email).to.equal(oldUser.email)",
+													"    })",
+													"    pm.variables.set('oldUser', JSON.stringify(oldUser))",
+													"",
+													"    // replace original values",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const existingUserId = pm.environment.get('EXISTING_USER')",
+													"    const restoreUserInfoReq = {",
+													"        url: `${apiRoot}/users/${existingUserId}`,",
+													"        method: 'PUT',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                name: { first: 'Bruce', last: 'Mcfadden' },",
+													"                username: 'Bale7Passive',",
+													"                email: 'mcfaddenbruce@techade.com'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(restoreUserInfoReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get current values from user before the PUT requests",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUserId = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUserId}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // assemble old values",
+													"    const oldUser = {}",
+													"    oldUser.name = res.json().message.name",
+													"    oldUser.username = res.json().message.username",
+													"    oldUser.email = res.json().message.email",
+													"    pm.variables.set('oldUser', JSON.stringify(oldUser))",
+													"",
+													"    // make dynamic request body",
+													"    const middleNameType = { NONE: 0, INITIAL: 1, FULL: 2 }",
+													"    let middle = undefined",
+													"    switch (Math.floor(Math.random() * 1000000) % 3) {",
+													"        case middleNameType.INITIAL:",
+													"            const randomCharAscii = Math.floor(Math.random() * 1000000) % 26 + 65",
+													"            middle = `${String.fromCharCode(randomCharAscii)}.`",
+													"            break",
+													"        case middleNameType.FULL:",
+													"            middle = pm.variables.replaceIn('{{$randomFirstName}}')",
+													"            break",
+													"        default:",
+													"            break",
+													"    }",
+													"    const body = {",
+													"        name: {",
+													"            first: pm.variables.replaceIn('{{$randomFirstName}}'),",
+													"            last: pm.variables.replaceIn('{{$randomLastName}}'),",
+													"            middle",
+													"        },",
+													"        username: pm.variables.replaceIn('{{$randomUserName}}'),",
+													"        email: pm.variables.replaceIn('{{$randomEmail}}')",
+													"    }",
+													"    pm.variables.set('body', JSON.stringify(body))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{{body}}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get values from user after the PUT request",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldUser = JSON.parse(pm.variables.get('oldUser'))",
+													"    const { name, username, email } = res.json().message",
+													"    pm.test('User name has not changed', () => {",
+													"        pm.expect(name.first).to.equal(oldUser.name.first)",
+													"        pm.expect(name.last).to.equal(oldUser.name.last)",
+													"    })",
+													"    pm.test('User username has not changed', () => {",
+													"        pm.expect(username).to.equal(oldUser.username)",
+													"    })",
+													"    pm.test('User email has not changed', () => {",
+													"        pm.expect(email).to.equal(oldUser.email)",
+													"    })",
+													"    pm.variables.set('oldUser', JSON.stringify(oldUser))",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get current values from user before the PUT requests",
+													"const existingUserId = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUserId}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // assemble old values",
+													"    const oldUser = {}",
+													"    oldUser.name = res.json().message.name",
+													"    oldUser.username = res.json().message.username",
+													"    oldUser.email = res.json().message.email",
+													"    pm.variables.set('oldUser', JSON.stringify(oldUser))",
+													"",
+													"    // make dynamic request body",
+													"    const middleNameType = { NONE: 0, INITIAL: 1, FULL: 2 }",
+													"    let middle = undefined",
+													"    switch (Math.floor(Math.random() * 1000000) % 3) {",
+													"        case middleNameType.INITIAL:",
+													"            const randomCharAscii = Math.floor(Math.random() * 1000000) % 26 + 65",
+													"            middle = `${String.fromCharCode(randomCharAscii)}.`",
+													"            break",
+													"        case middleNameType.FULL:",
+													"            middle = pm.variables.replaceIn('{{$randomFirstName}}')",
+													"            break",
+													"        default:",
+													"            break",
+													"    }",
+													"    const body = {",
+													"        name: {",
+													"            first: pm.variables.replaceIn('{{$randomFirstName}}'),",
+													"            last: pm.variables.replaceIn('{{$randomLastName}}'),",
+													"            middle",
+													"        },",
+													"        username: pm.variables.replaceIn('{{$randomUserName}}'),",
+													"        email: pm.variables.replaceIn('{{$randomEmail}}')",
+													"    }",
+													"    pm.variables.set('body', JSON.stringify(body))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{{body}}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "404",
 							"item": [
 								{
@@ -1493,7 +1796,64 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -2590,15 +2950,30 @@
 											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
 											"pm.sendRequest(getExistingUserReq, (err, res) => {",
 											"    if (err) throw err",
-											"    const { name, username, email } = res.json().message",
+											"",
+											"    // sign user in",
+											"    const { username } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: username,",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
 											"    ",
 											"    // assemble old values",
 											"    const oldUser = {}",
-											"    oldUser.name = name",
-											"    oldUser.username = username",
-											"    oldUser.email = email",
-											"",
-											"    // make the current user properties visible to collection",
+											"    oldUser.name = res.json().message.name",
+											"    oldUser.username = res.json().message.username",
+											"    oldUser.email = res.json().message.email",
 											"    pm.variables.set('oldUser', JSON.stringify(oldUser))",
 											"})"
 										]
@@ -2627,6 +3002,21 @@
 											"    })",
 											"    pm.test('User email has not changed', () => {",
 											"        pm.expect(email).to.equal(oldUser.email)",
+											"    })",
+											"",
+											"    // sign user out",
+											"    const apiRoot = pm.environment.get('API_ROOT')",
+											"    const signOutUserReq = {",
+											"        url: `${apiRoot}/users/signout`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signOutUserReq, err => {",
+											"        if (err) throw err",
 											"    })",
 											"})"
 										]
@@ -2680,6 +3070,20 @@
 													"    }",
 													"    pm.sendRequest(restoreUserInfoReq, err => {",
 													"        if (err) throw err",
+													"        ",
+													"        // sign user out",
+													"        const signOutUserReq = {",
+													"            url: `${apiRoot}/users/signout`,",
+													"            method: 'POST',",
+													"            header: { 'Content-Type': 'application/json' },",
+													"            body: {",
+													"                mode: 'raw',",
+													"                raw: JSON.stringify({ username: 'Bale7Passive' })",
+													"            }",
+													"        }",
+													"        pm.sendRequest(signOutUserReq, err => {",
+													"            if (err) throw err",
+													"        })",
 													"    })",
 													"})"
 												],
@@ -2774,7 +3178,7 @@
 													"        pm.expect(email).to.equal(oldUser.email)",
 													"    })",
 													"",
-													"    // replace original values",
+													"        // replace original values",
 													"    const apiRoot = pm.environment.get('API_ROOT')",
 													"    const existingUserId = pm.environment.get('EXISTING_USER')",
 													"    const restoreUserInfoReq = {",
@@ -2793,6 +3197,20 @@
 													"    }",
 													"    pm.sendRequest(restoreUserInfoReq, err => {",
 													"        if (err) throw err",
+													"        ",
+													"        // sign user out",
+													"        const signOutUserReq = {",
+													"            url: `${apiRoot}/users/signout`,",
+													"            method: 'POST',",
+													"            header: { 'Content-Type': 'application/json' },",
+													"            body: {",
+													"                mode: 'raw',",
+													"                raw: JSON.stringify({ username: 'Bale7Passive' })",
+													"            }",
+													"        }",
+													"        pm.sendRequest(signOutUserReq, err => {",
+													"            if (err) throw err",
+													"        })",
 													"    })",
 													"})"
 												],
@@ -2857,15 +3275,29 @@
 											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
 											"pm.sendRequest(getExistingUserReq, (err, res) => {",
 											"    if (err) throw err",
-											"    const { name, username, email } = res.json().message",
-											"    ",
-											"    // create a rotation cycle that constantly changes values",
-											"    const oldUser = {}",
-											"    oldUser.name = name",
-											"    oldUser.username = username",
-											"    oldUser.email = email",
 											"",
-											"    // make the current user properties visible to collection",
+											"    // sign user in",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: res.json().message.username,",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
+											"",
+											"    // assemble old values",
+											"    const oldUser = {}",
+											"    oldUser.name = res.json().message.name",
+											"    oldUser.username = res.json().message.username",
+											"    oldUser.email = res.json().message.email",
 											"    pm.variables.set('oldUser', JSON.stringify(oldUser))",
 											"})"
 										]
@@ -2889,64 +3321,26 @@
 					"name": "delete",
 					"item": [
 						{
-							"name": "404",
+							"name": "401",
 							"item": [
 								{
-									"name": "user-not-found",
+									"name": "user-not-authorized",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "DELETE",
-										"header": [],
-										"url": {
-											"raw": "{{API_ROOT}}/users/:id",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"users",
-												":id"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "asdfasdfasdfasdfasdfasdf"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "200",
-							"item": [
-								{
-									"name": "delete-user",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
 													"// count the number of users after the DELETE request",
 													"const getUsersReq = JSON.parse(pm.variables.get('getUsersReq'))",
 													"pm.sendRequest(getUsersReq, (err, res) => {",
 													"    if (err) throw err",
 													"    const oldUserCount = pm.variables.get('oldUserCount')",
-													"    pm.test('One less user exists than before', () => {",
+													"    pm.test('Same number of users exists', () => {",
 													"        const newUserCount = res.json().message.length",
-													"        pm.expect(newUserCount).to.be.equal(oldUserCount - 1)",
+													"        pm.expect(newUserCount).to.be.equal(oldUserCount)",
 													"    })",
 													"})"
 												],
@@ -2999,6 +3393,359 @@
 												{
 													"key": "id",
 													"value": "{{userToDelete}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// count the number of users after the DELETE request",
+													"const getUsersReq = JSON.parse(pm.variables.get('getUsersReq'))",
+													"pm.sendRequest(getUsersReq, (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // compensate for fake user by adding one",
+													"    const oldUserCount = pm.variables.get('oldUserCount') + 1",
+													"    ",
+													"    pm.test('Same number of users exists', () => {",
+													"        const newUserCount = res.json().message.length",
+													"        pm.expect(newUserCount).to.be.equal(oldUserCount)",
+													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// count the number of users before the DELETE request",
+													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
+													"pm.sendRequest(getUsersReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldUserCount = res.json().message.length",
+													"    const tailUser = res.json().message[oldUserCount - 1]._id",
+													"",
+													"    pm.variables.set('tailUser', tailUser)",
+													"    pm.variables.set('oldUserCount', oldUserCount)",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{tailUser}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "404",
+							"item": [
+								{
+									"name": "user-not-found",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 404",
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// count the number of users after the DELETE request",
+													"const getUsersReq = JSON.parse(pm.variables.get('getUsersReq'))",
+													"pm.sendRequest(getUsersReq, (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // compensate for fake user by adding one",
+													"    const oldUserCount = pm.variables.get('oldUserCount') + 1",
+													"    ",
+													"    pm.test('Same number of users exists', () => {",
+													"        const newUserCount = res.json().message.length",
+													"        pm.expect(newUserCount).to.be.equal(oldUserCount)",
+													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// count the number of users before the DELETE request",
+													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
+													"pm.sendRequest(getUsersReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldUserCount = res.json().message.length",
+													"    pm.variables.set('oldUserCount', oldUserCount)",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "asdfasdfasdfasdfasdfasdf"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "200",
+							"item": [
+								{
+									"name": "delete-user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 200",
+													"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
+													"",
+													"// count the number of users after the DELETE request",
+													"const getUsersReq = JSON.parse(pm.variables.get('getUsersReq'))",
+													"pm.sendRequest(getUsersReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldUserCount = pm.variables.get('oldUserCount')",
+													"    pm.test('One less user exists than before', () => {",
+													"        const newUserCount = res.json().message.length",
+													"        pm.expect(newUserCount).to.be.equal(oldUserCount - 1)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// count the number of users before the DELETE request",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const getUsersReq = { url: `${apiRoot}/users` }",
+													"pm.variables.set('getUsersReq', JSON.stringify(getUsersReq))",
+													"pm.sendRequest(getUsersReq,  (err, res) => {",
+													"    if (err) throw err",
+													"    const oldUserCount = res.json().message.length",
+													"    const tailUser = res.json().message[oldUserCount - 1]._id",
+													"    const tailUserUsername = res.json().message[oldUserCount - 1].username",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: tailUserUsername,",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"",
+													"    pm.variables.set('tailUser', tailUser)",
+													"    pm.variables.set('oldUserCount', oldUserCount)",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{tailUser}}"
 												}
 											]
 										}
@@ -3142,24 +3889,6 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"// sign user in",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signInUserReq = {",
-													"    url: `${apiRoot}/users/signin`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({",
-													"            username: 'UsernameTester.78',",
-													"            password: 'P@ssword23!'",
-													"        })",
-													"    }",
-													"}",
-													"pm.sendRequest(signInUserReq, err => {",
-													"    if (err) throw err",
-													"})",
-													"",
 													"// make dynamic request body",
 													"const body = {",
 													"    username: 'UsernameTester.78',",
@@ -3231,6 +3960,21 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
+													"// sign user out",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const signOutUserReq = {",
+													"    url: `${apiRoot}/users/signout`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
+													"    }",
+													"}",
+													"pm.sendRequest(signOutUserReq, err => {",
+													"    if (err) throw err",
+													"})",
+													"",
 													"// make dynamic request body",
 													"const body = {",
 													"    username: 'UsernameTester.78',",
@@ -3256,13 +4000,30 @@
 													"        pm.expect(user.active).to.be.false;",
 													"    })",
 													"",
-													"    // delete created user",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
 													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
+													"    pm.sendRequest(signInUserReq, err => {",
 													"        if (err) throw err",
+													"",
+													"        // delete created user",
+													"        const deleteUserReq = {",
+													"            url: `${apiRoot}/users/${userToDelete}`,",
+													"            method: 'DELETE'",
+													"        }",
+													"        pm.sendRequest(deleteUserReq, err => {",
+													"            if (err) throw err",
+													"        })",
 													"    })",
 													"})"
 												],
@@ -3302,7 +4063,7 @@
 									"script": {
 										"type": "text/javascript",
 										"exec": [
-											"// make user to sign in",
+											"// make fake user to sign in",
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const createUserReq = {",
 											"    url: `${apiRoot}/users/register`,",
@@ -3322,6 +4083,23 @@
 											"    if (err) throw err",
 											"    const userToDelete = res.json().message.substr(21, 24)",
 											"    pm.variables.set('userToDelete', userToDelete)",
+											"",
+											"    // sign user in",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: 'UsernameTester.78',",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
 											"})"
 										]
 									}
@@ -3452,7 +4230,7 @@
 									"script": {
 										"type": "text/javascript",
 										"exec": [
-											"// make user to sign in",
+											"// make fake user to sign in",
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const createUserReq = {",
 											"    url: `${apiRoot}/users/register`,",
@@ -3472,6 +4250,23 @@
 											"    if (err) throw err",
 											"    const userToDelete = res.json().message.substr(21, 24)",
 											"    pm.variables.set('userToDelete', userToDelete)",
+											"",
+											"    // sign user in",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({",
+											"                username: 'UsernameTester.78',",
+											"                password: 'P@ssword23!'",
+											"            })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
 											"})"
 										]
 									}
@@ -3620,13 +4415,30 @@
 													"        pm.expect(user.active).to.be.false;",
 													"    })",
 													"",
-													"    // delete created user",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
 													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
+													"    pm.sendRequest(signInUserReq, err => {",
 													"        if (err) throw err",
+													"",
+													"        // delete created user",
+													"        const deleteUserReq = {",
+													"            url: `${apiRoot}/users/${userToDelete}`,",
+													"            method: 'DELETE'",
+													"        }",
+													"        pm.sendRequest(deleteUserReq, err => {",
+													"            if (err) throw err",
+													"        })",
 													"    })",
 													"})"
 												],
@@ -3666,7 +4478,7 @@
 									"script": {
 										"type": "text/javascript",
 										"exec": [
-											"// make user to sign in",
+											"// make fake user to sign in",
 											"const apiRoot = pm.environment.get('API_ROOT')",
 											"const createUserReq = {",
 											"    url: `${apiRoot}/users/register`,",
@@ -3733,6 +4545,241 @@
 					"name": "create",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the POST request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": [
+														"media/a.out",
+														"media/bad.zip",
+														"media/dice.png",
+														"media/evil"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the POST request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": [
+														"media/a.out",
+														"media/bad.zip",
+														"media/dice.png",
+														"media/evil"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "404",
 							"item": [
 								{
@@ -3742,7 +4789,56 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the POST request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -3752,7 +4848,31 @@
 											"script": {
 												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -3812,7 +4932,27 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													""
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { username } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -3893,6 +5033,21 @@
 													"    }",
 													"    pm.sendRequest(deleteMediaReq, err => {",
 													"        if (err) throw err",
+													"",
+													"        // sign user out",
+													"        const { username } = res.json().message",
+													"        const signOutUserReq = {",
+													"            url: `${apiRoot}/users/signout`,",
+													"            method: 'POST',",
+													"            header: { 'Content-Type': 'application/json' },",
+													"            body: {",
+													"                mode: 'raw',",
+													"                raw: JSON.stringify({ username })",
+													"            }",
+													"        }",
+													"        pm.sendRequest(signOutUserReq, err => {",
+													"            if (err) throw err",
+													"        })",
 													"    })",
 													"})"
 												],
@@ -3941,6 +5096,48 @@
 									},
 									"response": []
 								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"// get user object for direct validation",
+											"const apiRoot = pm.environment.get('API_ROOT')",
+											"const existingUser = pm.environment.get('EXISTING_USER')",
+											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+											"    if (err) throw err",
+											"",
+											"    // sign user in",
+											"    const { username } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
+											"})"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
 							]
 						},
 						{
@@ -3973,13 +5170,7 @@
 										"header": [],
 										"body": {
 											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "userImage",
-													"type": "file",
-													"src": []
-												}
-											]
+											"formdata": []
 										},
 										"url": {
 											"raw": "{{API_ROOT}}/users/:id/media",
@@ -4070,10 +5261,25 @@
 											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
 											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 											"    if (err) throw err",
-											"    const { media } = res.json().message",
 											"",
 											"    // check media before the POST request",
+											"    const { media } = res.json().message",
 											"    pm.variables.set('oldMedia', JSON.stringify(media))",
+											"",
+											"    // sign user in",
+											"    const { username } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
 											"})"
 										]
 									}
@@ -4093,12 +5299,28 @@
 											"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
 											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 											"    if (err) throw err",
-											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
-											"    const { media } = res.json().message",
 											"",
 											"    // user was updated properly in the database",
+											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+											"    const { media } = res.json().message",
 											"    pm.test('Filename has not changed and the state of the media is the same', () => {",
 											"        pm.expect(media).to.deep.equal(oldMedia)",
+											"    })",
+											"",
+											"    // sign user out",
+											"    const apiRoot = pm.environment.get('API_ROOT')",
+											"    const { username } = res.json().message",
+											"    const signOutUserReq = {",
+											"        url: `${apiRoot}/users/signout`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signOutUserReq, err => {",
+											"        if (err) throw err",
 											"    })",
 											"})"
 										]
@@ -4116,7 +5338,33 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the POST request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"",
+													"    // sign user in",
+													"    const { username } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4169,6 +5417,21 @@
 													"        method: 'DELETE'",
 													"    }",
 													"    pm.sendRequest(deleteMediaReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"",
+													"    // sign user out",
+													"    const { username } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
 													"        if (err) throw err",
 													"    })",
 													"})"
@@ -4229,13 +5492,161 @@
 							"name": "404",
 							"item": [
 								{
+									"name": "SETUP-user-not-found",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user in",
+													"    const { username } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { username } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": "/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "user-not-found",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													""
+													"// assert that status code is 404",
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user in",
+													"    const { username } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"",
+													"        // delete created media",
+													"        const deleteMediaReq = {",
+													"            url: `${apiRoot}/users/${existingUser}/media`,",
+													"            method: 'DELETE'",
+													"        }",
+													"        pm.sendRequest(deleteMediaReq, err => {",
+													"            if (err) throw err",
+													"",
+													"            // sign user out",
+													"            const { username } = res.json().message",
+													"            const signOutUserReq = {",
+													"                url: `${apiRoot}/users/signout`,",
+													"                method: 'POST',",
+													"                header: { 'Content-Type': 'application/json' },",
+													"                body: {",
+													"                    mode: 'raw',",
+													"                    raw: JSON.stringify({ username })",
+													"                }",
+													"            }",
+													"            pm.sendRequest(signOutUserReq, err => {",
+													"                if (err) throw err",
+													"            })",
+													"        })",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4244,7 +5655,18 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the GET request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('userMediaCreated', media)",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4285,7 +5707,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													""
+													"// assert that status code is 404",
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
 												],
 												"type": "text/javascript"
 											}
@@ -4344,8 +5767,7 @@
 									"script": {
 										"type": "text/javascript",
 										"exec": [
-											"// assert that status code is 404",
-											"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+											""
 										]
 									}
 								}
@@ -4361,7 +5783,29 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user in",
+													"    const { username } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4370,8 +5814,27 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"const { context } = pm.response.json()",
-													"pm.collectionVariables.set('userMediaCreated', context.cleared[0].unique)"
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { username } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4389,7 +5852,7 @@
 												{
 													"key": "userImage",
 													"type": "file",
-													"src": "media/dice.png"
+													"src": "/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png"
 												}
 											]
 										},
@@ -4423,18 +5886,52 @@
 													"// assert that status code is 200",
 													"pm.test('Status code is 200', () => pm.response.to.have.status(200))",
 													"",
-													"// delete created media",
+													"// get user object for direct validation",
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const existingUser = pm.environment.get('EXISTING_USER')",
-													"const deleteMediaReq = {",
-													"    url: `${apiRoot}/users/${existingUser}/media`,",
-													"    method: 'DELETE'",
-													"}",
-													"pm.sendRequest(deleteMediaReq, err => {",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 													"    if (err) throw err",
-													"})",
 													"",
-													"pm.collectionVariables.unset('userMediaCreated')"
+													"    // sign user in",
+													"    const { username } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"",
+													"        // delete created media",
+													"        const deleteMediaReq = {",
+													"            url: `${apiRoot}/users/${existingUser}/media`,",
+													"            method: 'DELETE'",
+													"        }",
+													"        pm.sendRequest(deleteMediaReq, err => {",
+													"            if (err) throw err",
+													"",
+													"            // sign user out",
+													"            const { username } = res.json().message",
+													"            const signOutUserReq = {",
+													"                url: `${apiRoot}/users/signout`,",
+													"                method: 'POST',",
+													"                header: { 'Content-Type': 'application/json' },",
+													"                body: {",
+													"                    mode: 'raw',",
+													"                    raw: JSON.stringify({ username })",
+													"                }",
+													"            }",
+													"            pm.sendRequest(signOutUserReq, err => {",
+													"                if (err) throw err",
+													"            })",
+													"        })",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4443,7 +5940,18 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the GET request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('userMediaCreated', media)",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4485,6 +5993,231 @@
 					"name": "update",
 					"item": [
 						{
+							"name": "401",
+							"item": [
+								{
+									"name": "user-not-authorized",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the PUT request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the PUT request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "userImage",
+													"type": "file",
+													"src": [
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/a.out",
+														"/Users/mnystoriak/Workspace/recipe-book/postman/media/dice.png"
+													]
+												}
+											]
+										},
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "404",
 							"item": [
 								{
@@ -4494,7 +6227,56 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the PUT request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4507,17 +6289,27 @@
 													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
 													"",
 													"// get user object for direct validation",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const existingUser = pm.environment.get('EXISTING_USER')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
 													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const { media } = res.json().message",
 													"",
 													"    // user was updated properly in the database",
-													"    pm.test('Filename not linked to the user', () => {",
-													"        pm.expect(media.length).to.equal(0)",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
 													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
 													"})"
 												],
 												"type": "text/javascript"
@@ -4593,13 +6385,7 @@
 										"header": [],
 										"body": {
 											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "foodImages",
-													"type": "file",
-													"src": []
-												}
-											]
+											"formdata": []
 										},
 										"url": {
 											"raw": "{{API_ROOT}}/users/:id/media",
@@ -4692,7 +6478,33 @@
 									"script": {
 										"type": "text/javascript",
 										"exec": [
-											""
+											"// get user object for direct validation",
+											"const apiRoot = pm.environment.get('API_ROOT')",
+											"const existingUser = pm.environment.get('EXISTING_USER')",
+											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+											"    if (err) throw err",
+											"",
+											"    // check media before the PUT request",
+											"    const { media } = res.json().message",
+											"    pm.variables.set('oldMedia', JSON.stringify(media))",
+											"",
+											"    // sign user in",
+											"    const { username } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
+											"})"
 										]
 									}
 								},
@@ -4708,16 +6520,31 @@
 											"pm.test('Nothing to do on the server', () => pm.expect(pm.response.responseSize).to.equal(0))",
 											"",
 											"// get user object for direct validation",
-											"const apiRoot = pm.environment.get('API_ROOT')",
-											"const existingUser = pm.environment.get('EXISTING_USER')",
-											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+											"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
 											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 											"    if (err) throw err",
-											"    const { media } = res.json().message",
 											"",
 											"    // user was updated properly in the database",
-											"    pm.test('Filename not linked to the user', () => {",
-											"        pm.expect(media.length).to.equal(0)",
+											"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+											"    const { media } = res.json().message",
+											"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+											"        pm.expect(media).to.deep.equal(oldMedia)",
+											"    })",
+											"",
+											"    // sign user out",
+											"    const apiRoot = pm.environment.get('API_ROOT')",
+											"    const { username } = res.json().message",
+											"    const signOutUserReq = {",
+											"        url: `${apiRoot}/users/signout`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signOutUserReq, err => {",
+											"        if (err) throw err",
 											"    })",
 											"})"
 										]
@@ -4735,7 +6562,33 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													""
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the PUT request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"",
+													"    // sign user in",
+													"    const { username } = res.json().message",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4790,6 +6643,21 @@
 													"    pm.sendRequest(deleteMediaReq, err => {",
 													"        if (err) throw err",
 													"    })",
+													"",
+													"    // sign user out",
+													"    const { username } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -4840,10 +6708,10 @@
 					"name": "delete",
 					"item": [
 						{
-							"name": "404",
+							"name": "401",
 							"item": [
 								{
-									"name": "user-not-found",
+									"name": "user-not-authorized",
 									"event": [
 										{
 											"listen": "prerequest",
@@ -4858,8 +6726,304 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
+													"",
+													"// get user object for direct validation",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename not linked to the user', () => {",
+													"        pm.expect(media.length).to.equal(0)",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "403",
+							"item": [
+								{
+									"name": "user-forbidden",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the DELETE request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 403",
+													"pm.test('Status code is 403', () => pm.response.to.have.status(403))",
+													"",
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{API_ROOT}}/users/:id/media",
+											"host": [
+												"{{API_ROOT}}"
+											],
+											"path": [
+												"users",
+												":id",
+												"media"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "{{EXISTING_USER}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "404",
+							"item": [
+								{
+									"name": "user-not-found",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// make fake user to sign in",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const createUserReq = {",
+													"    url: `${apiRoot}/users/register`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            name: { first: 'Brad', middle: 'A.', last: 'Bradson' },",
+													"            username: 'UsernameTester.78',",
+													"            email: 'faker@fake.com',",
+													"            password: 'P@ssword23!'",
+													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(createUserReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const userToDelete = res.json().message.substr(21, 24)",
+													"    pm.variables.set('userToDelete', userToDelete)",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})",
+													"",
+													"// get user object for direct validation",
+													"const existingUser = pm.environment.get('EXISTING_USER')",
+													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+													"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // check media before the DELETE request",
+													"    const { media } = res.json().message",
+													"    pm.variables.set('oldMedia', JSON.stringify(media))",
+													"",
+													"    // sign user in",
+													"    const signInUserReq = {",
+													"        url: `${apiRoot}/users/signin`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({",
+													"                username: 'UsernameTester.78',",
+													"                password: 'P@ssword23!'",
+													"            })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signInUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
 													"// assert that status code is 404",
-													"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
+													"",
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // user was updated properly in the database",
+													"    const oldMedia = JSON.parse(pm.variables.get('oldMedia'))",
+													"    const { media } = res.json().message",
+													"    pm.test('Filename has not changed and the state of the media is the same', () => {",
+													"        pm.expect(media).to.deep.equal(oldMedia)",
+													"    })",
+													"})",
+													"",
+													"// delete created user",
+													"const apiRoot = pm.environment.get('API_ROOT')",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
+													"    if (err) throw err",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4870,17 +7034,7 @@
 										"header": [],
 										"body": {
 											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "foodImages",
-													"type": "file",
-													"src": [
-														"media/cake.jpg",
-														"media/dice.png",
-														"media/doughnuts.jpg"
-													]
-												}
-											]
+											"formdata": []
 										},
 										"url": {
 											"raw": "{{API_ROOT}}/users/:id/media",
@@ -4923,8 +7077,27 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"const { context } = pm.response.json()",
-													"pm.collectionVariables.set('userMediaCreated', context.cleared[0].unique)"
+													"// get user object for direct validation",
+													"const getExistingUserReq = JSON.parse(pm.variables.get('getExistingUserReq'))",
+													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+													"    if (err) throw err",
+													"",
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { username } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -4991,15 +7164,29 @@
 													"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
 													"pm.sendRequest(getExistingUserReq,  (err, res) => {",
 													"    if (err) throw err",
-													"    const { media } = res.json().message",
 													"",
 													"    // user was updated properly in the database",
+													"    const { media } = res.json().message",
 													"    pm.test('Filename no longer linked to the user', () => {",
 													"        pm.expect(media.length).to.equal(0)",
 													"    })",
-													"})",
 													"",
-													"pm.collectionVariables.unset('userMediaCreated')"
+													"    // sign user out",
+													"    const apiRoot = pm.environment.get('API_ROOT')",
+													"    const { username } = res.json().message",
+													"    const signOutUserReq = {",
+													"        url: `${apiRoot}/users/signout`,",
+													"        method: 'POST',",
+													"        header: { 'Content-Type': 'application/json' },",
+													"        body: {",
+													"            mode: 'raw',",
+													"            raw: JSON.stringify({ username })",
+													"        }",
+													"    }",
+													"    pm.sendRequest(signOutUserReq, err => {",
+													"        if (err) throw err",
+													"    })",
+													"})"
 												],
 												"type": "text/javascript"
 											}
@@ -5031,6 +7218,48 @@
 										}
 									},
 									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"// get user object for direct validation",
+											"const apiRoot = pm.environment.get('API_ROOT')",
+											"const existingUser = pm.environment.get('EXISTING_USER')",
+											"const getExistingUserReq = { url: `${apiRoot}/users/${existingUser}` }",
+											"pm.variables.set('getExistingUserReq', JSON.stringify(getExistingUserReq))",
+											"pm.sendRequest(getExistingUserReq,  (err, res) => {",
+											"    if (err) throw err",
+											"",
+											"    // sign user in",
+											"    const { username } = res.json().message",
+											"    const signInUserReq = {",
+											"        url: `${apiRoot}/users/signin`,",
+											"        method: 'POST',",
+											"        header: { 'Content-Type': 'application/json' },",
+											"        body: {",
+											"            mode: 'raw',",
+											"            raw: JSON.stringify({ username, password: 'P@ssword23!' })",
+											"        }",
+											"    }",
+											"    pm.sendRequest(signInUserReq, err => {",
+											"        if (err) throw err",
+											"    })",
+											"})"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
 								}
 							]
 						}
@@ -6855,53 +9084,6 @@
 									"name": "user-not-authorized",
 									"event": [
 										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// assert that status code is 401",
-													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
-													"",
-													"// get values from recipe after the PUT request",
-													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
-													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
-													"    if (err) throw err",
-													"    const oldRecipe = JSON.parse(pm.variables.get('oldRecipe'))",
-													"    const {",
-													"        title,",
-													"        about,",
-													"        prepTime,",
-													"        ingredients,",
-													"        instructions,",
-													"        category,",
-													"        modifiedOn",
-													"    } = res.json().message",
-													"    pm.test('Recipe title has not changed', () => {",
-													"        pm.expect(title).to.equal(oldRecipe.title)",
-													"    })",
-													"    pm.test('Recipe about has not changed', () => {",
-													"        pm.expect(about).to.equal(oldRecipe.about)",
-													"    })",
-													"    pm.test('Recipe category has not changed', () => {",
-													"        pm.expect(category).to.equal(oldRecipe.category)",
-													"    })",
-													"    pm.test('Recipe modification date has not changed', () => {",
-													"        pm.expect(modifiedOn).to.equal(oldRecipe.modifiedOn)    ",
-													"    })",
-													"    pm.test('Recipe preparation time has not changed', () => {",
-													"        pm.expect(prepTime).to.deep.equal(oldRecipe.prepTime)",
-													"    })",
-													"    pm.test('Recipe ingredients list has not changed', () => {",
-													"        pm.expect(ingredients).to.deep.equal(oldRecipe.ingredients)",
-													"    })",
-													"    pm.test('Recipe instructions set has not changed', () => {",
-													"        pm.expect(instructions).to.deep.equal(oldRecipe.instructions)",
-													"    })",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
 											"listen": "prerequest",
 											"script": {
 												"exec": [
@@ -6922,6 +9104,7 @@
 													"    oldRecipe.instructions = res.json().message.instructions",
 													"    oldRecipe.category = res.json().message.category",
 													"    oldRecipe.modifiedOn = res.json().message.modifiedOn",
+													"    pm.variables.set('oldRecipe', JSON.stringify(oldRecipe))",
 													"",
 													"    // make dynamic request body",
 													"    const prepTimeUnits = ['m', 'h', 'd']",
@@ -6988,9 +9171,53 @@
 													"        instructions",
 													"    }",
 													"    pm.variables.set('body', JSON.stringify(body))",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// assert that status code is 401",
+													"pm.test('Status code is 401', () => pm.response.to.have.status(401))",
 													"",
-													"    // make the current user properties visible to collection",
-													"    pm.variables.set('oldRecipe', JSON.stringify(oldRecipe))",
+													"// get values from recipe after the PUT request",
+													"const getExistingRecipeReq = JSON.parse(pm.variables.get('getExistingRecipeReq'))",
+													"pm.sendRequest(getExistingRecipeReq, (err, res) => {",
+													"    if (err) throw err",
+													"    const oldRecipe = JSON.parse(pm.variables.get('oldRecipe'))",
+													"    const {",
+													"        title,",
+													"        about,",
+													"        prepTime,",
+													"        ingredients,",
+													"        instructions,",
+													"        category,",
+													"        modifiedOn",
+													"    } = res.json().message",
+													"    pm.test('Recipe title has not changed', () => {",
+													"        pm.expect(title).to.equal(oldRecipe.title)",
+													"    })",
+													"    pm.test('Recipe about has not changed', () => {",
+													"        pm.expect(about).to.equal(oldRecipe.about)",
+													"    })",
+													"    pm.test('Recipe category has not changed', () => {",
+													"        pm.expect(category).to.equal(oldRecipe.category)",
+													"    })",
+													"    pm.test('Recipe modification date has not changed', () => {",
+													"        pm.expect(modifiedOn).to.equal(oldRecipe.modifiedOn)    ",
+													"    })",
+													"    pm.test('Recipe preparation time has not changed', () => {",
+													"        pm.expect(prepTime).to.deep.equal(oldRecipe.prepTime)",
+													"    })",
+													"    pm.test('Recipe ingredients list has not changed', () => {",
+													"        pm.expect(ingredients).to.deep.equal(oldRecipe.ingredients)",
+													"    })",
+													"    pm.test('Recipe instructions set has not changed', () => {",
+													"        pm.expect(instructions).to.deep.equal(oldRecipe.instructions)",
+													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -7080,29 +9307,15 @@
 													"    })",
 													"})",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -7286,29 +9499,15 @@
 													"// assert that status code is 404",
 													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -9343,29 +11542,15 @@
 													"    })",
 													"})",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -9487,29 +11672,15 @@
 													"    })",
 													"})",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -9947,29 +12118,15 @@
 													"    })",
 													"})",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -10086,29 +12243,15 @@
 													"// assert that status code is 404",
 													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -10184,13 +12327,7 @@
 										"header": [],
 										"body": {
 											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "foodImages",
-													"type": "file",
-													"src": []
-												}
-											]
+											"formdata": []
 										},
 										"url": {
 											"raw": "{{API_ROOT}}/recipes/:id/media",
@@ -10625,8 +12762,7 @@
 									"script": {
 										"type": "text/javascript",
 										"exec": [
-											"// assert that status code is 404",
-											"pm.test('Status code is 404', () => pm.response.to.have.status(404))"
+											""
 										]
 									}
 								}
@@ -10995,29 +13131,15 @@
 													"    })",
 													"})",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -11131,29 +13253,15 @@
 													"// assert that status code is 404",
 													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -11229,13 +13337,7 @@
 										"header": [],
 										"body": {
 											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "foodImages",
-													"type": "file",
-													"src": []
-												}
-											]
+											"formdata": []
 										},
 										"url": {
 											"raw": "{{API_ROOT}}/recipes/:id/media",
@@ -11761,29 +13863,15 @@
 													"    })",
 													"})",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -11878,29 +13966,15 @@
 													"// assert that status code is 404",
 													"pm.test('Status code is 404', () => pm.response.to.have.status(404))",
 													"",
-													"// sign user out",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
+													"const userToDelete = pm.variables.get('userToDelete')",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
 													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    ",
-													"    // delete created user",
-													"    const userToDelete = pm.variables.get('userToDelete')",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"

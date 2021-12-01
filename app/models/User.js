@@ -16,7 +16,6 @@ const nameSchema = new Schema({
 
 const userSchema = new Schema({
     name: { type: nameSchema, required: true },
-    active: { type: Boolean, default: false },
     username: {
         type: String,
         required: true,

@@ -315,28 +315,13 @@ const unsetMedia = async id => {
 const signIn = async username => {
     const notFoundMessage = `The user with username of "${username}"` +
                             ' does not exist.'
-    const badRequestMessage = `The user with username of "${username}"` +
-                              ' is already signed in.'
     const okMessage = `The user with username of "${username}"` +
                       ' was signed into the application.'
     try {
         const user = await User.findOne({ username })
         if (!user) return quickResponse(404, notFoundMessage)
 
-        // TODO: The end goal would be to allow users to sign in
-        //       on multiple clients simultaneously. Currently,
-        //       this is not allowed. Implement a check into the
-        //       sessions collection and allow the sign-in if the
-        //       SID does not currently exist. Return a '409
-        //       Conflict' `quickResponse` method if the SID
-        //       already exists.
-
-        // check if user is already signed in
-        if (user.active) return quickResponse(400, badRequestMessage)
-
-        user.active = true
         user.save()
-
         return quickResponse(200, okMessage)
     } catch (err) {
         return quickResponse(500)
@@ -356,20 +341,13 @@ const signIn = async username => {
 const signOut = async username => {
     const notFoundMessage = `The user with username of "${username}"` +
                             ' does not exist.'
-    const badRequestMessage = `The user with username of "${username}"` +
-                              ' is already signed out.'
     const okMessage = `The user with username of "${username}"` +
                       ' was signed out of the application.'
     try {
         const user = await User.findOne({ username })
         if (!user) return quickResponse(404, notFoundMessage)
 
-        // check if user is already signed out
-        if (!user.active) return quickResponse(400, badRequestMessage)
-
-        user.active = false
         user.save()
-
         return quickResponse(200, okMessage)
     } catch (err) {
         return quickResponse(500)

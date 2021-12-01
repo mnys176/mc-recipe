@@ -60,13 +60,6 @@ const postUser = async (req, res) => {
     }
     const hashedPassword = authServiceData.context
 
-    // sign the user in automatically
-    // const { status, data } = await userService.signIn(username)
-    // if (status === 200) {
-    //     req.session.isAuth = true
-    //     req.session.username = username
-    // }
-
     // cherry-pick fields from body (more secure)
     const { status, data } = await userService.create(
         req.body.name,
@@ -156,7 +149,7 @@ const putUser = async (req, res) => {
 }
 
 /**
- * Deletes a user in the database, signing them out beforehand.
+ * Deletes a user in the database.
  * 
  * @author Mike Nystoriak <nystoriakm@gmail.com>
  * 

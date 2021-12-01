@@ -1334,7 +1334,6 @@
 													"    const expectedUserKeys = [",
 													"        '_id',",
 													"        'name',",
-													"        'active',",
 													"        'media',",
 													"        'username',",
 													"        'email',",
@@ -1377,7 +1376,6 @@
 													"    const expectedUserKeys = [",
 													"        '_id',",
 													"        'name',",
-													"        'active',",
 													"        'media',",
 													"        'username',",
 													"        'email',",
@@ -3881,180 +3879,6 @@
 										}
 									},
 									"response": []
-								},
-								{
-									"name": "user-already-signed-in",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// make dynamic request body",
-													"const body = {",
-													"    username: 'UsernameTester.78',",
-													"    password: 'P@ssword23!'",
-													"}",
-													"pm.variables.set('body', JSON.stringify(body))"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// check that the user is still labeled as 'active'",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const userToDelete = pm.variables.get('userToDelete')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${userToDelete}` }",
-													"pm.sendRequest(getExistingUserReq, (err, res) => {",
-													"    if (err) throw err",
-													"    pm.test('User is still active in the application', () => {",
-													"        const user = res.json().message",
-													"        pm.expect(user.active).to.be.true;",
-													"    })",
-													"",
-													"    // delete created user",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{{body}}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{API_ROOT}}/users/signin",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"users",
-												"signin"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "user-already-signed-out",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// sign user out",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const signOutUserReq = {",
-													"    url: `${apiRoot}/users/signout`,",
-													"    method: 'POST',",
-													"    header: { 'Content-Type': 'application/json' },",
-													"    body: {",
-													"        mode: 'raw',",
-													"        raw: JSON.stringify({ username: 'UsernameTester.78' })",
-													"    }",
-													"}",
-													"pm.sendRequest(signOutUserReq, err => {",
-													"    if (err) throw err",
-													"})",
-													"",
-													"// make dynamic request body",
-													"const body = {",
-													"    username: 'UsernameTester.78',",
-													"    password: 'P@ssword23!'",
-													"}",
-													"pm.variables.set('body', JSON.stringify(body))"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// check that the user is still labeled as not 'active'",
-													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const userToDelete = pm.variables.get('userToDelete')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${userToDelete}` }",
-													"pm.sendRequest(getExistingUserReq, (err, res) => {",
-													"    if (err) throw err",
-													"    pm.test('User is still inactive in the application', () => {",
-													"        const user = res.json().message",
-													"        pm.expect(user.active).to.be.false;",
-													"    })",
-													"",
-													"    // sign user in",
-													"    const signInUserReq = {",
-													"        url: `${apiRoot}/users/signin`,",
-													"        method: 'POST',",
-													"        header: { 'Content-Type': 'application/json' },",
-													"        body: {",
-													"            mode: 'raw',",
-													"            raw: JSON.stringify({",
-													"                username: 'UsernameTester.78',",
-													"                password: 'P@ssword23!'",
-													"            })",
-													"        }",
-													"    }",
-													"    pm.sendRequest(signInUserReq, err => {",
-													"        if (err) throw err",
-													"",
-													"        // delete created user",
-													"        const deleteUserReq = {",
-													"            url: `${apiRoot}/users/${userToDelete}`,",
-													"            method: 'DELETE'",
-													"        }",
-													"        pm.sendRequest(deleteUserReq, err => {",
-													"            if (err) throw err",
-													"        })",
-													"    })",
-													"})"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{{body}}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{API_ROOT}}/users/signout",
-											"host": [
-												"{{API_ROOT}}"
-											],
-											"path": [
-												"users",
-												"signout"
-											]
-										}
-									},
-									"response": []
 								}
 							],
 							"event": [
@@ -4318,25 +4142,15 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"// check that the user is now labeled as 'active'",
+													"// delete created user",
 													"const apiRoot = pm.environment.get('API_ROOT')",
 													"const userToDelete = pm.variables.get('userToDelete')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${userToDelete}` }",
-													"pm.sendRequest(getExistingUserReq, (err, res) => {",
+													"const deleteUserReq = {",
+													"    url: `${apiRoot}/users/${userToDelete}`,",
+													"    method: 'DELETE'",
+													"}",
+													"pm.sendRequest(deleteUserReq, err => {",
 													"    if (err) throw err",
-													"    pm.test('User is now active in the application', () => {",
-													"        const user = res.json().message",
-													"        pm.expect(user.active).to.be.true;",
-													"    })",
-													"",
-													"    // delete created user",
-													"    const deleteUserReq = {",
-													"        url: `${apiRoot}/users/${userToDelete}`,",
-													"        method: 'DELETE'",
-													"    }",
-													"    pm.sendRequest(deleteUserReq, err => {",
-													"        if (err) throw err",
-													"    })",
 													"})"
 												],
 												"type": "text/javascript"
@@ -4404,41 +4218,31 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"// check that the user is now labeled as not 'active'",
+													"// sign user in",
 													"const apiRoot = pm.environment.get('API_ROOT')",
-													"const userToDelete = pm.variables.get('userToDelete')",
-													"const getExistingUserReq = { url: `${apiRoot}/users/${userToDelete}` }",
-													"pm.sendRequest(getExistingUserReq, (err, res) => {",
-													"    if (err) throw err",
-													"    pm.test('User is now inactive in the application', () => {",
-													"        const user = res.json().message",
-													"        pm.expect(user.active).to.be.false;",
-													"    })",
-													"",
-													"    // sign user in",
-													"    const signInUserReq = {",
-													"        url: `${apiRoot}/users/signin`,",
-													"        method: 'POST',",
-													"        header: { 'Content-Type': 'application/json' },",
-													"        body: {",
-													"            mode: 'raw',",
-													"            raw: JSON.stringify({",
-													"                username: 'UsernameTester.78',",
-													"                password: 'P@ssword23!'",
-													"            })",
-													"        }",
-													"    }",
-													"    pm.sendRequest(signInUserReq, err => {",
-													"        if (err) throw err",
-													"",
-													"        // delete created user",
-													"        const deleteUserReq = {",
-													"            url: `${apiRoot}/users/${userToDelete}`,",
-													"            method: 'DELETE'",
-													"        }",
-													"        pm.sendRequest(deleteUserReq, err => {",
-													"            if (err) throw err",
+													"const signInUserReq = {",
+													"    url: `${apiRoot}/users/signin`,",
+													"    method: 'POST',",
+													"    header: { 'Content-Type': 'application/json' },",
+													"    body: {",
+													"        mode: 'raw',",
+													"        raw: JSON.stringify({",
+													"            username: 'UsernameTester.78',",
+													"            password: 'P@ssword23!'",
 													"        })",
+													"    }",
+													"}",
+													"pm.sendRequest(signInUserReq, err => {",
+													"    if (err) throw err",
+													"",
+													"    // delete created user",
+													"    const userToDelete = pm.variables.get('userToDelete')",
+													"    const deleteUserReq = {",
+													"        url: `${apiRoot}/users/${userToDelete}`,",
+													"        method: 'DELETE'",
+													"    }",
+													"    pm.sendRequest(deleteUserReq, err => {",
+													"        if (err) throw err",
 													"    })",
 													"})"
 												],

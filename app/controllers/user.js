@@ -143,6 +143,8 @@ const putUser = async (req, res) => {
         hashedPassword,
         req.body.email
     )
+    if (status === 200) req.session.username = req.body.username
+
     return res.status(status).json(data)
 }
 
@@ -157,6 +159,10 @@ const putUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     const { id } = req.params
     const { status, data } = await userService.discard(id)
+
+    // drop current session
+    if (status === 200) req.session.destroy()
+
     return res.status(status).json(data)
 }
 
@@ -262,6 +268,21 @@ const deleteUserMedia = async (req, res) => {
     return res.status(status).json(data)
 }
 
+/**
+ * Checks that the provided username is the username of
+ * the provided user.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id       - The user ID to check.
+ * @param {string} username - The username.
+ * 
+ * @returns {number} The results of the operation.
+ */
+const checkUsername = async (id, username) => {
+    return await userService.checkUsername(id, username)
+}
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -273,5 +294,6 @@ module.exports = {
     getUserMedia,
     postUserMedia,
     putUserMedia,
-    deleteUserMedia
+    deleteUserMedia,
+    checkUsername
 }

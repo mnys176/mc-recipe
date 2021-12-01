@@ -51,16 +51,11 @@ const getRecipeById = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const postRecipe = async (req, res) => {
-    // if (!req.session.isAuth) {
-    //     const { status, data } = authService.notAuthenticated()
-    //     return res.status(status).json(data)
-    // }
-
     // cherry-pick fields from body (more secure)
     const { status, data } = await recipeService.create(
         req.body.title,
         req.body.about,
-        req.body.uploader,
+        req.session.username,
         req.body.prepTime,
         req.body.category,
         req.body.ingredients,
@@ -101,8 +96,7 @@ const putRecipe = async (req, res) => {
  * @param {object} res - Response object from Express.
  */
 const deleteRecipe = async (req, res) => {
-    const { id } = req.params
-    const { status, data } = await recipeService.discard(id)
+    const { status, data } = await recipeService.discard(req.params.id)
     return res.status(status).json(data)
 }
 
@@ -205,6 +199,21 @@ const deleteRecipeMedia = async (req, res) => {
     return res.status(status).json(data)
 }
 
+/**
+ * Checks that the provided user is the uploader of
+ * the provided recipe.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id       - The recipe ID to check.
+ * @param {string} username - The username.
+ * 
+ * @returns {boolean} The results of the operation.
+ */
+const checkUploader = async (id, username) => {
+    return await recipeService.checkUploader(id, username)
+}
+
 module.exports = {
     getAllRecipes,
     getRecipeById,
@@ -214,5 +223,6 @@ module.exports = {
     getRecipeMedia,
     postRecipeMedia,
     putRecipeMedia,
-    deleteRecipeMedia
+    deleteRecipeMedia,
+    checkUploader
 }

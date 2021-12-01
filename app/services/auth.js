@@ -78,9 +78,4 @@ const hashPassword = async plaintext => {
     }
 }
 
-const notAuthenticated = () => {
-    const message = 'Please sign in to perform this action.'
-    return quickResponse(401, message)
-}
-
-module.exports = { authenticate, hashPassword, notAuthenticated }
+module.exports = { authenticate, hashPassword }

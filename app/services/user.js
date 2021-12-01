@@ -11,6 +11,9 @@ const path = require('path')
 const { User } = require('../models')
 const quickResponse = require('../util/quick-response')
 
+// TODO: Upgrade JSDoc comments to enhance parameter
+//       descriptions as in `auth-firewall.js`.
+
 /**
  * Confirms that the provided ID is a MongoDB
  * ObjectID.
@@ -127,7 +130,7 @@ const change = async (id, name, username, password, email) => {
     const okMessage = `The user with ID of "${id}"` +
                       ' was successfully updated.'
     try {
-        if (!objectIdIsValid(id)) {
+        if (!(await exists(id))) {
             return quickResponse(404, notFoundMessage)
         }
 
@@ -166,7 +169,7 @@ const discard = async id => {
     const okMessage = `The user with ID of "${id}"` +
                       ' was successfully deleted.'
     try {
-        if (!objectIdIsValid(id)) {
+        if (!(await exists(id))) {
             return quickResponse(404, notFoundMessage)
         }
         const data = await User.findByIdAndDelete(id)
@@ -190,7 +193,7 @@ const discard = async id => {
  */
 const exists = async id => {
     try {
-        return await User.exists({ _id: id })
+        return objectIdIsValid(id) && await User.exists({ _id: id })
     } catch (err) {
         return false
     }
@@ -312,20 +315,13 @@ const unsetMedia = async id => {
 const signIn = async username => {
     const notFoundMessage = `The user with username of "${username}"` +
                             ' does not exist.'
-    const badRequestMessage = `The user with username of "${username}"` +
-                              ' is already signed in.'
     const okMessage = `The user with username of "${username}"` +
                       ' was signed into the application.'
     try {
         const user = await User.findOne({ username })
         if (!user) return quickResponse(404, notFoundMessage)
 
-        // check if user is already signed in
-        if (user.active) return quickResponse(400, badRequestMessage)
-
-        user.active = true
         user.save()
-
         return quickResponse(200, okMessage)
     } catch (err) {
         return quickResponse(500)
@@ -345,23 +341,37 @@ const signIn = async username => {
 const signOut = async username => {
     const notFoundMessage = `The user with username of "${username}"` +
                             ' does not exist.'
-    const badRequestMessage = `The user with username of "${username}"` +
-                              ' is already signed out.'
     const okMessage = `The user with username of "${username}"` +
                       ' was signed out of the application.'
     try {
         const user = await User.findOne({ username })
         if (!user) return quickResponse(404, notFoundMessage)
 
-        // check if user is already signed out
-        if (!user.active) return quickResponse(400, badRequestMessage)
-
-        user.active = false
         user.save()
-
         return quickResponse(200, okMessage)
     } catch (err) {
         return quickResponse(500)
+    }
+}
+
+/**
+ * Checks that the provided username is the username of
+ * the provided user.
+ * 
+ * @author Mike Nystoriak <nystoriakm@gmail.com>
+ * 
+ * @param {string} id       - The user ID to check.
+ * @param {string} username - The username.
+ * 
+ * @returns {number} The results of the operation.
+ */
+const checkUsername = async (id, username) => {
+    try {
+        if (!(await exists(id))) return -1
+        const user = await User.findById(id)
+        return user.username === username ? 0 : 1
+    } catch (err) {
+        return -1
     }
 }
 
@@ -375,5 +385,6 @@ module.exports = {
     resetMedia,
     unsetMedia,
     signIn,
-    signOut
+    signOut,
+    checkUsername
 }
